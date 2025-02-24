@@ -1,4 +1,4 @@
-# you📔 Personal Journal iOS App
+# 📔 Personal Journal iOS App
 
 A secure, elegant, and user-friendly private journal app built using **SwiftUI** and **Firebase**. Capture your thoughts, experiences, and ideas anywhere, anytime, securely and conveniently.
 
