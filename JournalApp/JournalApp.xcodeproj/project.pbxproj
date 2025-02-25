@@ -40,6 +40,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		805E5C832D6E3603006A0614 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		805E5C842D6E360D006A0614 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		805E5C852D6E3615006A0614 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		80D636292D6CCBA3008FF902 = {
 			isa = PBXGroup;
 			children = (
@@ -59,6 +80,9 @@
 		80D636342D6CCBA3008FF902 /* JournalApp */ = {
 			isa = PBXGroup;
 			children = (
+				805E5C852D6E3615006A0614 /* Services */,
+				805E5C842D6E360D006A0614 /* Views */,
+				805E5C832D6E3603006A0614 /* Models */,
 				80D636352D6CCBA3008FF902 /* JournalAppApp.swift */,
 				80D636372D6CCBA3008FF902 /* ContentView.swift */,
 				80D636392D6CCBA6008FF902 /* Assets.xcassets */,
