@@ -15,44 +15,46 @@ struct TopNavBarView: View {
     let onSearch: () -> Void
 
     var body: some View {
-        HStack {
-            // Hamburger Menu Button
-            Button(action: { isSidebarOpen.toggle() }) {
-                Image(systemName: "line.horizontal.3")
-                    .font(.title)
-            }
-
-            Spacer()
-
-            // Journal Dropdown
-            Menu {
-                ForEach(journals, id: \.id) { journal in
-                    Button(action: { selectedJournal = journal.id }) {
-                        Text(journal.title)
-                    }
+            HStack {
+                // ☰ Hamburger Menu Button
+                Button(action: { isSidebarOpen.toggle() }) {
+                    Image(systemName: "line.horizontal.3")
+                        .font(.title)
                 }
-            } label: {
-                Text(selectedJournal.isEmpty ? "Select Journal" : selectedJournal)
-                    .font(.headline)
-            }
 
-            Spacer()
+                Spacer()
 
-            // Search and Add Buttons
-            Button(action: onSearch) {
-                Image(systemName: "magnifyingglass")
-                    .font(.title2)
-            }
+                // 📖 Journal Dropdown
+                Menu {
+                    ForEach(journals, id: \.id) { journal in
+                        Button(action: {
+                            selectedJournal = journal.title // ✅ Update selected journal
+                        }) {
+                            Text(journal.title)
+                        }
+                    }
+                } label: {
+                    Text(selectedJournal)
+                        .font(.headline)
+                }
 
-            Button(action: onCreateEntry) {
-                Image(systemName: "plus")
-                    .font(.title2)
+                Spacer()
+
+                // 🔍 Search and ➕ Add Entry Buttons
+                Button(action: onSearch) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.title2)
+                }
+
+                Button(action: onCreateEntry) {
+                    Image(systemName: "plus")
+                        .font(.title2)
+                }
             }
+            .padding()
+            .background(Color.white)
+            .shadow(radius: 2)
         }
-        .padding()
-        .background(Color.white)
-        .shadow(radius: 2)
-    }
 }
 
 

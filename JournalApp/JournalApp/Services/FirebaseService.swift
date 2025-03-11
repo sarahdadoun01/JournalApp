@@ -23,6 +23,31 @@ class FirebaseService: ObservableObject {
             print("❌ Firestore connection failed: \(error.localizedDescription)")
         }
     }
+    
+    // Fetches all journals for a given userID
+        func fetchJournalsForUser(userID: String, completion: @escaping ([Journal]) -> Void) {
+            db.collection("journals")
+                .whereField("userID", isEqualTo: userID)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        print("❌ Error fetching journals: \(error.localizedDescription)")
+                        completion([])
+                        return
+                    }
+
+                    let journals = snapshot?.documents.compactMap { doc -> Journal? in
+                        let data = doc.data()
+                        return Journal(
+                            id: doc.documentID,
+                            userID: data["userID"] as? String ?? "",
+                            title: data["title"] as? String ?? "Untitled",
+                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                        )
+                    } ?? []
+
+                    completion(journals)
+                }
+        }
 
     // Save a new Journal
     func saveJournal(userID: String, title: String, completion: @escaping (Bool) -> Void) {

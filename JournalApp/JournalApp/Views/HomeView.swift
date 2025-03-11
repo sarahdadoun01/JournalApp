@@ -7,49 +7,61 @@
 
 import SwiftUI
 import FirebaseFirestore
+import FirebaseAuth
+
+import SwiftUI
 
 struct HomeView: View {
     @State private var isSidebarOpen = false
     @State private var selectedJournal = "All"
     @State private var journals: [Journal] = []
-    @State private var tags: [String] = ["Work", "Personal", "Ideas"] // Placeholder tags
+    @State private var tags: [String] = ["Work", "Personal", "Ideas"]
     @StateObject private var firebaseService = FirebaseService()
 
     var body: some View {
         ZStack {
             VStack {
-                // Top Navigation Bar
+                // Pass selectedJournal Binding to update in real-time
                 TopNavBarView(
                     isSidebarOpen: $isSidebarOpen,
                     selectedJournal: $selectedJournal,
                     journals: journals,
                     onCreateEntry: { print("Create Entry") },
-                    onSearch: { print("Search") }
+                    onSearch: { print("Search...") }
                 )
 
-                // Entry List View
+                // Show Entries for the Selected Journal
                 EntryListView(journalID: selectedJournal)
             }
 
-            // Sidebar Menu
+            // Sidebar Menu with Journal Selection
             SideBarView(
                 isShowing: $isSidebarOpen,
                 selectedJournal: $selectedJournal,
                 journals: journals,
                 tags: tags,
                 onSelectJournal: { journalID in
-                    selectedJournal = journalID
+                    selectedJournal = journalID // Update journal when selected
                 }
             )
         }
         .onAppear {
-            // Fetch user's journals
-            firebaseService.fetchJournals(userID: "test_user") { fetchedJournals in
-                self.journals = fetchedJournals
+            Auth.auth().signIn(withEmail: "testuser@example.com", password: "password123") { result, error in
+                if let error = error {
+                    print("❌ Firebase Auth failed: \(error.localizedDescription)")
+                    return
+                }
+                print("✅ Signed in as test user!")
+
+                let userID = result?.user.email ?? "testuser@example.com"
+                firebaseService.fetchJournals(userID: userID) { fetchedJournals in
+                    self.journals = [Journal(id: "All", userID: userID, title: "All")] + fetchedJournals
+                }
             }
         }
     }
 }
+
 
 
 struct HomeView_Previews: PreviewProvider {

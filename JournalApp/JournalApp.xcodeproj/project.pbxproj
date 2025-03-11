@@ -13,6 +13,7 @@
 		804F6D8E2D8075EF00E2378D /* SideBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D8D2D8075EF00E2378D /* SideBarView.swift */; };
 		804F6D902D80764100E2378D /* TopNavBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D8F2D80764100E2378D /* TopNavBarView.swift */; };
 		804F6D922D80768B00E2378D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D912D80768B00E2378D /* HomeView.swift */; };
+		804F6D942D80B03300E2378D /* EntryListBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D932D80B03300E2378D /* EntryListBlockView.swift */; };
 		805E5C872D6E79DC006A0614 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E5C862D6E79DC006A0614 /* UserModel.swift */; };
 		805E5C892D6E79EF006A0614 /* EntryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E5C882D6E79EF006A0614 /* EntryModel.swift */; };
 		805E5C8B2D6E7D40006A0614 /* MediaFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E5C8A2D6E7D40006A0614 /* MediaFile.swift */; };
@@ -41,6 +42,7 @@
 		804F6D8D2D8075EF00E2378D /* SideBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarView.swift; sourceTree = "<group>"; };
 		804F6D8F2D80764100E2378D /* TopNavBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavBarView.swift; sourceTree = "<group>"; };
 		804F6D912D80768B00E2378D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		804F6D932D80B03300E2378D /* EntryListBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryListBlockView.swift; sourceTree = "<group>"; };
 		805E5C862D6E79DC006A0614 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		805E5C882D6E79EF006A0614 /* EntryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryModel.swift; sourceTree = "<group>"; };
 		805E5C8A2D6E7D40006A0614 /* MediaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFile.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				804F6D8D2D8075EF00E2378D /* SideBarView.swift */,
 				804F6D8F2D80764100E2378D /* TopNavBarView.swift */,
 				804F6D912D80768B00E2378D /* HomeView.swift */,
+				804F6D932D80B03300E2378D /* EntryListBlockView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 				80B2CE632D70D28D00440A1F /* AddEntryView.swift in Sources */,
 				805E5C8D2D6E7EFF006A0614 /* FirebaseService.swift in Sources */,
 				80D636362D6CCBA3008FF902 /* JournalAppApp.swift in Sources */,
+				804F6D942D80B03300E2378D /* EntryListBlockView.swift in Sources */,
 				80B2CE6A2D70DC7300440A1F /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
