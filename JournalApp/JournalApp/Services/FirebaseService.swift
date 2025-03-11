@@ -11,6 +11,18 @@ import FirebaseFirestore
 @MainActor
 class FirebaseService: ObservableObject {
     private let db = Firestore.firestore()
+    
+    // Test firebase connection
+    func testFirestoreConnection() async {
+        let testDoc = db.collection("test").document("testDoc")
+        
+        do {
+            try await testDoc.setData(["message": "Hello, Firebase!"])
+            print("✅ Firestore is connected successfully!")
+        } catch {
+            print("❌ Firestore connection failed: \(error.localizedDescription)")
+        }
+    }
 
     // Save a new Journal
     func saveJournal(userID: String, title: String, completion: @escaping (Bool) -> Void) {

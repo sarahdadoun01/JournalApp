@@ -58,6 +58,16 @@ struct TopNavBarView: View {
 
 struct TopNavBarView_Previews: PreviewProvider {
     static var previews: some View {
-        TopNavBarView()
+        TopNavBarView(
+            isSidebarOpen: .constant(false),
+            selectedJournal: .constant("Personal"),
+            journals: [
+                Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
+                Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
+            ], // Sample list of journals
+            onCreateEntry: {}, // Empty closure for creating entries
+            onSearch: {} // Empty closure for search
+        )
     }
 }
+

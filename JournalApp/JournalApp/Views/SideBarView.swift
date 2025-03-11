@@ -84,16 +84,21 @@ struct SideBarView: View {
 
 struct SideBarView_Previews: PreviewProvider {
     static var previews: some View {
+        
         SideBarView(
-            isShowing: .constant(true), // ✅ Use .constant() for bindings
-            selectedJournal: .constant("All"), // ✅ Sample journal selection
+            isShowing: .constant(true), // Use .constant() for bindings
+            selectedJournal: .constant("All"), // Sample journal selection
+            
             journals: [
                 Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
                 Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
-            ], // ✅ Sample journal list
-            tags: ["Work", "Personal", "Ideas"], // ✅ Sample tags
-            onSelectJournal: { _ in } // ✅ Dummy closure for journal selection
+            ], // Sample journal list
+            
+            tags: ["Work", "Personal", "Ideas"], // Sample tags
+            
+            onSelectJournal: { _ in } // Dummy closure for journal selection
         )
+        
     }
 }
 

@@ -32,7 +32,7 @@ struct HomeView: View {
             }
 
             // Sidebar Menu
-            SidebarMenuView(
+            SideBarView(
                 isShowing: $isSidebarOpen,
                 selectedJournal: $selectedJournal,
                 journals: journals,
@@ -44,7 +44,7 @@ struct HomeView: View {
         }
         .onAppear {
             // Fetch user's journals
-            firebaseService.fetchJournalsForUser(userID: "test_user") { fetchedJournals in
+            firebaseService.fetchJournals(userID: "test_user") { fetchedJournals in
                 self.journals = fetchedJournals
             }
         }

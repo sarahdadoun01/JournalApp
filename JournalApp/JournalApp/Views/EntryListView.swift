@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct EntryListView: View {
+    var journalID: String
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("Entries for Journal: \(journalID)")
     }
 }
 
+
 struct EntryListView_Previews: PreviewProvider {
     static var previews: some View {
-        EntryListView()
+        EntryListView(journalID: "sampleJournalID") // ✅ Pass a sample journal ID
     }
 }

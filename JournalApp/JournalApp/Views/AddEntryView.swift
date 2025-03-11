@@ -12,6 +12,7 @@ struct AddEntryView: View {
     @State private var selectedMoods: [String] = []
     @EnvironmentObject var firebaseService: FirebaseService // ✅ Now works!
     @Environment(\.presentationMode) var presentationMode
+    var selectedJournalID: String
 
     var body: some View {
         VStack {
@@ -53,6 +54,7 @@ struct AddEntryView: View {
         guard !entryText.isEmpty else { return }
 
         firebaseService.saveEntry(
+            journalID: selectedJournalID,
             userID: "test_user", // Replace with actual user ID
             title: "New Entry",
             content: entryText,
@@ -67,6 +69,7 @@ struct AddEntryView: View {
 
 struct AddEntryView_Previews: PreviewProvider {
     static var previews: some View {
-        AddEntryView()
+        AddEntryView(selectedJournalID: "sampleJournalID")
     }
 }
+

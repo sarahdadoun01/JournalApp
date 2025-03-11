@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var firebaseService = FirebaseService() // ✅ Fix applied
+    @StateObject private var firebaseService = FirebaseService()
 
     var body: some View {
         NavigationView {
@@ -17,7 +17,7 @@ struct ContentView: View {
                     .font(.title)
                 
                 Button("Test Firestore") {
-                    Task { // ✅ Run inside an async Task
+                    Task {
                         await firebaseService.testFirestoreConnection()
                     }
                 }
