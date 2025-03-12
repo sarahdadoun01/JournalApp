@@ -29,12 +29,15 @@ struct EntryListBlockView: View {
             }.frame(width: 50)
             
             // entry preview
-            VStack(alignment: .leading, spacing: 6){
+            VStack(alignment: .leading, spacing: 15){
                     
                     // moods
                     if !entry.moods.isEmpty {
                         HStack{
-                            Text("Mood icons go here")
+                            ForEach(entry.moods.prefix(2), id: \.self) {
+                                mood in Text(mood)
+                                    .font(.headline)
+                            }
                         }
                     }
                     
@@ -66,7 +69,11 @@ struct EntryListBlockView: View {
             }
             
         }.padding()
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(radius: 10))
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 0)
+            )
     }
 }
 
@@ -78,15 +85,27 @@ private func formatDate(_ date: Date, format: String) -> String {
 
 struct EntryListBlockView_Previews: PreviewProvider {
     static var previews: some View {
-        EntryListBlockView(entry: Entry(
-            id: "1",
-            journalID: "work",
-            userID: "testuser@example.com",
-            title: "Meeting Notes",
-            content: "Had a great meeting today about the new project...",
-            date: Date(),
-            moods: ["😊", "🚀"]
-        ))
+        VStack {
+            EntryListBlockView(entry: Entry(
+                id: "1",
+                journalID: "work",
+                userID: "testuser@example.com",
+                title: "Meeting Notes",
+                content: "Had a great meeting today about the new project...",
+                date: Date(),
+                moods: ["😊", "🚀"]
+            ))
+                    
+            EntryListBlockView(entry: Entry(
+                id: "2",
+                journalID: "work",
+                userID: "testuser@example.com",
+                title: "Daily Reflection",
+                content: "Today was a good day. I accomplished a lot and stayed productive!",
+                date: Date(),
+                moods: ["😌", "🌟"]
+            ))
+        }
         .previewLayout(.sizeThatFits)
         .padding()
     }
