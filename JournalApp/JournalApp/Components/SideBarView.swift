@@ -22,23 +22,25 @@ struct SideBarView: View {
                     .onTapGesture { isShowing = false } // Close when tapping outside
                 
                 HStack {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 8) {
                         // Journals Section
                         Text("Journals")
                             .font(.headline)
                             .padding(.top, 20)
-
-                        Button(action: {
-                            onSelectJournal("All")
-                            isShowing = false
-                        }) {
-                            Label("All", systemImage: "book.closed")
-                        }
-                        .padding()
+                            .padding(.bottom, 10)
+//
+//                        Button(action: {
+//                            onSelectJournal("All")
+//                            isShowing = false
+//                        }) {
+//                            Label("All", systemImage: "book.closed")
+//                        }
+//                        .padding()
 
                         ForEach(journals, id: \.id) { journal in
                             Button(action: {
-                                onSelectJournal(journal.id)
+                                print("📌 Sidebar Journal Selected: \(journal.title)") // ✅ Debugging Log !!!
+                                onSelectJournal(journal.title)
                                 isShowing = false
                             }) {
                                 Label(journal.title, systemImage: "book")
@@ -51,6 +53,7 @@ struct SideBarView: View {
                         // Tags Section
                         Text("Tags")
                             .font(.headline)
+                            .padding(.bottom, 10)
 
                         ForEach(tags, id: \.self) { tag in
                             Button(action: {}) {
@@ -68,12 +71,13 @@ struct SideBarView: View {
                         .padding(.leading, 15)
 
                         Spacer()
-                    }
-                    .frame(width: UIScreen.main.bounds.width * 0.8) // 80% of screen
+                    }.padding(.top, 50)
+                    .padding(.leading, 20)
+                    .frame(width: UIScreen.main.bounds.width * 0.8)
                     .background(Color.white)
                     .edgesIgnoringSafeArea(.all)
 
-                    Spacer() // Pushes menu to the left
+                    Spacer()
                 }
             }
         }

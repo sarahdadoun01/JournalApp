@@ -9,7 +9,7 @@ import Foundation
 
 struct Entry: Identifiable {
     var id: String
-    var journalID: String // ✅ Now belongs to a specific journal
+    var journalID: String
     var userID: String
     var title: String
     var content: String

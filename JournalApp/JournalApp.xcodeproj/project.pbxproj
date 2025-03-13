@@ -85,6 +85,7 @@
 			children = (
 				804F6D932D80B03300E2378D /* EntryListBlockView.swift */,
 				804F6D8F2D80764100E2378D /* TopNavBarView.swift */,
+				804F6D8D2D8075EF00E2378D /* SideBarView.swift */,
 				804F6D862D7D01A700E2378D /* CalendarView.swift */,
 			);
 			path = Components;
@@ -109,7 +110,6 @@
 				80B2CE602D70D27900440A1F /* EntryDetailView.swift */,
 				80B2CE622D70D28D00440A1F /* AddEntryView.swift */,
 				80B2CE642D70DA0200440A1F /* ProfileView.swift */,
-				804F6D8D2D8075EF00E2378D /* SideBarView.swift */,
 				804F6D912D80768B00E2378D /* HomeView.swift */,
 			);
 			path = Views;

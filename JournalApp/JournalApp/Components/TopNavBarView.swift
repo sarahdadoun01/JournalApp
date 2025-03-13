@@ -24,11 +24,11 @@ struct TopNavBarView: View {
 
                 Spacer()
 
-                // 📖 Journal Dropdown
+                // Journal Dropdown
                 Menu {
                     ForEach(journals, id: \.id) { journal in
                         Button(action: {
-                            selectedJournal = journal.title // ✅ Update selected journal
+                            selectedJournal = journal.title
                         }) {
                             Text(journal.title)
                         }
@@ -40,7 +40,7 @@ struct TopNavBarView: View {
 
                 Spacer()
 
-                // 🔍 Search and ➕ Add Entry Buttons
+                // search and Add Entry Buttons
                 Button(action: onSearch) {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)
