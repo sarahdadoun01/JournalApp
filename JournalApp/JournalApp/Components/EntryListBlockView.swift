@@ -14,22 +14,25 @@ struct EntryListBlockView: View {
     @StateObject private var firebaseService = FirebaseService()
     
     var body: some View {
-        HStack(alignment: .center, spacing: 15){
+        
+        GeometryReader { geometry in
             
-            // date of entry
-            VStack(alignment: .center){
-                Text(formatDate(entry.date, format: "dd")) // day only
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.black)
+            HStack(alignment: .center, spacing: 15){
                 
-                Text(formatDate(entry.date, format: "MMM")) // ex: Mar
-                    .font(.caption)
-                    .foregroundColor(.black)
-            }.frame(width: 50)
-            
-            // entry preview
-            VStack(alignment: .leading, spacing: 15){
+                // date of entry ( left side )
+                VStack(alignment: .center){
+                    Text(formatDate(entry.date, format: "dd")) // day only
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                    
+                    Text(formatDate(entry.date, format: "MMM")) // ex: Mar
+                        .font(.caption)
+                        .foregroundColor(.black)
+                }.frame(maxWidth: 50)
+                
+                // entry preview ( right side )
+                VStack(alignment: .leading, spacing: 15){
                     
                     // moods
                     if !entry.moods.isEmpty {
@@ -66,14 +69,20 @@ struct EntryListBlockView: View {
                             Text("Photos go here")
                         }
                     }
-            }
+                }.frame(width: geometry.size.width * 0.75, alignment: .leading)
+                
+            }.padding()
+                .frame(width: geometry.size.width * 1, height: 150) // ✅ 95% of screen width
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.white)
+                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 0)
+                )
             
-        }.padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 0)
-            )
+        }.frame(height: 150)
+        
+        
+            
     }
 }
 
@@ -102,6 +111,16 @@ struct EntryListBlockView_Previews: PreviewProvider {
                 userID: "testuser@example.com",
                 title: "Daily Reflection",
                 content: "Today was a good day. I accomplished a lot and stayed productive!",
+                date: Date(),
+                moods: ["😌", "🌟"]
+            ))
+            
+            EntryListBlockView(entry: Entry(
+                id: "2",
+                journalID: "personal",
+                userID: "testuser@example.com",
+                title: "Relaxing Weekend",
+                content: "Spent time at the beach and read a book",
                 date: Date(),
                 moods: ["😌", "🌟"]
             ))
