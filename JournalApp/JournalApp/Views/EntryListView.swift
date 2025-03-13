@@ -32,9 +32,18 @@ struct EntryListView: View {
         
         .onAppear {
             print("🟢 onAppear triggered for journal: \(journalID)") // ✅ Debugging Log
+            
+            if let user = Auth.auth().currentUser {
+                firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") { fetchedEntries in
+                    print("✅ All Entries fetched: \(fetchedEntries.count)")
+                    self.entries = fetchedEntries
+                }
+            }
         }
         .onChange(of: journalID) { newJournalID in
             print("🔄 Journal changed to: \(newJournalID), fetching new entries...") // ✅ Debugging Log
+            
+            
 
             if newJournalID == "All" {
                 if let user = Auth.auth().currentUser {
@@ -50,61 +59,6 @@ struct EntryListView: View {
                 }
             }
         }
-
-        
-        
-        //DEBUGING
-//        .onAppear {
-//            print("🟢 onAppear triggered for journal: \(journalID)")
-//
-//            if journalID == "All" {
-//                // Fetch ALL entries from all journals if "All" is selected
-//                if let user = Auth.auth().currentUser {
-//                    let userID = user.email ?? "testuser@example.com"
-//                    print("🔍 Fetching ALL entries for user: \(userID)")
-//
-//                    firebaseService.fetchAllEntries(userID: userID) { fetchedEntries in
-//                        print("✅ Fetched \(fetchedEntries.count) entries for 'All'")
-//                        self.entries = fetchedEntries
-//                    }
-//                } else {
-//                    print("❌ No user logged in")
-//                }
-//            } else {
-//                // Fetch entries for a specific journal
-//                print("🔍 Fetching entries for specific journal: \(journalID)")
-//
-//                firebaseService.fetchEntriesFromJournal(journalID: journalID) { fetchedEntries in
-//                    print("✅ Fetched \(fetchedEntries.count) entries for journal: \(journalID)")
-//                    self.entries = fetchedEntries
-//                }
-//            }
-//        }
-        
-        
-        
-        
-        
-        // THIS IS WHAT I HAD BEFORE DEBUGGING.
-//        .onAppear {
-//
-//            if journalID == "All" {
-//                // Fetch ALL entries from all journals if "All" is selected
-//                if let user = Auth.auth().currentUser {
-//                    firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") {
-//                        fetchedEntries in
-//                        self.entries = fetchedEntries
-//                    }
-//                } else {
-//                    print("❌ No user logged in")
-//                }
-//            } else {
-//                // Fetch entries for the specific journal
-//                firebaseService.fetchEntriesFromJournal(journalID: journalID) { fetchedEntries in
-//                    self.entries = fetchedEntries
-//                }
-//            }
-//        }
     }
 }
 
