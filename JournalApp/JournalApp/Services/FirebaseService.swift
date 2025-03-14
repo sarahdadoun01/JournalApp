@@ -104,7 +104,7 @@ class FirebaseService: ObservableObject {
                         content: data["content"] as? String ?? "",
                         date: (data["date"] as? Timestamp)?.dateValue() ?? Date(),
                         moods: data["moods"] as? [String] ?? [],
-                        mediaFiles: data["media"] as? [String] ?? []
+                        mediaFiles: data["mediaFiles"] as? [String] ?? []
                     )
                 } ?? []
 
@@ -142,7 +142,7 @@ class FirebaseService: ObservableObject {
 
                     let date = timestamp.dateValue() // Convert Firestore Timestamp to Date
                     let moods = data["moods"] as? [String] ?? []
-                    let media = data["media"] as? [String] ?? []
+                    let media = data["mediaFiles"] as? [String] ?? []
 
                     return Entry(
                         id: document.documentID,

@@ -26,7 +26,7 @@ struct EntryListView: View {
                     }
                 }
             }
-            .padding()
+            .padding(.horizontal)
         }
         
         
