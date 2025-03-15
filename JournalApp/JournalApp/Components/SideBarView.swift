@@ -39,7 +39,6 @@ struct SideBarView: View {
 
                         ForEach(journals, id: \.id) { journal in
                             Button(action: {
-                                print("📌 Sidebar Journal Selected: \(journal.title)") // ✅ Debugging Log !!!
                                 onSelectJournal(journal.title)
                                 isShowing = false
                             }) {

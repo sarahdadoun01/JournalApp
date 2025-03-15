@@ -35,26 +35,22 @@ struct EntryListView: View {
             
             if let user = Auth.auth().currentUser {
                 firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") { fetchedEntries in
-                    print("✅ All Entries fetched: \(fetchedEntries.count)")
                     self.entries = fetchedEntries
                 }
             }
         }
         .onChange(of: journalID) { newJournalID in
-            print("🔄 Journal changed to: \(newJournalID), fetching new entries...") // ✅ Debugging Log
             
             
 
             if newJournalID == "All" {
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") { fetchedEntries in
-                        print("✅ All Entries fetched: \(fetchedEntries.count)")
                         self.entries = fetchedEntries
                     }
                 }
             } else {
                 firebaseService.fetchEntriesFromJournal(journalID: newJournalID) { fetchedEntries in
-                    print("✅ Entries fetched for \(newJournalID): \(fetchedEntries.count)")
                     self.entries = fetchedEntries
                 }
             }

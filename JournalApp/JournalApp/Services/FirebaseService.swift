@@ -26,33 +26,6 @@ class FirebaseService: ObservableObject {
         }
     }
     
-//    func fetchJournals(userID: String, completion: @escaping ([Journal]) -> Void) {
-//        db.collection("journals")
-//            .whereField("userID", isEqualTo: userID)
-//            .getDocuments { snapshot, error in
-//                if let error = error {
-//                    print("❌ Error fetching journals: \(error.localizedDescription)")
-//                    completion([])
-//                    return
-//                }
-//
-//                let journals = snapshot?.documents.compactMap { document -> Journal? in
-//                    let data = document.data()
-//                    guard let title = data["title"] as? String else { return nil }
-//
-//                    return Journal(
-//                        id: document.documentID,
-//                        userID: userID,
-//                        title: title
-//                    )
-//                } ?? []
-//
-//                DispatchQueue.main.async {
-//                    completion(journals)
-//                }
-//        }
-//    }
-    
     func fetchJournals(userID: String, completion: @escaping ([Journal]) -> Void) {
         
         db.collection("journals")
@@ -109,7 +82,6 @@ class FirebaseService: ObservableObject {
                 } ?? []
 
                 DispatchQueue.main.async {
-                    print("✅ Fetched \(entries.count) entries for user \(userID) @fetchAllEntries in FirebaseService.swift.")
                     completion(entries)
                 }
             }
@@ -118,8 +90,6 @@ class FirebaseService: ObservableObject {
     // Fetch All Entries from a specific Journal
     func fetchEntriesFromJournal(journalID: String, completion: @escaping ([Entry]) -> Void) {
         let lowercasedJournalID = journalID.lowercased()
-        
-        print("🔍 Firestore Query: Fetching entries where journalID == \(lowercasedJournalID)") // ✅ Debugging Log
         
         db.collection("entries")
             .whereField("journalID", isEqualTo: lowercasedJournalID)
@@ -157,7 +127,6 @@ class FirebaseService: ObservableObject {
                 } ?? []
 
                 DispatchQueue.main.async {
-                    print("✅ Entries fetched for \(lowercasedJournalID): \(entries.count) at fetchEntriesFromJournal in FirebaseService.swift")
                     completion(entries)
                 }
             }
@@ -174,7 +143,6 @@ class FirebaseService: ObservableObject {
             }
             
             if let url = url {
-                print("✅ Image Download URL: \(url.absoluteString)")
                 completion(url.absoluteString)
             }
         }
@@ -194,7 +162,7 @@ class FirebaseService: ObservableObject {
                 print("❌ Failed to save journal: \(error.localizedDescription)")
                 completion(false)
             } else {
-                print("✅ Journal saved successfully!")
+                print("Journal saved successfully!")
                 completion(true)
             }
         }
@@ -216,7 +184,7 @@ class FirebaseService: ObservableObject {
                 print("❌ Failed to save entry: \(error.localizedDescription)")
                 completion(false)
             } else {
-                print("✅ Entry saved successfully!")
+                print("Entry saved successfully!")
                 completion(true)
             }
         }
