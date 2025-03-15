@@ -39,7 +39,6 @@ struct HomeView: View {
                 journals: journals,
                 tags: tags,
                 onSelectJournal: { journalID in
-                    print("✅ HomeView received selectedJournal update: \(journalID)") // ✅ Debugging Log!!!!
                     selectedJournal = journalID // Update journal when selected
                 }
             )
@@ -51,18 +50,15 @@ struct HomeView: View {
     
     private func authenticateTestUser() {
             if Auth.auth().currentUser == nil {
-                print("🔹 No user detected, logging in test user...")
 
                 Auth.auth().signIn(withEmail: "testuser@example.com", password: "123456") { result, error in
                     if let error = error {
                         print("❌ Firebase Auth failed: \(error.localizedDescription)")
                     } else {
-                        print("✅ Signed in as test user!")
                         fetchJournalsForCurrentUser()
                     }
                 }
             } else {
-                print("✅ User already logged in, fetching journals...")
                 fetchJournalsForCurrentUser()
             }
         }
@@ -71,7 +67,6 @@ struct HomeView: View {
         if let user = Auth.auth().currentUser {
             let userID = user.email ?? "testuser@example.com"
             
-            print("🔍 Fetching journals for user: \(userID)") // ✅ Debug Log
 
             firebaseService.fetchJournals(userID: userID) { fetchedJournals in
                 DispatchQueue.main.async {
@@ -80,7 +75,6 @@ struct HomeView: View {
                     
                     self.journals = [Journal(id: "All", userID: userID, title: "All")] + fetchedJournals
                     
-                    print("✅ Journals fetched from Firestore: \(self.journals.map { $0.title })") // ✅ Debug Log
 
                     // Preserve selection unless it no longer exists
                     if !self.journals.contains(where: { $0.title == previousSelection }) {
@@ -89,36 +83,12 @@ struct HomeView: View {
                         self.selectedJournal = previousSelection
                     }
 
-                    print("📌 Selected journal after update: \(self.selectedJournal)") // ✅ Debug Log
                 }
             }
         } else {
             print("❌ No user is logged in")
         }
     }
-
-//    private func fetchJournalsForCurrentUser() {
-//        if let user = Auth.auth().currentUser {
-//            let userID = user.email ?? "testuser@example.com"
-//
-//            print("🔍 Fetching journals for user: \(userID)") // ✅ Debug Log
-//
-//            firebaseService.fetchJournals(userID: userID) { fetchedJournals in
-//                DispatchQueue.main.async {
-//                    self.journals = [Journal(id: "All", userID: userID, title: "All")] + fetchedJournals
-//
-//                    print("✅ Journals fetched from Firestore: \(self.journals.map { $0.title })") // ✅ Debug Log
-//
-//                    if let firstJournal = fetchedJournals.first {
-//                        self.selectedJournal = firstJournal.title
-//                        print("📌 First journal selected: \(self.selectedJournal)") // ✅ Debug Log
-//                    }
-//                }
-//            }
-//        } else {
-//            print("❌ No user is logged in")
-//        }
-//    }
 
 }
 

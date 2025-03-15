@@ -16,10 +16,11 @@ struct TopNavBarView: View {
 
     var body: some View {
             HStack {
-                // ☰ Hamburger Menu Button
+                // Hamburger Menu Button
                 Button(action: { isSidebarOpen.toggle() }) {
                     Image(systemName: "line.horizontal.3")
                         .font(.title)
+                        .foregroundColor(.purple)
                 }
 
                 Spacer()
@@ -36,6 +37,7 @@ struct TopNavBarView: View {
                 } label: {
                     Text(selectedJournal)
                         .font(.headline)
+                        .foregroundColor(.purple)
                 }
 
                 Spacer()
@@ -44,16 +46,17 @@ struct TopNavBarView: View {
                 Button(action: onSearch) {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)
+                        .foregroundColor(.purple)
                 }
 
                 Button(action: onCreateEntry) {
                     Image(systemName: "plus")
                         .font(.title2)
+                        .foregroundColor(.purple)
                 }
             }
             .padding()
             .background(Color.white)
-            .shadow(radius: 2)
         }
 }
 

@@ -10,7 +10,7 @@ import SwiftUI
 struct AddEntryView: View {
     @State private var entryText: String = ""
     @State private var selectedMoods: [String] = []
-    @EnvironmentObject var firebaseService: FirebaseService // ✅ Now works!
+    @EnvironmentObject var firebaseService: FirebaseService
     @Environment(\.presentationMode) var presentationMode
     var selectedJournalID: String
 
