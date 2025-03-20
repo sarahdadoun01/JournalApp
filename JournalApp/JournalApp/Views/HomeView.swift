@@ -24,7 +24,6 @@ struct HomeView: View {
                     isSidebarOpen: $isSidebarOpen,
                     selectedJournal: $selectedJournal,
                     journals: journals,
-                    onCreateEntry: { print("Create Entry") },
                     onSearch: { print("Search...") }
                 )
 

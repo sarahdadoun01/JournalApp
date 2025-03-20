@@ -10,9 +10,13 @@ import SwiftUI
 struct TopNavBarView: View {
     @Binding var isSidebarOpen: Bool
     @Binding var selectedJournal: String
+    
+    @State private var isAddingEntry = false
+    
     let journals: [Journal]
-    let onCreateEntry: () -> Void
     let onSearch: () -> Void
+    
+
 
     var body: some View {
             HStack {
@@ -49,7 +53,9 @@ struct TopNavBarView: View {
                         .foregroundColor(.purple)
                 }
 
-                Button(action: onCreateEntry) {
+                Button(action: {
+                    isAddingEntry = true // Opens AddEntryView
+                }) {
                     Image(systemName: "plus")
                         .font(.title2)
                         .foregroundColor(.purple)
@@ -57,6 +63,16 @@ struct TopNavBarView: View {
             }
             .padding()
             .background(Color.white)
+            .sheet(isPresented: $isAddingEntry) {
+                        AddEntryView(selectedJournalID: selectedJournal)
+                            .transition(.move(edge: .bottom)) // Slide up animation
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    // Delays keyboard opening after animation
+                                    UIApplication.shared.sendAction(#selector(UIResponder.becomeFirstResponder), to: nil, from: nil, for: nil)
+                                }
+                            }
+                    }
         }
 }
 
@@ -70,7 +86,6 @@ struct TopNavBarView_Previews: PreviewProvider {
                 Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
                 Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
             ], // Sample list of journals
-            onCreateEntry: {}, // Empty closure for creating entries
             onSearch: {} // Empty closure for search
         )
     }

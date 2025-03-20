@@ -43,6 +43,8 @@ struct AddEntryView: View {
     let selectedJournalID: String
     
     @StateObject private var firebaseService = FirebaseService()
+    
+    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         VStack {
@@ -55,34 +57,32 @@ struct AddEntryView: View {
                         // Title Field
                         TextField("Title", text: $entryTitle)
                             .font(.title)
-                            .multilineTextAlignment(.leading) // Align text input to the right
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.leading) // Align text to the right
+                            //.focused($isTextFieldFocused) // automatically focus on title
 
                         Text("\(formatCurrentDate())")
                             .font(.system(size: 12))
-                        
+                            .foregroundColor(.white)
                         
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
                     
                     VStack(alignment: .center){
-                        Button(action: {
-                                print("Checkmark tapped")
-                                // Add logic to mark entry as completed
-                            }) {
+                        Button(action: saveEntry) {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.white) // White checkmark
-                                    .font(.system(size: 17, weight: .bold)) // Adjust size
-                                    .frame(width: 40, height: 40) // Set size of the button
+                                    .font(.system(size: 17, weight: .bold))
+                                    .frame(width: 40, height: 40) // size of the button
                                     .background(
                                         Circle()
-                                            .fill(Color.black.opacity(0.2)) // Black with 50% opacity
+                                            .fill(Color.black.opacity(0.2))
                                     )
                             }
                     }.frame(width: 50, height: 57,alignment: .trailing)
                     
-                }.frame(width: .infinity)
-                .padding(.horizontal,20)
+                }.padding(.horizontal,20)
                 .padding(.vertical,20)
                 
             }.background(Color.blue)
@@ -101,20 +101,38 @@ struct AddEntryView: View {
             }
             .padding(.horizontal)
 
+//            // Entry Blocks (Text, Images, etc.)
+//            ScrollView {
+//                VStack {
+//                    ForEach($blocks) { $block in
+//                        if block.type == .text {
+//                            TextEditor(text: $block.content)
+//                                .frame(minHeight: 40)
+//                                .padding()
+//                                .background(.white)
+//                                .cornerRadius(15)
+//                                .focused($isTextFieldFocused)
+//                        }
+//                    }
+//                }
+//                .padding(.horizontal)
+//            }.background(.gray)
+            
             // Entry Blocks (Text, Images, etc.)
-            ScrollView {
-                VStack {
-                    ForEach($blocks) { $block in
-                        if block.type == .text {
-                            TextEditor(text: $block.content)
-                                .frame(minHeight: 40)
-                                .padding()
-                                .background(Color(.systemGray5))
-                                .cornerRadius(15)
-                        }
+            Form {
+                ForEach($blocks) { $block in
+                    if block.type == .text {
+                        TextEditor(text: $block.content)
+                            .frame(minHeight: 40)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .focused($isTextFieldFocused)
                     }
                 }
-                .padding(.horizontal)
+            }
+            .onAppear {
+                showKeyboard() // Force keyboard to appear
             }
 
             // Floating Toolbar
@@ -131,25 +149,27 @@ struct AddEntryView: View {
                     .transition(.move(edge: .bottom))
                     .animation(.easeInOut(duration: 0.3))
             }
-
-            // Save Button
-            Button(action: saveEntry) {
-                Text("Save Entry")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-            .padding()
-            
-            
             
         }
         .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isTextFieldFocused = true
+            }
             observeKeyboardNotifications()
         }
+
         
+    }
+    
+    private func showKeyboard() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.becomeFirstResponder),
+                to: nil,
+                from: nil,
+                for: nil
+            )
+        }
     }
     
     // Date Formatter
@@ -210,8 +230,17 @@ struct AddEntryView: View {
 
     // MARK: - Save Entry Logic
     private func saveEntry() {
-        guard !blocks.isEmpty else { return }
-        
+        // Check if there is no meaningful content
+        let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
+
+        guard !entryTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+              !textBlocks.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+              !selectedMediaFiles.isEmpty else {
+            // No meaningful content → Just exit without saving
+            presentationMode.wrappedValue.dismiss()
+            return
+        }
+
         if selectedMediaFiles.isEmpty {
             saveEntryWithMedia(mediaURLs: [])
         } else {
@@ -220,6 +249,7 @@ struct AddEntryView: View {
             }
         }
     }
+
 
     private func uploadMediaFiles(completion: @escaping ([String]) -> Void) {
         let uploadedURLs = UploadedURLs()
