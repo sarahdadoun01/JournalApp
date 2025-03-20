@@ -13,6 +13,7 @@ import FirebaseStorage
 @MainActor
 class FirebaseService: ObservableObject {
     private let db = Firestore.firestore()
+    let storage = Storage.storage()
     
     // Test firebase connection
     func testFirestoreConnection() async {
@@ -77,7 +78,8 @@ class FirebaseService: ObservableObject {
                         content: data["content"] as? String ?? "",
                         date: (data["date"] as? Timestamp)?.dateValue() ?? Date(),
                         moods: data["moods"] as? [String] ?? [],
-                        mediaFiles: data["mediaFiles"] as? [String] ?? []
+                        mediaFiles: data["mediaFiles"] as? [String] ?? [],
+                        tags: data["tags"] as? [String] ?? []
                     )
                 } ?? []
 
@@ -113,6 +115,7 @@ class FirebaseService: ObservableObject {
                     let date = timestamp.dateValue() // Convert Firestore Timestamp to Date
                     let moods = data["moods"] as? [String] ?? []
                     let media = data["mediaFiles"] as? [String] ?? []
+                    let tags = data["tags"] as? [String] ?? []
 
                     return Entry(
                         id: document.documentID,
@@ -122,7 +125,8 @@ class FirebaseService: ObservableObject {
                         content: content,
                         date: date,
                         moods: moods,
-                        mediaFiles: media
+                        mediaFiles: media,
+                        tags: tags
                     )
                 } ?? []
 
@@ -148,6 +152,24 @@ class FirebaseService: ObservableObject {
         }
     }
     
+    // Upload media to Firebase Storage when Entry is saved
+    @MainActor
+    func uploadImage(image: UIImage) async -> String? {
+        let storageRef = Storage.storage().reference().child("images/\(UUID().uuidString).jpg")
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return nil }
+
+        do {
+            let _ = try await storageRef.putDataAsync(imageData, metadata: nil)
+            let downloadURL = try await storageRef.downloadURL()
+            return downloadURL.absoluteString
+        } catch {
+            print("❌ Error uploading image: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    
     // Save a new Journal
     func saveJournal(userID: String, title: String, completion: @escaping (Bool) -> Void) {
         let newJournal: [String: Any] = [
@@ -169,15 +191,28 @@ class FirebaseService: ObservableObject {
     }
 
     // Save an entry inside a specific journal
-    func saveEntry(journalID: String, userID: String, title: String, content: String, moods: [String], completion: @escaping (Bool) -> Void) {
-        let newEntry: [String: Any] = [
+    func saveEntry(journalID: String, userID: String, title: String, content: String, moods: [String]?, mediaFiles: [String]?, tags: [String]?, completion: @escaping (Bool) -> Void) {
+        var newEntry: [String: Any] = [
             "journalID": journalID,
             "userID": userID,
             "title": title,
             "content": content,
-            "moods": moods,
+            "moods": moods ?? [],
+            "tags": tags ?? [],
             "date": Date().timeIntervalSince1970
         ]
+        
+        // Ensure tags is saved
+        if let tags = tags {
+            newEntry["tags"] = tags
+        } else {
+            newEntry["tags"] = [] // Ensure Firestore gets an empty array instead of nil
+        }
+        
+        // Ensure media files are saved if not empty
+        if let mediaFiles = mediaFiles, !mediaFiles.isEmpty {
+            newEntry["mediaFiles"] = mediaFiles
+        }
 
         db.collection("entries").addDocument(data: newEntry) { error in
             if let error = error {

@@ -35,9 +35,9 @@ struct EntryListBlockView: View {
                 VStack(alignment: .leading, spacing: 15){
                     
                     // moods
-                    if !entry.moods.isEmpty {
+                    if let moods = entry.moods, !moods.isEmpty {
                         HStack{
-                            ForEach(entry.moods.prefix(2), id: \.self) {
+                            ForEach(moods.prefix(2), id: \.self) {
                                 mood in Text(mood)
                                     .font(.headline)
                             }
@@ -89,9 +89,9 @@ struct EntryListBlockView: View {
             .padding()
             .frame(minHeight: entry.mediaFiles?.isEmpty == false ? 250 : 150)
             .background(
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: 15)
                     .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 0)
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 0)
             )
             
         }
@@ -171,7 +171,8 @@ struct EntryListBlockView_Previews: PreviewProvider {
                 moods: ["😊", "🚀"],
                 mediaFiles: [
                     "sample-image", "sample-image", "sample-image", "sample-image", "sample-image"
-                ]
+                ],
+                tags: []
             ))
                     
             EntryListBlockView(entry: Entry(
@@ -181,7 +182,8 @@ struct EntryListBlockView_Previews: PreviewProvider {
                 title: "Daily Reflection",
                 content: "Today was a good day. I accomplished a lot and stayed productive!",
                 date: Date(),
-                moods: ["😌", "🌟"]
+                moods: ["😌", "🌟"],
+                tags: []
             ))
             
             EntryListBlockView(entry: Entry(
@@ -191,7 +193,8 @@ struct EntryListBlockView_Previews: PreviewProvider {
                 title: "Relaxing Weekend",
                 content: "Spent time at the beach and read a book",
                 date: Date(),
-                moods: ["😌", "🌟"]
+                moods: ["😌", "🌟"],
+                tags: []
             ))
         }
         .previewLayout(.sizeThatFits)

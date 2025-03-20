@@ -15,10 +15,11 @@ struct Entry: Identifiable {
     var content: String
     var date: Date
     var time: String
-    var moods: [String]
+    var moods: [String]?
     var mediaFiles: [String]?
+    var tags: [String]
 
-    init(id: String = UUID().uuidString, journalID: String, userID: String, title: String, content: String, date: Date = Date(), moods: [String] = [], mediaFiles: [String]? = []) {
+    init(id: String = UUID().uuidString, journalID: String, userID: String, title: String, content: String, date: Date = Date(), moods: [String]? = [], mediaFiles: [String]? = [], tags: [String]) {
         self.id = id
         self.journalID = journalID
         self.userID = userID
@@ -32,6 +33,7 @@ struct Entry: Identifiable {
         }()
         self.moods = moods
         self.mediaFiles = mediaFiles
+        self.tags = tags
     }
 
     // Convert Firestore document into an Entry
@@ -40,8 +42,7 @@ struct Entry: Identifiable {
               let userID = document["userID"] as? String,
               let title = document["title"] as? String,
               let content = document["content"] as? String,
-              let timestamp = document["date"] as? Double,
-              let moods = document["moods"] as? [String] else {
+              let timestamp = document["date"] as? Double else {
             return nil
         }
 
@@ -52,8 +53,9 @@ struct Entry: Identifiable {
             title: title,
             content: content,
             date: Date(timeIntervalSince1970: timestamp),
-            moods: moods,
-            mediaFiles: document["mediaFiles"] as? [String] ?? []
+            moods: document["moods"] as? [String] ?? [],
+            mediaFiles: document["mediaFiles"] as? [String] ?? [],
+            tags: document["tags"] as? [String] ?? []
         )
     }
 }

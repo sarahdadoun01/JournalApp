@@ -26,12 +26,11 @@ struct EntryListView: View {
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding()
         }
         
         
         .onAppear {
-            print("🟢 onAppear triggered for journal: \(journalID)") // ✅ Debugging Log
             
             if let user = Auth.auth().currentUser {
                 firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") { fetchedEntries in
