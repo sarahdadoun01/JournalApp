@@ -20,23 +20,77 @@ actor UploadedURLs {
     }
 }
 
+struct EntryBlock: Identifiable {
+    var id = UUID()
+    var type: BlockType
+    var content: String
+}
+
+enum BlockType {
+    case text
+    case image
+}
+
 struct AddEntryView: View {
-    @State private var entryText: String = ""
-    @State private var entryTitle: String = ""
+    @State private var entryTitle: String = "Untitled"
     @State private var selectedMoods: [String] = []
     @State private var selectedTags: [String] = []
-    //@State private var blocks: [EntryBlock] = []
+    @State private var blocks: [EntryBlock] = [EntryBlock(type: .text, content: "")]
+    @State private var selectedMediaFiles: [UIImage] = []
     @State private var isKeyboardVisible = false
-    @State private var selectedMediaFiles: [UIImage] = [] // ✅ Store selected images
-    
+
     @Environment(\.presentationMode) var presentationMode
     let selectedJournalID: String
     
     @StateObject private var firebaseService = FirebaseService()
-    
+
     var body: some View {
         VStack {
-            // Moods
+            
+            /// TOP
+            VStack{
+                
+                HStack{
+                    VStack(alignment: .leading) { // Align content to the right
+                        // Title Field
+                        TextField("Title", text: $entryTitle)
+                            .font(.title)
+                            .multilineTextAlignment(.leading) // Align text input to the right
+
+                        Text("\(formatCurrentDate())")
+                            .font(.system(size: 12))
+                        
+                        
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    
+                    VStack(alignment: .center){
+                        Button(action: {
+                                print("Checkmark tapped")
+                                // Add logic to mark entry as completed
+                            }) {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.white) // White checkmark
+                                    .font(.system(size: 17, weight: .bold)) // Adjust size
+                                    .frame(width: 40, height: 40) // Set size of the button
+                                    .background(
+                                        Circle()
+                                            .fill(Color.black.opacity(0.2)) // Black with 50% opacity
+                                    )
+                            }
+                    }.frame(width: 50, height: 57,alignment: .trailing)
+                    
+                }.frame(width: .infinity)
+                .padding(.horizontal,20)
+                .padding(.vertical,20)
+                
+            }.background(Color.blue)
+            
+            
+            
+            /// CONTENT
+            // Mood Selection
             HStack {
                 ForEach(selectedMoods, id: \.self) { mood in
                     Text(mood)
@@ -44,60 +98,121 @@ struct AddEntryView: View {
                         .background(Color.gray.opacity(0.3))
                         .cornerRadius(8)
                 }
-            }.padding(.horizontal)
+            }
+            .padding(.horizontal)
 
-            // Text Editor for Entry Content
-            TextEditor(text: $entryText)
-                .padding()
-                .frame(maxHeight: .infinity)
-
-            // Media Upload Button
-            Button(action: {
-                pickMedia()
-            }) {
-                Text("Add Media")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }.padding()
-
-            // Display Selected Media
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(selectedMediaFiles, id: \.self) { image in
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+            // Entry Blocks (Text, Images, etc.)
+            ScrollView {
+                VStack {
+                    ForEach($blocks) { $block in
+                        if block.type == .text {
+                            TextEditor(text: $block.content)
+                                .frame(minHeight: 40)
+                                .padding()
+                                .background(Color(.systemGray5))
+                                .cornerRadius(15)
+                        }
                     }
                 }
-            }.padding()
+                .padding(.horizontal)
+            }
+
+            // Floating Toolbar
+            if isKeyboardVisible {
+                FloatingToolbarMenuView(
+                    onAddMood: addMood,
+                    onAddText: addText,
+                    onAddImage: addImage,
+                    onAddVoiceMemo: addVoiceMemo,
+                    onAddTag: addTag,
+                    onSelectJournal: selectJournal
+                )
+
+                    .transition(.move(edge: .bottom))
+                    .animation(.easeInOut(duration: 0.3))
+            }
 
             // Save Button
             Button(action: saveEntry) {
                 Text("Save Entry")
                     .padding()
+                    .frame(maxWidth: .infinity)
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(8)
-            }.padding()
+            }
+            .padding()
+            
+            
+            
+        }
+        .onAppear {
+            observeKeyboardNotifications()
+        }
+        
+    }
+    
+    // Date Formatter
+    private func formatCurrentDate() -> String{
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy - h:mm a"
+        return formatter.string(from:Date())
+    }
+    
+    private func addMood() {
+        print("Mood added")
+        // Add logic to insert mood into entry
+    }
+
+    private func addText() {
+        withAnimation {
+            blocks.append(EntryBlock(type: .text, content: ""))
         }
     }
 
-    
-    // ✅ Media Picker Function
-    private func pickMedia() {
-        // Implement a way to select images (Using PHPickerViewController or UIImagePickerController)
+    private func addImage() {
+        print("Image added")
+        // Add logic to open image picker and insert image
     }
-    
-    // ✅ Upload Media, then Save Entry
+
+    private func addVoiceMemo() {
+        print("Voice memo added")
+        // Add logic for voice memo recording
+    }
+
+    private func addTag() {
+        print("Tag added")
+        // Add logic for adding tags
+    }
+
+    private func selectJournal() {
+        print("Journal selected")
+        // Add logic for journal selection
+    }
+
+
+    // MARK: - Floating Toolbar Handlers
+    private func addBlock(_ type: BlockType) {
+        withAnimation {
+            blocks.append(EntryBlock(type: type, content: ""))
+        }
+    }
+
+    // MARK: - Keyboard Observers
+    private func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
+            isKeyboardVisible = true
+        }
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+            isKeyboardVisible = false
+        }
+    }
+
+    // MARK: - Save Entry Logic
     private func saveEntry() {
-        guard !entryText.isEmpty else { return }
+        guard !blocks.isEmpty else { return }
         
         if selectedMediaFiles.isEmpty {
-            // If no media, save entry immediately
             saveEntryWithMedia(mediaURLs: [])
         } else {
             uploadMediaFiles { uploadedURLs in
@@ -106,44 +221,37 @@ struct AddEntryView: View {
         }
     }
 
-
     private func uploadMediaFiles(completion: @escaping ([String]) -> Void) {
-        let uploadedURLs = UploadedURLs() // ✅ Correct variable name
+        let uploadedURLs = UploadedURLs()
         let dispatchGroup = DispatchGroup()
 
         for image in selectedMediaFiles {
             dispatchGroup.enter()
-
             Task {
                 let url = await firebaseService.uploadImage(image: image)
-
                 if let url = url {
-                    await uploadedURLs.append(url) // ✅ Corrected reference
+                    await uploadedURLs.append(url)
                 }
-
                 dispatchGroup.leave()
             }
         }
 
         dispatchGroup.notify(queue: .main) {
             Task {
-                let urls = await uploadedURLs.getURLs() // ✅ Corrected reference
+                let urls = await uploadedURLs.getURLs()
                 completion(urls)
             }
         }
     }
 
-
-
-
-    
-    // ✅ Save Entry with Uploaded Media URLs
     private func saveEntryWithMedia(mediaURLs: [String]) {
+        let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
+
         firebaseService.saveEntry(
             journalID: selectedJournalID,
             userID: "test_user",
-            title: "New Entry",
-            content: entryText,
+            title: entryTitle,
+            content: textBlocks,
             moods: selectedMoods,
             mediaFiles: mediaURLs,
             tags: selectedTags
@@ -155,10 +263,8 @@ struct AddEntryView: View {
     }
 }
 
-
 struct AddEntryView_Previews: PreviewProvider {
     static var previews: some View {
         AddEntryView(selectedJournalID: "sampleJournalID")
     }
 }
-
