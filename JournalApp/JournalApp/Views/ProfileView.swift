@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @State private var username: String = ""
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+                    TextField("Username", text: $username) // <1>, <2>
+                }
     }
 }
 

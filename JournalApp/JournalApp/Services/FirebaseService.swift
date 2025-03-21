@@ -12,6 +12,8 @@ import FirebaseStorage
 
 @MainActor
 class FirebaseService: ObservableObject {
+    @Published var journalEntries: [Entry] = []
+    
     private let db = Firestore.firestore()
     let storage = Storage.storage()
     
@@ -24,6 +26,24 @@ class FirebaseService: ObservableObject {
             print("✅ Firestore is connected successfully!")
         } catch {
             print("❌ Firestore connection failed: \(error.localizedDescription)")
+        }
+    }
+    
+    // Listener that updated UI for new/edited entries.
+    func observeJournalEntries() {
+            db.collection("entries").addSnapshotListener { snapshot, error in
+                guard let documents = snapshot?.documents else {
+                    print("❌ Error fetching journal entries: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    self.journalEntries = documents.compactMap { doc in
+                        var data = doc.data()
+                        data["id"] = doc.documentID // Ensure ID is included
+                        return Entry.fromFirestore(document: data)
+                }
+            }
         }
     }
     
@@ -131,9 +151,14 @@ class FirebaseService: ObservableObject {
                 } ?? []
 
                 DispatchQueue.main.async {
+//                    for entry in entries {
+//                        print("Title: \(entry.title), Date: \(entry.date)")
+//                    }
                     completion(entries)
                 }
             }
+        
+        
     }
     
     func fetchImageURL(imagePath: String, completion: @escaping (String?) -> Void) {

@@ -33,7 +33,7 @@ struct EntryListView: View {
         .onAppear {
             
             if let user = Auth.auth().currentUser {
-                firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") { fetchedEntries in
+                firebaseService.fetchAllEntries(userID: user.uid) { fetchedEntries in
                     self.entries = fetchedEntries
                 }
             }
@@ -44,7 +44,7 @@ struct EntryListView: View {
 
             if newJournalID == "All" {
                 if let user = Auth.auth().currentUser {
-                    firebaseService.fetchAllEntries(userID: user.email ?? "testuser@example.com") { fetchedEntries in
+                    firebaseService.fetchAllEntries(userID: user.uid) { fetchedEntries in
                         self.entries = fetchedEntries
                     }
                 }

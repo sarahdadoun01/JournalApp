@@ -277,9 +277,15 @@ struct AddEntryView: View {
     private func saveEntryWithMedia(mediaURLs: [String]) {
         let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
 
+        // Get current userID
+        guard let user = Auth.auth().currentUser else {
+            print("Error: No authenticated user identified.")
+            return
+        }
+        
         firebaseService.saveEntry(
             journalID: selectedJournalID,
-            userID: "test_user",
+            userID: user.uid,
             title: entryTitle,
             content: textBlocks,
             moods: selectedMoods,
