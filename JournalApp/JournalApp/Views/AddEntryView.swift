@@ -32,12 +32,17 @@ enum BlockType {
 }
 
 struct AddEntryView: View {
+    
     @State private var entryTitle: String = "Untitled"
     @State private var selectedMoods: [String] = []
     @State private var selectedTags: [String] = []
     @State private var blocks: [EntryBlock] = [EntryBlock(type: .text, content: "")]
     @State private var selectedMediaFiles: [UIImage] = []
     @State private var isKeyboardVisible = false
+    @State private var hasEditedTitle = false
+    
+    var onSaveComplete: () -> Void = {}
+    
 
     @Environment(\.presentationMode) var presentationMode
     let selectedJournalID: String
@@ -49,26 +54,43 @@ struct AddEntryView: View {
     var body: some View {
         VStack {
             
-            /// TOP
+            /// ------  TOP
             VStack{
                 
                 HStack{
-                    VStack(alignment: .leading) { // Align content to the right
-                        // Title Field
-                        TextField("Title", text: $entryTitle)
-                            .font(.title)
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.leading) // Align text to the right
-                            //.focused($isTextFieldFocused) // automatically focus on title
+                    /// ----- TITLE AND DATE
+                    ///
+                    VStack(alignment: .leading, spacing: 4) {
+                        ZStack(alignment: .leading) {
+                            if entryTitle.isEmpty {
+                                Text("Title")
+                                    .foregroundColor(.white.opacity(0.4))
+                                    .font(.title)
+                                    .padding(.leading, 4)
+                            }
 
-                        Text("\(formatCurrentDate())")
+                            TextField("", text: $entryTitle)
+                                .font(.title)
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.leading)
+                                .focused($isTextFieldFocused)
+                                .tint(.white)
+                                .onChange(of: isTextFieldFocused) { focused in
+                                    if focused && entryTitle == "Untitled" && !hasEditedTitle {
+                                        entryTitle = ""
+                                        hasEditedTitle = true
+                                    }
+                                }
+                        }
+
+                        // ✅ Date below the title
+                        Text(formatCurrentDate())
                             .font(.system(size: 12))
-                            .foregroundColor(.white)
-                        
+                            .foregroundColor(.white.opacity(0.8))
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
                     
-                    
+                    /// ----- SAVE BUTTON
                     VStack(alignment: .center){
                         Button(action: saveEntry) {
                                 Image(systemName: "checkmark")
@@ -85,11 +107,11 @@ struct AddEntryView: View {
                 }.padding(.horizontal,20)
                 .padding(.vertical,20)
                 
-            }.background(Color.blue)
+            }.background(Color.purple)
             
             
             
-            /// CONTENT
+            /// -------  CONTENT
             // Mood Selection
             HStack {
                 ForEach(selectedMoods, id: \.self) { mood in
@@ -100,23 +122,6 @@ struct AddEntryView: View {
                 }
             }
             .padding(.horizontal)
-
-//            // Entry Blocks (Text, Images, etc.)
-//            ScrollView {
-//                VStack {
-//                    ForEach($blocks) { $block in
-//                        if block.type == .text {
-//                            TextEditor(text: $block.content)
-//                                .frame(minHeight: 40)
-//                                .padding()
-//                                .background(.white)
-//                                .cornerRadius(15)
-//                                .focused($isTextFieldFocused)
-//                        }
-//                    }
-//                }
-//                .padding(.horizontal)
-//            }.background(.gray)
             
             // Entry Blocks (Text, Images, etc.)
             Form {
@@ -127,7 +132,7 @@ struct AddEntryView: View {
                             .padding()
                             .background(Color.white)
                             .cornerRadius(15)
-                            .focused($isTextFieldFocused)
+                            //.focused($isTextFieldFocused)
                     }
                 }
             }
@@ -284,7 +289,7 @@ struct AddEntryView: View {
         }
         
         firebaseService.saveEntry(
-            journalID: selectedJournalID,
+            journalID: selectedJournalID.lowercased(),
             userID: user.uid,
             title: entryTitle,
             content: textBlocks,
@@ -293,14 +298,25 @@ struct AddEntryView: View {
             tags: selectedTags
         ) { success in
             if success {
+                onSaveComplete() 
                 presentationMode.wrappedValue.dismiss()
             }
         }
     }
 }
 
+//struct AddEntryView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AddEntryView(selectedJournalID: "sampleJournalID")
+//    }
+//}
+
 struct AddEntryView_Previews: PreviewProvider {
     static var previews: some View {
-        AddEntryView(selectedJournalID: "sampleJournalID")
+        AddEntryView(
+            onSaveComplete: {},
+            selectedJournalID: "All"
+        )
     }
 }
+

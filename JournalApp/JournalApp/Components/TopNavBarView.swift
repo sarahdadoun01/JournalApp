@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct TopNavBarView: View {
+    let onSaveComplete: () -> Void
+    
     @Binding var isSidebarOpen: Bool
     @Binding var selectedJournal: String
     
@@ -64,15 +66,21 @@ struct TopNavBarView: View {
             .padding()
             .background(Color.white)
             .sheet(isPresented: $isAddingEntry) {
-                        AddEntryView(selectedJournalID: selectedJournal)
-                            .transition(.move(edge: .bottom)) // Slide up animation
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    // Delays keyboard opening after animation
-                                    UIApplication.shared.sendAction(#selector(UIResponder.becomeFirstResponder), to: nil, from: nil, for: nil)
-                                }
-                            }
+                AddEntryView(
+                    onSaveComplete: {
+                        onSaveComplete() // ✅ Refresh journal list in HomeView
+                        isAddingEntry = false
+                    },
+                    selectedJournalID: selectedJournal
+                )
+                .transition(.move(edge: .bottom))
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        UIApplication.shared.sendAction(#selector(UIResponder.becomeFirstResponder), to: nil, from: nil, for: nil)
                     }
+                }
+            }
+
         }
 }
 
@@ -80,6 +88,7 @@ struct TopNavBarView: View {
 struct TopNavBarView_Previews: PreviewProvider {
     static var previews: some View {
         TopNavBarView(
+            onSaveComplete: {},
             isSidebarOpen: .constant(false),
             selectedJournal: .constant("Personal"),
             journals: [

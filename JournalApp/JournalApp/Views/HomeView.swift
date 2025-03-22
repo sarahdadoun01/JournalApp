@@ -14,6 +14,7 @@ struct HomeView: View {
     @State private var selectedJournal = "All" // default to 'all'
     @State private var journals: [Journal] = []
     @State private var tags: [String] = ["Work", "Personal", "Ideas"]
+
     @StateObject private var firebaseService = FirebaseService()
 
     var body: some View {
@@ -21,6 +22,13 @@ struct HomeView: View {
             VStack {
                 // Top Navigation Bar
                 TopNavBarView(
+                    onSaveComplete: {
+                        let current = selectedJournal
+                        selectedJournal = "temp"
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                            selectedJournal = current
+                        }
+                    },
                     isSidebarOpen: $isSidebarOpen,
                     selectedJournal: $selectedJournal,
                     journals: journals,

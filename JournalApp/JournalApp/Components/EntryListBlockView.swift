@@ -10,6 +10,9 @@ import SwiftUI
 struct EntryListBlockView: View {
     
     var entry: Entry
+    
+    var onDelete: () -> Void // here added 10:47pm friday
+    
     @State private var entries: [Entry] = []
     @StateObject private var firebaseService = FirebaseService()
     
@@ -93,6 +96,11 @@ struct EntryListBlockView: View {
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 0)
             )
+            .swipeActions(edge: .trailing) { // added this friday at 10:47pm
+                Button(role: .destructive, action: onDelete) {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
             
         }
         .frame(height: entry.mediaFiles?.isEmpty == false ? 250 : 150)
@@ -173,7 +181,7 @@ struct EntryListBlockView_Previews: PreviewProvider {
                     "sample-image", "sample-image", "sample-image", "sample-image", "sample-image"
                 ],
                 tags: []
-            ))
+            ), onDelete: {} )
                     
             EntryListBlockView(entry: Entry(
                 id: "2",
@@ -184,7 +192,7 @@ struct EntryListBlockView_Previews: PreviewProvider {
                 date: Date(),
                 moods: ["😌", "🌟"],
                 tags: []
-            ))
+            ), onDelete: {} )
             
             EntryListBlockView(entry: Entry(
                 id: "2",
@@ -195,7 +203,7 @@ struct EntryListBlockView_Previews: PreviewProvider {
                 date: Date(),
                 moods: ["😌", "🌟"],
                 tags: []
-            ))
+            ), onDelete: {} )
         }
         .previewLayout(.sizeThatFits)
         .padding()

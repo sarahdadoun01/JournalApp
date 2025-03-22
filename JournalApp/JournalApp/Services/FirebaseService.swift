@@ -88,7 +88,7 @@ class FirebaseService: ObservableObject {
                     return
                 }
 
-                let entries = snapshot?.documents.compactMap { doc -> Entry? in
+                var entries = snapshot?.documents.compactMap { doc -> Entry? in
                     let data = doc.data()
                     return Entry(
                         id: doc.documentID,
@@ -104,6 +104,14 @@ class FirebaseService: ObservableObject {
                 } ?? []
 
                 DispatchQueue.main.async {
+                    
+                    entries.sort { $0.date > $1.date  }
+                    
+                    // debug
+                    for entry in entries {
+                        print("Title: \(entry.title), Date: \(entry.date)")
+                    }
+                    
                     completion(entries)
                 }
             }
@@ -123,7 +131,7 @@ class FirebaseService: ObservableObject {
                     return
                 }
 
-                let entries = snapshot?.documents.compactMap { document -> Entry? in
+                var entries = snapshot?.documents.compactMap { document -> Entry? in
                     let data = document.data()
                     guard let userID = data["userID"] as? String,
                           let title = data["title"] as? String,
@@ -151,9 +159,14 @@ class FirebaseService: ObservableObject {
                 } ?? []
 
                 DispatchQueue.main.async {
-//                    for entry in entries {
-//                        print("Title: \(entry.title), Date: \(entry.date)")
-//                    }
+                    
+                    entries.sort { $0.date > $1.date  }
+                    
+                    // debug
+                    for entry in entries {
+                        print("Title: \(entry.title), Date: \(entry.date)")
+                    }
+                    
                     completion(entries)
                 }
             }
@@ -218,13 +231,13 @@ class FirebaseService: ObservableObject {
     // Save an entry inside a specific journal
     func saveEntry(journalID: String, userID: String, title: String, content: String, moods: [String]?, mediaFiles: [String]?, tags: [String]?, completion: @escaping (Bool) -> Void) {
         var newEntry: [String: Any] = [
-            "journalID": journalID,
+            "journalID": journalID.lowercased(),
             "userID": userID,
             "title": title,
             "content": content,
             "moods": moods ?? [],
             "tags": tags ?? [],
-            "date": Date().timeIntervalSince1970
+            "date": Timestamp(date: Date())
         ]
         
         // Ensure tags is saved
@@ -247,6 +260,20 @@ class FirebaseService: ObservableObject {
                 print("Entry saved successfully!")
                 completion(true)
             }
+        }
+    }
+    
+    func deleteEntry(entryID: String, completion: @escaping (Bool) -> Void)  {
+        
+        db.collection("entries").document(entryID).delete { error in
+            if let error = error {
+                print("❌ Failed to delete entry: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print ("Entry deleted successfully")
+                completion(true)
+            }
+            
         }
     }
 }
