@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseStorage
+import FirebaseAuth
 
 
 @MainActor
@@ -16,6 +17,8 @@ class FirebaseService: ObservableObject {
     
     private let db = Firestore.firestore()
     let storage = Storage.storage()
+    static let shared = FirebaseService()
+    
     
     // Test firebase connection
     func testFirestoreConnection() async {
@@ -28,6 +31,46 @@ class FirebaseService: ObservableObject {
             print("❌ Firestore connection failed: \(error.localizedDescription)")
         }
     }
+    
+    
+    func signUp(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { _, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+
+    func logIn(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password) { _, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+
+    func resetPassword(email: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+
+    func signOut() throws {
+        try Auth.auth().signOut()
+    }
+
+    func getCurrentUser() -> User? {
+        return Auth.auth().currentUser
+    }
+    
     
     // Listener that updated UI for new/edited entries.
     func observeJournalEntries() {

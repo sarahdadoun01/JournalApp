@@ -61,14 +61,21 @@ struct LoginView: View {
                 // Forgot Password
                 HStack {
                     Spacer()
+                    // Forgot Password Button Action
                     Button(action: {
-                        alertMessage = "Password reset instructions sent."
-                        showingAlert = true
+                        FirebaseService.shared.resetPassword(email: email) { result in
+                            switch result {
+                            case .success():
+                                alertMessage = "Password reset email sent!"
+                            case .failure(let error):
+                                alertMessage = error.localizedDescription
+                            }
+                            showingAlert = true
+                        }
                     }) {
                         Text("Forgot Password?")
-                            .font(.footnote)
-                            .foregroundColor(.blue)
                     }
+
                 }
 
                 // Log In Button
@@ -89,8 +96,16 @@ struct LoginView: View {
                         .cornerRadius(12)
                 }
 
-                // Biometric Login
-                Button(action: authenticateWithBiometrics) {
+                Button(action: {
+                    BiometricAuthService.authenticate { success, errorMessage in
+                        if success {
+                            // Log the user in, or continue with Firebase
+                        } else {
+                            alertMessage = errorMessage ?? "Login failed"
+                            showingAlert = true
+                        }
+                    }
+                }) {
                     HStack {
                         Image(systemName: "faceid")
                         Text("Log in with Face ID / Touch ID")
@@ -98,6 +113,7 @@ struct LoginView: View {
                     .padding(.top, 10)
                     .font(.footnote)
                 }
+
 
                 Spacer()
 
@@ -119,30 +135,7 @@ struct LoginView: View {
         }
     }
 
-    // MARK: - Biometric Authentication
-    func authenticateWithBiometrics() {
-        let context = LAContext()
-        var error: NSError?
-
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "Log in using Face ID or Touch ID."
-
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authError in
-                DispatchQueue.main.async {
-                    if success {
-                        alertMessage = "Biometric authentication successful!"
-                        // Proceed with login flow
-                    } else {
-                        alertMessage = "Biometric authentication failed."
-                    }
-                    showingAlert = true
-                }
-            }
-        } else {
-            alertMessage = "Biometric authentication not available."
-            showingAlert = true
-        }
-    }
+    
 }
 
 struct LoginView_Previews: PreviewProvider {
