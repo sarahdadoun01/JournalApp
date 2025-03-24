@@ -92,7 +92,7 @@ struct AddEntryView: View {
                     
                     /// ----- SAVE BUTTON
                     VStack(alignment: .center){
-                        Button(action: saveEntry) {
+                        Button(action: { saveEntry() } ) {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.white) // White checkmark
                                     .font(.system(size: 17, weight: .bold))
@@ -139,6 +139,19 @@ struct AddEntryView: View {
             .onAppear {
                 showKeyboard() // Force keyboard to appear
             }
+            .refreshable {
+                if shouldSaveEntry() {
+                    print("🔄 Pull-to-save triggered")
+
+                    if shouldSaveEntry() {
+                        await saveEntryAsync()
+                    }
+                    
+                } else {
+                    print("⚠️ Pull-to-save skipped — entry is empty")
+                }
+            }
+
 
             // Floating Toolbar
             if isKeyboardVisible {
@@ -234,25 +247,46 @@ struct AddEntryView: View {
     }
 
     // MARK: - Save Entry Logic
-    private func saveEntry() {
-        // Check if there is no meaningful content
+    private func saveEntry(completion: (() -> Void)? = nil) {
         let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
 
         guard !entryTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
               !textBlocks.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
               !selectedMediaFiles.isEmpty else {
-            // No meaningful content → Just exit without saving
             presentationMode.wrappedValue.dismiss()
             return
         }
 
         if selectedMediaFiles.isEmpty {
             saveEntryWithMedia(mediaURLs: [])
+            completion?()
         } else {
             uploadMediaFiles { uploadedURLs in
                 saveEntryWithMedia(mediaURLs: uploadedURLs)
+                completion?()
             }
         }
+    }
+
+    @MainActor
+    private func saveEntryAsync() async {
+        let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
+
+        guard !entryTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+              !textBlocks.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+              !selectedMediaFiles.isEmpty else {
+            presentationMode.wrappedValue.dismiss()
+            return
+        }
+
+        let mediaURLs: [String]
+        if selectedMediaFiles.isEmpty {
+            mediaURLs = []
+        } else {
+            mediaURLs = await uploadMediaFilesAsync()
+        }
+
+        saveEntryWithMedia(mediaURLs: mediaURLs)
     }
 
 
@@ -278,7 +312,31 @@ struct AddEntryView: View {
             }
         }
     }
+    
+    // Async version
+    private func uploadMediaFilesAsync() async -> [String] {
+        var uploadedURLs: [String] = []
 
+        await withTaskGroup(of: String?.self) { group in
+            for image in selectedMediaFiles {
+                group.addTask {
+                    return await firebaseService.uploadImage(image: image)
+                }
+            }
+
+            for await result in group {
+                if let url = result {
+                    uploadedURLs.append(url)
+                }
+            }
+        }
+
+        return uploadedURLs
+    }
+
+
+
+    // Make sure media is included when calling the saveEntry function if there is media
     private func saveEntryWithMedia(mediaURLs: [String]) {
         let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
 
@@ -303,6 +361,22 @@ struct AddEntryView: View {
             }
         }
     }
+    
+    // If page is pulled down, save Entry if not empty
+    private func shouldSaveEntry() -> Bool {
+        let textBlocks = blocks
+            .filter { $0.type == .text }
+            .map { $0.content }
+            .joined(separator: "\n\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let titleIsValid = !entryTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let contentIsValid = !textBlocks.isEmpty
+
+        return titleIsValid || contentIsValid
+    }
+
+    
 }
 
 //struct AddEntryView_Previews: PreviewProvider {

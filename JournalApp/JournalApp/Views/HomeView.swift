@@ -79,16 +79,15 @@ struct HomeView: View {
                 DispatchQueue.main.async {
                     // If selectedJournal is "All", keep it. Otherwise, preserve last selection.
                     let previousSelection = self.selectedJournal
-                    
-                    self.journals = [Journal(id: "All", userID: userID, title: "All")] + fetchedJournals
-                    
 
-                    // Preserve selection unless it no longer exists
-                    if !self.journals.contains(where: { $0.title == previousSelection }) {
-                        self.selectedJournal = "All" // Default to "All" if previous selection is missing
-                    } else {
+                    self.journals = fetchedJournals
+
+                    if fetchedJournals.contains(where: { $0.title == previousSelection }) {
                         self.selectedJournal = previousSelection
+                    } else {
+                        self.selectedJournal = "All"
                     }
+
 
                 }
             }
@@ -96,6 +95,25 @@ struct HomeView: View {
             print("❌ No user is logged in")
         }
     }
+    
+    
+    private func fetchEntryCounts(for userID: String) {
+        firebaseService.fetchAllEntries(userID: userID) { entries in
+            var counts: [String: Int] = [:]
+
+            for entry in entries {
+                counts[entry.journalID, default: 0] += 1
+            }
+
+            counts["All"] = entries.count // total count for "All"
+
+            DispatchQueue.main.async {
+                self.journalEntryCounts = counts
+            }
+        }
+    }
+
+    
 
 }
 

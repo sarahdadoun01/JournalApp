@@ -21,6 +21,9 @@
 		805E5C8D2D6E7EFF006A0614 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E5C8C2D6E7EFF006A0614 /* FirebaseService.swift */; };
 		805E5C8F2D6E905F006A0614 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 805E5C8E2D6E905E006A0614 /* GoogleService-Info.plist */; };
 		807BB9BB2D8C459800F6A86C /* FloatingToolbarMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807BB9BA2D8C459800F6A86C /* FloatingToolbarMenuView.swift */; };
+		80AF73C42D8F14F50095B252 /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80AF73C32D8F14F50095B252 /* TagModel.swift */; };
+		80AF73C62D8F44390095B252 /* SideBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80AF73C52D8F44390095B252 /* SideBarItem.swift */; };
+		80AF73C82D91AD1B0095B252 /* SideBarCounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80AF73C72D91AD1B0095B252 /* SideBarCounts.swift */; };
 		80B2CE1D2D6F632200440A1F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 80B2CE1C2D6F632200440A1F /* FirebaseAnalytics */; };
 		80B2CE1F2D6F632200440A1F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 80B2CE1E2D6F632200440A1F /* FirebaseAuth */; };
 		80B2CE212D6F632200440A1F /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 80B2CE202D6F632200440A1F /* FirebaseFirestore */; };
@@ -56,6 +59,9 @@
 		805E5C8C2D6E7EFF006A0614 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		805E5C8E2D6E905E006A0614 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		807BB9BA2D8C459800F6A86C /* FloatingToolbarMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingToolbarMenuView.swift; sourceTree = "<group>"; };
+		80AF73C32D8F14F50095B252 /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
+		80AF73C52D8F44390095B252 /* SideBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarItem.swift; sourceTree = "<group>"; };
+		80AF73C72D91AD1B0095B252 /* SideBarCounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarCounts.swift; sourceTree = "<group>"; };
 		80B2CE5E2D70D26A00440A1F /* EntryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryListView.swift; sourceTree = "<group>"; };
 		80B2CE602D70D27900440A1F /* EntryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailView.swift; sourceTree = "<group>"; };
 		80B2CE622D70D28D00440A1F /* AddEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEntryView.swift; sourceTree = "<group>"; };
@@ -93,13 +99,14 @@
 		804F6D972D81D60000E2378D /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				804F6D932D80B03300E2378D /* EntryListBlockView.swift */,
 				804F6D8F2D80764100E2378D /* TopNavBarView.swift */,
 				804F6D8D2D8075EF00E2378D /* SideBarView.swift */,
-				804F6D862D7D01A700E2378D /* CalendarView.swift */,
+				80AF73C52D8F44390095B252 /* SideBarItem.swift */,
+				804F6D932D80B03300E2378D /* EntryListBlockView.swift */,
 				80B2CE5E2D70D26A00440A1F /* EntryListView.swift */,
 				80B2CE602D70D27900440A1F /* EntryDetailView.swift */,
 				807BB9BA2D8C459800F6A86C /* FloatingToolbarMenuView.swift */,
+				804F6D862D7D01A700E2378D /* CalendarView.swift */,
 				80BDB0342D8DBC3E0021262A /* SettingsView.swift */,
 			);
 			path = Components;
@@ -112,6 +119,8 @@
 				805E5C882D6E79EF006A0614 /* EntryModel.swift */,
 				805E5C8A2D6E7D40006A0614 /* MediaFile.swift */,
 				804F6D8B2D80730F00E2378D /* JournalModel.swift */,
+				80AF73C32D8F14F50095B252 /* TagModel.swift */,
+				80AF73C72D91AD1B0095B252 /* SideBarCounts.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -283,10 +292,12 @@
 				80D636382D6CCBA3008FF902 /* ContentView.swift in Sources */,
 				80BDB02F2D8DB10A0021262A /* LoginView.swift in Sources */,
 				805E5C872D6E79DC006A0614 /* UserModel.swift in Sources */,
+				80AF73C82D91AD1B0095B252 /* SideBarCounts.swift in Sources */,
 				805E5C8B2D6E7D40006A0614 /* MediaFile.swift in Sources */,
 				804F6D902D80764100E2378D /* TopNavBarView.swift in Sources */,
 				804F6D922D80768B00E2378D /* HomeView.swift in Sources */,
 				80BDB0352D8DBC3E0021262A /* SettingsView.swift in Sources */,
+				80AF73C42D8F14F50095B252 /* TagModel.swift in Sources */,
 				805E5C892D6E79EF006A0614 /* EntryModel.swift in Sources */,
 				80B2CE6C2D70DC8600440A1F /* ValidationHelper.swift in Sources */,
 				804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */,
@@ -295,6 +306,7 @@
 				805E5C8D2D6E7EFF006A0614 /* FirebaseService.swift in Sources */,
 				80D636362D6CCBA3008FF902 /* JournalAppApp.swift in Sources */,
 				804F6D942D80B03300E2378D /* EntryListBlockView.swift in Sources */,
+				80AF73C62D8F44390095B252 /* SideBarItem.swift in Sources */,
 				80B2CE6A2D70DC7300440A1F /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

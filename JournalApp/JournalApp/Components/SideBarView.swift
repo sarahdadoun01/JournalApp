@@ -5,6 +5,13 @@
 //  Created by Sarah Dadoun on 2025-03-11.
 //
 
+//
+//  SideBarView.swift
+//  JournalApp
+//
+//  Created by Sarah Dadoun on 2025-03-11.
+//
+import Foundation
 import SwiftUI
 
 struct SideBarView: View {
@@ -15,93 +22,128 @@ struct SideBarView: View {
     let onSelectJournal: (String) -> Void
 
     var body: some View {
-        ZStack {
-            if isShowing {
-                Color.black.opacity(0.3)
-                    .edgesIgnoringSafeArea(.all)
-                    .onTapGesture { isShowing = false } // Close when tapping outside
-                
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Journals Section
-                        Text("Journals")
-                            .font(.headline)
-                            .padding(.top, 20)
-                            .padding(.bottom, 10)
-//
-//                        Button(action: {
-//                            onSelectJournal("All")
-//                            isShowing = false
-//                        }) {
-//                            Label("All", systemImage: "book.closed")
-//                        }
-//                        .padding()
+            ZStack {
+                if isShowing {
+                    Color.black.opacity(0.3)
+                        .edgesIgnoringSafeArea(.all)
+                        .onTapGesture { isShowing = false }
 
-                        ForEach(journals, id: \.id) { journal in
-                            Button(action: {
-                                onSelectJournal(journal.title)
-                                isShowing = false
-                            }) {
-                                Label(journal.title, systemImage: "book")
-                            }
-                            .padding(.leading, 15)
-                        }
+                    HStack(spacing: 0) {
+                        List {
+                            // All Entries
+                            Section {
+                                SideBarItem(title: "All", iconName: "book.closed", count: 9, isSelected: selectedJournal == "All") {
+                                    onSelectJournal("All")
+                                    isShowing = false
+                                }
+                            }.padding(.horizontal, -16)
+                            .padding(.vertical, -11)
 
-                        Divider().padding(.vertical, 10)
+                            // Journals
+                            Section(header: Text("JOURNALS")) {
+                                ForEach(journals, id: \.id) { journal in
+                                    SideBarItem(title: journal.title, iconName: "book.fill", count: 6, isSelected: selectedJournal == journal.title) {
+                                        onSelectJournal(journal.title)
+                                        isShowing = false
+                                    }
+                                }
 
-                        // Tags Section
-                        Text("Tags")
-                            .font(.headline)
-                            .padding(.bottom, 10)
+                                AddItemButton(title: "Add New Journal") {
+                                    // Add new journal logic
+                                }
+                            }.padding(.horizontal, -16)
+                                .padding(.vertical, -11)
 
-                        ForEach(tags, id: \.self) { tag in
-                            Button(action: {}) {
-                                Label(tag, systemImage: "tag")
-                            }
-                            .padding(.leading, 15)
-                        }
+                            // Tags
+                            Section(header: Text("TAGS")) {
+                                ForEach(tags, id: \.self) { tag in
+                                    SideBarItem(title: tag, iconName: "tag.fill", count: 2, isSelected: false) {
+                                        // Tag tap logic
+                                    }
+                                }
 
-                        Divider().padding(.vertical, 10)
+                                AddItemButton(title: "Add New Tag") {
+                                    // Add new tag logic
+                                }
+                            }.padding(.horizontal, -16)
+                                .padding(.vertical, -11)
 
-                        // Settings
-                        Button(action: {}) {
-                            Label("Settings", systemImage: "gear")
-                        }
-                        .padding(.leading, 15)
+                            // Other
+                            Section {
+                                SideBarItem(title: "Pinned", iconName: "pin.fill", count: 2, isSelected: false, action: {})
+                                SideBarItem(title: "Favorites", iconName: "star.fill", count: 2, isSelected: false, action: {})
+                                SideBarItem(title: "Deleted", iconName: "trash.fill", count: 3, isSelected: false, action: {})
+                            }.padding(.horizontal, -16)
+                                .padding(.vertical, -11)
+
+                            // Settings
+                            Section {
+                                SideBarItem(title: "Settings", iconName: "gearshape.fill", count: nil, isSelected: false) {
+                                    // Settings action
+                                }
+                            }.padding(.horizontal, -16)
+                                .padding(.vertical, -11)
+                            
+                            
+                        }.padding(.top, 50)
+                        .padding(.bottom, 20)
+                        .listStyle(InsetGroupedListStyle())
+                        .frame(width: UIScreen.main.bounds.width * 0.75)
+                        .background(Color(.systemGray6))
+                        .edgesIgnoringSafeArea(.all)
 
                         Spacer()
-                    }.padding(.top, 50)
-                    .padding(.leading, 20)
-                    .frame(width: UIScreen.main.bounds.width * 0.8)
-                    .background(Color.white)
-                    .edgesIgnoringSafeArea(.all)
-
-                    Spacer()
+                    }
                 }
             }
+            .animation(.easeInOut, value: isShowing)
         }
-        .animation(.easeInOut, value: isShowing)
+}
+
+struct SectionLabel: View {
+    let text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var body: some View {
+        Text(text)
+            .font(.caption)
+            .fontWeight(.semibold)
+            .foregroundColor(.gray)
+            .padding(.top, 10)
     }
 }
 
+struct AddItemButton: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "plus.circle")
+                Text(title)
+            }
+            .foregroundColor(.purple)
+            .padding(.vertical, 20)
+            .padding(.horizontal, 20)
+        }
+    }
+}
 
 struct SideBarView_Previews: PreviewProvider {
     static var previews: some View {
-        
         SideBarView(
-            isShowing: .constant(true), // Use .constant() for bindings
-            selectedJournal: .constant("All"), // Sample journal selection
-            
+            isShowing: .constant(true),
+            selectedJournal: .constant("All"),
             journals: [
-                Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
-                Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
-            ], // Sample journal list
-            
-            tags: ["Work", "Personal", "Ideas"], // Sample tags
-            
-            onSelectJournal: { _ in } // Dummy closure for journal selection
+                Journal(id: "1", userID: "user1", title: "Journal1", createdAt: Date()),
+                Journal(id: "2", userID: "user1", title: "Journal2", createdAt: Date())
+            ],
+            tags: ["Tag1", "Tag2"],
+            onSelectJournal: { _ in }
         )
-        
     }
 }
-
