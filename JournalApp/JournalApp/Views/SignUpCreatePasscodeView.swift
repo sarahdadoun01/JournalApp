@@ -103,12 +103,12 @@ struct SignUpCreatePasscodeView: View {
         }
         .navigationDestination(isPresented: $showNext) {
             SignUpSuccessView(
-//                firstName: firstName,
-//                lastName: lastName,
-//                birthday: birthday,
-//                email: email,
-//                password: password,
-//                passcode: passcode
+                firstName: firstName,
+                lastName: lastName,
+                birthday: birthday,
+                email: email,
+                password: password,
+                passcode: passcode
             )
         }
         .navigationTitle("Passcode")
