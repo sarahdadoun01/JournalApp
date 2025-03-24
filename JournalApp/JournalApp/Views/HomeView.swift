@@ -14,6 +14,12 @@ struct HomeView: View {
     @State private var selectedJournal = "All" // default to 'all'
     @State private var journals: [Journal] = []
     @State private var tags: [String] = ["Work", "Personal", "Ideas"]
+    @State private var journalEntryCounts: [String: Int] = [:]
+    @State private var tagEntryCounts: [String: Int] = [:]
+    @State private var pinnedCount: Int = 0
+    @State private var favoritesCount: Int = 0
+    @State private var deletedCount: Int = 0
+    @State private var allCount: Int = 0
 
     @StateObject private var firebaseService = FirebaseService()
 
@@ -47,7 +53,13 @@ struct HomeView: View {
                 tags: tags,
                 onSelectJournal: { journalID in
                     selectedJournal = journalID // Update journal when selected
-                }
+                },
+                journalEntryCounts: journalEntryCounts,
+                tagEntryCounts: tagEntryCounts,
+                pinnedCount: pinnedCount,
+                favoritesCount: favoritesCount,
+                deletedCount: deletedCount,
+                allCount: allCount
             )
         }
         .onAppear {
@@ -87,9 +99,25 @@ struct HomeView: View {
                     } else {
                         self.selectedJournal = "All"
                     }
-
-
                 }
+                
+                
+                // Fetch entries and compute counts
+                firebaseService.fetchAllEntries(userID: userID) { entries in
+                    print("✅ Fetched \(entries.count) entries")
+                    
+                    let counts = computeSidebarCounts(from: entries)
+
+                    DispatchQueue.main.async {
+                        self.journalEntryCounts = counts.journalCounts
+                        self.tagEntryCounts = counts.tagCounts
+                        self.pinnedCount = counts.pinned
+                        self.favoritesCount = counts.favorites
+                        self.deletedCount = counts.deleted
+                        self.allCount = counts.all
+                    }
+                }
+                
             }
         } else {
             print("❌ No user is logged in")

@@ -78,18 +78,70 @@ class FirebaseService: ObservableObject {
 
     // Fetches ALL entries from all journals and sorts them by date (Most recent first)
     func fetchAllEntries(userID: String, completion: @escaping ([Entry]) -> Void) {
+        
+        print("Fetching for userID:", userID)
+
+        
+//        db.collection("entries")
+//            .whereField("userID", isEqualTo: userID)
+//            .order(by: "date", descending: false) // Sort by date (newest first)
+//            .getDocuments { snapshot, error in
+//                if let error = error {
+//                    print("❌ Error fetching all entries: \(error.localizedDescription)")
+//                    completion([])
+//                    return
+//                }
+//
+//                let docs = snapshot?.documents ?? []
+//                print("📦 Firestore returned \(docs.count) documents")
+//
+//                var entries = snapshot?.documents.compactMap { doc -> Entry? in
+//                    let data = doc.data()
+//
+//                    print("Found entry with userID:", data["userID"] ?? "none")
+//
+//                    return Entry(
+//                        id: doc.documentID,
+//                        journalID: data["journalID"] as? String ?? "",
+//                        userID: data["userID"] as? String ?? "",
+//                        title: data["title"] as? String ?? "Untitled",
+//                        content: data["content"] as? String ?? "",
+//                        date: (data["date"] as? Timestamp)?.dateValue() ?? Date(),
+//                        moods: data["moods"] as? [String] ?? [],
+//                        mediaFiles: data["mediaFiles"] as? [String] ?? [],
+//                        tags: data["tags"] as? [String] ?? []
+//                    )
+//                } ?? []
+//
+//                DispatchQueue.main.async {
+//
+//                    entries.sort { $0.date > $1.date  }
+//
+//                    // debug
+//                    for entry in entries {
+//                        print("Title: \(entry.title), Date: \(entry.date)")
+//                    }
+//
+//                    completion(entries)
+//                }
+//            }
+        
         db.collection("entries")
-            .whereField("userID", isEqualTo: userID)
-            .order(by: "date", descending: false) // Sort by date (newest first)
             .getDocuments { snapshot, error in
                 if let error = error {
                     print("❌ Error fetching all entries: \(error.localizedDescription)")
                     completion([])
                     return
                 }
+                
+                let docs = snapshot?.documents ?? []
+                print("📦 Firestore returned \(docs.count) documents")
 
                 var entries = snapshot?.documents.compactMap { doc -> Entry? in
                     let data = doc.data()
+                    
+                    print("Found entry with userID:", data["userID"] ?? "none")
+
                     return Entry(
                         id: doc.documentID,
                         journalID: data["journalID"] as? String ?? "",
@@ -105,24 +157,18 @@ class FirebaseService: ObservableObject {
 
                 DispatchQueue.main.async {
                     
-                    entries.sort { $0.date > $1.date  }
-                    
-                    // debug
-                    for entry in entries {
-                        print("Title: \(entry.title), Date: \(entry.date)")
-                    }
-                    
+                    entries.sort { $0.date > $1.date }
                     completion(entries)
                 }
             }
+        
     }
     
     // Fetch All Entries from a specific Journal
     func fetchEntriesFromJournal(journalID: String, completion: @escaping ([Entry]) -> Void) {
-        let lowercasedJournalID = journalID.lowercased()
         
         db.collection("entries")
-            .whereField("journalID", isEqualTo: lowercasedJournalID)
+            .whereField("journalID", isEqualTo: journalID)
             .order(by: "date", descending: false)
             .getDocuments { snapshot, error in
                 if let error = error {
@@ -231,7 +277,7 @@ class FirebaseService: ObservableObject {
     // Save an entry inside a specific journal
     func saveEntry(journalID: String, userID: String, title: String, content: String, moods: [String]?, mediaFiles: [String]?, tags: [String]?, completion: @escaping (Bool) -> Void) {
         var newEntry: [String: Any] = [
-            "journalID": journalID.lowercased(),
+            "journalID": journalID,
             "userID": userID,
             "title": title,
             "content": content,

@@ -23,24 +23,28 @@ func computeSidebarCounts(from entries: [Entry]) -> SidebarCounts {
         counts.all += 1
 
         // Journal
+        print("🔍 Entry journalID before:", entry.journalID)
+        print("📄 entry.journalID:", entry.journalID)
+
         counts.journalCounts[entry.journalID, default: 0] += 1
 
         // Tags
         for tag in entry.tags {
+            print("🔍 Entry tags before:", entry.tags)
             counts.tagCounts[tag, default: 0] += 1
         }
 
-        // Pinned (if you have a boolean like entry.isPinned)
+        // Pinned
         if entry.tags.contains("pinned") { // or entry.isPinned if you track it that way
             counts.pinned += 1
         }
 
-        // Favorites (same logic)
+        // Favorites
         if entry.tags.contains("favorite") {
             counts.favorites += 1
         }
 
-        // Deleted (if you track deleted status)
+        // Deleted
         if entry.tags.contains("deleted") {
             counts.deleted += 1
         }

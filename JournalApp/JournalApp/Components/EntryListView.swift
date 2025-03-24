@@ -42,7 +42,7 @@ struct EntryListView: View {
 //        }
         
         .onAppear {
-            print("DEBUG - View appeared with journalID: \(journalID)")
+            print("DEBUG @EntryListView- View appeared with journalID: \(journalID)")
             if journalID == "All" {
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchAllEntries(userID: user.uid) { fetchedEntries in
@@ -50,7 +50,7 @@ struct EntryListView: View {
                     }
                 }
             } else {
-                firebaseService.fetchEntriesFromJournal(journalID: journalID.lowercased()) { fetchedEntries in
+                firebaseService.fetchEntriesFromJournal(journalID: journalID) { fetchedEntries in
                     self.entries = fetchedEntries
                 }
             }
@@ -77,7 +77,7 @@ struct EntryListView: View {
         .task(id: journalID) {
             let currentJournalID = journalID // snapshot the value
 
-            print("DEBUG - Loading entries for journalID: \(currentJournalID)")
+            print("DEBUG @EntryListView - Loading entries for journalID: \(currentJournalID)")
             if currentJournalID == "All" {
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchAllEntries(userID: user.uid) { fetchedEntries in
@@ -91,7 +91,7 @@ struct EntryListView: View {
                     }
                 }
             } else {
-                firebaseService.fetchEntriesFromJournal(journalID: currentJournalID.lowercased()) { fetchedEntries in
+                firebaseService.fetchEntriesFromJournal(journalID: currentJournalID) { fetchedEntries in
                     DispatchQueue.main.async {
                         self.entries = fetchedEntries
                         print("DEBUG - Fetched \(fetchedEntries.count) entries for journalID: \(currentJournalID)")

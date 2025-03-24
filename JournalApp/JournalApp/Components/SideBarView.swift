@@ -20,6 +20,15 @@ struct SideBarView: View {
     let journals: [Journal]
     let tags: [String]
     let onSelectJournal: (String) -> Void
+    
+    // Accept the counts
+    let journalEntryCounts: [String: Int]
+    let tagEntryCounts: [String: Int]
+    let pinnedCount: Int
+    let favoritesCount: Int
+    let deletedCount: Int
+    let allCount: Int
+
 
     var body: some View {
             ZStack {
@@ -32,7 +41,7 @@ struct SideBarView: View {
                         List {
                             // All Entries
                             Section {
-                                SideBarItem(title: "All", iconName: "book.closed", count: 9, isSelected: selectedJournal == "All") {
+                                SideBarItem(title: "All", iconName: "book.closed", count: allCount, isSelected: selectedJournal == "All") {
                                     onSelectJournal("All")
                                     isShowing = false
                                 }
@@ -40,10 +49,11 @@ struct SideBarView: View {
                             .padding(.vertical, -11)
 
                             // Journals
+                            
                             Section(header: Text("JOURNALS")) {
                                 ForEach(journals, id: \.id) { journal in
-                                    SideBarItem(title: journal.title, iconName: "book.fill", count: 6, isSelected: selectedJournal == journal.title) {
-                                        onSelectJournal(journal.title)
+                                    SideBarItem(title: journal.title, iconName: "book.fill", count: journalEntryCounts[journal.id] ?? 0, isSelected: selectedJournal == journal.title) {
+                                        onSelectJournal(journal.id)
                                         isShowing = false
                                     }
                                 }
@@ -57,7 +67,7 @@ struct SideBarView: View {
                             // Tags
                             Section(header: Text("TAGS")) {
                                 ForEach(tags, id: \.self) { tag in
-                                    SideBarItem(title: tag, iconName: "tag.fill", count: 2, isSelected: false) {
+                                    SideBarItem(title: tag, iconName: "tag.fill", count: tagEntryCounts[tag] ?? 0, isSelected: false) {
                                         // Tag tap logic
                                     }
                                 }
@@ -70,9 +80,9 @@ struct SideBarView: View {
 
                             // Other
                             Section {
-                                SideBarItem(title: "Pinned", iconName: "pin.fill", count: 2, isSelected: false, action: {})
-                                SideBarItem(title: "Favorites", iconName: "star.fill", count: 2, isSelected: false, action: {})
-                                SideBarItem(title: "Deleted", iconName: "trash.fill", count: 3, isSelected: false, action: {})
+                                SideBarItem(title: "Pinned", iconName: "pin.fill", count: pinnedCount, isSelected: false, action: {})
+                                SideBarItem(title: "Favorites", iconName: "star.fill", count: favoritesCount, isSelected: false, action: {})
+                                SideBarItem(title: "Deleted", iconName: "trash.fill", count: deletedCount, isSelected: false, action: {})
                             }.padding(.horizontal, -16)
                                 .padding(.vertical, -11)
 
@@ -143,7 +153,13 @@ struct SideBarView_Previews: PreviewProvider {
                 Journal(id: "2", userID: "user1", title: "Journal2", createdAt: Date())
             ],
             tags: ["Tag1", "Tag2"],
-            onSelectJournal: { _ in }
+            onSelectJournal: { _ in },
+            journalEntryCounts: ["1": 4, "2": 3],
+            tagEntryCounts: ["Tag1" : 3, "Tag2": 1],
+            pinnedCount: 2,
+            favoritesCount: 3,
+            deletedCount: 4,
+            allCount: 5
         )
     }
 }

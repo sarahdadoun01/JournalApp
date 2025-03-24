@@ -33,15 +33,22 @@ struct TopNavBarView: View {
 
                 // Journal Dropdown
                 Menu {
+                    // Add the "All" option manually
+                    Button(action: {
+                        selectedJournal = "All"
+                    }) {
+                        Text("All")
+                    }
+                    
                     ForEach(journals, id: \.id) { journal in
                         Button(action: {
-                            selectedJournal = journal.title
+                            selectedJournal = journal.id
                         }) {
                             Text(journal.title)
                         }
                     }
                 } label: {
-                    Text(selectedJournal)
+                    Text(journals.first(where: { $0.id == selectedJournal })?.title ?? "All")
                         .font(.headline)
                         .foregroundColor(.purple)
                 }
