@@ -16,141 +16,179 @@ struct LoginView: View {
     @State private var alertMessage = ""
     @State private var isLoggedIn = false
     
+    @State private var path = NavigationPath()
+
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Text("Welcome Back")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+            VStack {
+                // Top Header (fixed at top)
+                VStack(spacing: 8) {
+                    Text("Welcome Back!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
 
-                Text("Login to your journal")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-
-                // Email Field
-                TextField("Email", text: $email)
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-
-                // Password Field
-                Group {
-                    if isSecure {
-                        SecureField("Password", text: $password)
-                    } else {
-                        TextField("Password", text: $password)
-                    }
+                    Text("Login if you already have an account.")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-                .overlay(
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            isSecure.toggle()
-                        }) {
-                            Image(systemName: self.isSecure ? "eye.slash" : "eye")
-                                .foregroundColor(.gray)
-                                .padding(.trailing, 10)
-                        }
-                    }
-                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 40)
 
-                // Forgot Password
-                HStack {
-                    Spacer()
-                    // Forgot Password Button Action
-                    Button(action: {
-                        FirebaseService.shared.resetPassword(email: email) { result in
-                            switch result {
-                            case .success():
-                                alertMessage = "Password reset email sent!"
-                            case .failure(let error):
-                                alertMessage = error.localizedDescription
+                Spacer()
+
+                // Centered Content
+                VStack(spacing: 24) {
+                    VStack(spacing: 16) {
+                        CustomTextFieldView(
+                            text: $email,
+                            placeholder: "Email",
+                            autocapitalization: .never,
+                            horizontalPadding: 20,
+                            verticalPadding: 15,
+                            cornerRadius: 999,
+                            backgroundColor: .clear,
+                            borderColor: .gray
+                        )
+
+                        CustomSecureFieldView(
+                            text: $password,
+                            placeholder: "Password",
+                            horizontalPadding: 20,
+                            verticalPadding: 15,
+                            cornerRadius: 999,
+                            backgroundColor: .clear,
+                            borderColor: .gray,
+                            textColor: .gray
+                        )
+
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                FirebaseService.shared.resetPassword(email: email) { result in
+                                    switch result {
+                                    case .success():
+                                        alertMessage = "Password reset email sent!"
+                                    case .failure(let error):
+                                        alertMessage = error.localizedDescription
+                                    }
+                                    showingAlert = true
+                                }
+                            }) {
+                                Text("Forgot Password?")
+                                    .font(.footnote)
+                                    .foregroundColor(.blue)
                             }
-                            showingAlert = true
                         }
-                    }) {
-                        Text("Forgot Password?")
-                    }
+                    }.padding()
 
+                    // Login & Face ID buttons
+                    VStack(spacing: 16) {
+                        RoundedBorderButtonView(
+                            title: "Log In",
+                            action: {
+                                if email.isEmpty || password.isEmpty {
+                                    alertMessage = "Please enter both email and password."
+                                    showingAlert = true
+                                } else {
+                                    FirebaseService.shared.logIn(email: email, password: password) { result in
+                                        switch result {
+                                        case .success():
+                                            isLoggedIn = true
+                                        case .failure(let error):
+                                            alertMessage = error.localizedDescription
+                                            showingAlert = true
+                                        }
+                                    }
+                                }
+                            },
+                            backgroundColor: .black,
+                            textColor: .white,
+                            horizontalPadding: 30,
+                            verticalPadding: 20
+                        )
+
+
+//                        CircularIconButtonView(
+//                            systemName: "faceid",
+//                            size: 44,
+//                            padding: 15,
+//                            backgroundColor: .clear,
+//                            borderColor: Color.gray,
+//                            iconColor: .black
+//                        ) {
+//                            BiometricAuthService.authenticate { success, errorMessage in
+//                                if success {
+//                                    // Log in or proceed
+//                                } else {
+//                                    alertMessage = errorMessage ?? "Login failed"
+//                                    showingAlert = true
+//                                }
+//                            }
+//                        }
+                    }
                 }
 
-                // Log In Button
-                Button(action: {
-                    if email.isEmpty || password.isEmpty {
-                        alertMessage = "Please enter both email and password."
-                        showingAlert = true
-                    } else {
-                        FirebaseService.shared.logIn(email: email, password: password) { result in
-                            switch result {
-                            case .success():
-                                isLoggedIn = true  // triggers navigation to HomeView
-                            case .failure(let error):
-                                alertMessage = error.localizedDescription
+                Spacer()
+
+                HStack {
+                    // Sign Up Button (left)
+                    Button(action: {
+                        path.append(SignUpRoute.emailPass(firstName: "", lastName: "", birthday: Date()))
+                    }) {
+                        Text("Sign\nUp")
+                            .font(.footnote)
+                            .fontWeight(.medium)
+                            .foregroundColor(.black)
+                            .padding(14)
+                            .frame(width: 80, height: 80)
+                            .background(
+                                Circle()
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                    }
+
+                    Spacer()
+
+                    // Face ID Button (right)
+                    CircularIconButtonView(
+                        systemName: "faceid",
+                        size: 80,
+                        padding: 27,
+                        backgroundColor: .clear,
+                        borderColor: Color.gray,
+                        iconColor: .black
+                    ) {
+                        BiometricAuthService.authenticate { success, errorMessage in
+                            if success {
+                                // Log in or proceed
+                            } else {
+                                alertMessage = errorMessage ?? "Login failed"
                                 showingAlert = true
                             }
                         }
                     }
-                }) {
-                    Text("Log In")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                }
-
-                Button(action: {
-                    BiometricAuthService.authenticate { success, errorMessage in
-                        if success {
-                            // Log the user in, or continue with Firebase
-                        } else {
-                            alertMessage = errorMessage ?? "Login failed"
-                            showingAlert = true
-                        }
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: "faceid")
-                        Text("Log in with Face ID / Touch ID")
-                    }
-                    .padding(.top, 10)
-                    .font(.footnote)
-                }
-
-
-                Spacer()
-
-                // Sign Up Link
-                HStack {
-                    Text("Don't have an account?")
-                    NavigationLink(destination: SignUpInfoView()) {
-                        Text("Sign Up")
-                            .foregroundColor(.blue)
-                            .fontWeight(.medium)
-                    }
-                }
-                .padding(.bottom)
+                }.padding(.horizontal, 5)
+                .padding(.bottom, -10)
+                    
                 
+
+
+                // Navigate to main screen on login
                 NavigationLink(destination: PasscodeBGBlurView(), isActive: $isLoggedIn) {
                     EmptyView()
                 }
-
-                
             }
-            .padding()
+            .padding(.horizontal)
             .alert(isPresented: $showingAlert) {
-                Alert(title: Text("Notice"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                Alert(
+                    title: Text("Notice"),
+                    message: Text(alertMessage),
+                    dismissButton: .default(Text("OK"))
+                )
             }
+            .hideKeyboardOnTap()
         }
     }
-
-    
 }
 
 struct LoginView_Previews: PreviewProvider {

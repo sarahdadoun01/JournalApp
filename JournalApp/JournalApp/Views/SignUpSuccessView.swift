@@ -32,18 +32,17 @@ struct SignUpSuccessView: View {
 
             Spacer()
 
-            Button(action: {
-                navigateToHome = true
-            }) {
-                Text("Explore")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal)
+            RoundedBorderButtonView(
+                title: "Explore",
+                action: { navigateToHome = true },
+                backgroundColor: .black,
+                textColor: .white,
+                horizontalPadding: 30,
+                verticalPadding: 20
+            )
+            
+            .padding()
+            .previewLayout(.sizeThatFits)
         }
         .padding()
         .navigationDestination(isPresented: $navigateToHome) {

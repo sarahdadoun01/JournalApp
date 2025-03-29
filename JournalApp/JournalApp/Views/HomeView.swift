@@ -20,6 +20,7 @@ struct HomeView: View {
     @State private var favoritesCount: Int = 0
     @State private var deletedCount: Int = 0
     @State private var allCount: Int = 0
+    @State private var showAddJournalView = false
 
     @StateObject private var firebaseService = FirebaseService()
 
@@ -62,6 +63,9 @@ struct HomeView: View {
                         print("❌ Logout failed: \(error.localizedDescription)")
                     }
                 },
+                onAddJournal: {
+                    showAddJournalView = true
+                },
                 journalEntryCounts: journalEntryCounts,
                 tagEntryCounts: tagEntryCounts,
                 pinnedCount: pinnedCount,
@@ -73,6 +77,14 @@ struct HomeView: View {
         .onAppear {
             fetchJournalsForCurrentUser()
         }.navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showAddJournalView) {
+            if let user = Auth.auth().currentUser {
+                AddJournalView(userID: user.uid) {
+                    fetchJournalsForCurrentUser()
+                }
+            }
+        }
+
     }
     
     private func fetchJournalsForCurrentUser() {

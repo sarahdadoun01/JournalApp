@@ -22,19 +22,12 @@ struct TopNavBarView: View {
 
     var body: some View {
             HStack {
-                // Hamburger Menu Button
-//                Button(action: { isSidebarOpen.toggle() }) {
-//                    Image(systemName: "line.horizontal.3")
-//                        .font(.title)
-//                        .foregroundColor(.purple)
-//                }
-                
                 CircularIconButtonView(
                     systemName: "line.horizontal.3",
                     size: 45,
                     padding: 14,
                     backgroundColor: .clear,
-                    borderColor: Color(hex: "#B9B9B9"),
+                    borderColor: Color(hex: "#D6D6D6"),
                     iconColor: .black
                 ) {
                     isSidebarOpen.toggle()
@@ -62,16 +55,18 @@ struct TopNavBarView: View {
                     HStack(spacing: 8) {
                             Text(journals.first(where: { $0.id == selectedJournal })?.title ?? "All")
                                 .fontWeight(.semibold)
+                                .foregroundColor(.white)
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white)
                         }
                         .padding(.vertical, 12)
                         .padding(.horizontal, 24)
-                        .background(Color.clear)
+                        .background(Color.black)
                         .foregroundColor(Color(hex: "#1A1F3B"))
                         .overlay(
                             RoundedRectangle(cornerRadius: 999)
-                                .stroke(Color(hex: "#B9B9B9"), lineWidth: 1)
+                                .stroke(.black, lineWidth: 1)
                         )
                         .cornerRadius(999)
                 }
@@ -83,33 +78,18 @@ struct TopNavBarView: View {
                     size: 45,
                     padding: 15,
                     backgroundColor: .clear,
-                    borderColor: Color(hex: "#B9B9B9"),
+                    borderColor: Color(hex: "#D6D6D6"),
                     iconColor: .black
                 ) {
                     print("Plus tapped")
                 }
-                
-                // search and Add Entry Buttons
-//                Button(action: onSearch) {
-//                    Image(systemName: "magnifyingglass")
-//                        .font(.title2)
-//                        .foregroundColor(.purple)
-//                }
-
-//                Button(action: {
-//                    isAddingEntry = true // Opens AddEntryView
-//                }) {
-//                    Image(systemName: "plus")
-//                        .font(.title2)
-//                        .foregroundColor(.purple)
-//                }
                 
                 CircularIconButtonView(
                     systemName: "plus",
                     size: 45,
                     padding: 15,
                     backgroundColor: .clear,
-                    borderColor: Color(hex: "#B9B9B9"),
+                    borderColor: Color(hex: "#D6D6D6"),
                     iconColor: .black
                 ) {
                     isAddingEntry = true
@@ -120,7 +100,7 @@ struct TopNavBarView: View {
             .sheet(isPresented: $isAddingEntry) {
                 AddEntryView(
                     onSaveComplete: {
-                        onSaveComplete() // ✅ Refresh journal list in HomeView
+                        onSaveComplete() //Refresh journal list in HomeView
                         isAddingEntry = false
                     },
                     selectedJournalID: selectedJournal
@@ -147,7 +127,7 @@ struct TopNavBarView_Previews: PreviewProvider {
                 Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
                 Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
             ], // Sample list of journals
-            onSearch: {} // Empty closure for search
+            onSearch: {}
         )
     }
 }

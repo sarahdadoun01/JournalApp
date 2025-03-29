@@ -12,6 +12,7 @@ struct SideBarItem: View {
     let iconName: String?
     let count: Int?
     let isSelected: Bool
+    let iconColor: Color? = .blue
     let action: () -> Void
 
     var body: some View {
@@ -21,7 +22,7 @@ struct SideBarItem: View {
                     
                     if let iconName = iconName {
                         Image(systemName: iconName)
-                            .foregroundColor(.purple)
+                            .foregroundColor(iconColor ?? .blue)
                     }
                     
                     Text(title)
@@ -34,7 +35,7 @@ struct SideBarItem: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, 18)
                 .padding(.horizontal, 16)
                 .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
                 .cornerRadius(8)

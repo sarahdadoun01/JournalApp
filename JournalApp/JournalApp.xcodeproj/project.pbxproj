@@ -40,7 +40,8 @@
 		80227B552D9842E700675AD7 /* AddJournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B542D9842E700675AD7 /* AddJournalView.swift */; };
 		80227B572D984D6F00675AD7 /* CircularIconButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B562D984D6F00675AD7 /* CircularIconButtonView.swift */; };
 		80227B592D9856F100675AD7 /* CustomTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B582D9856F100675AD7 /* CustomTextFieldView.swift */; };
-		80227B5B2D98582C00675AD7 /* AddTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B5A2D98582C00675AD7 /* AddTagView.swift */; };
+		80227B5D2D9872F500675AD7 /* CustomSecureFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B5C2D9872F500675AD7 /* CustomSecureFieldView.swift */; };
+		80227B5F2D987E4200675AD7 /* UIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B5E2D987E4200675AD7 /* UIHelpers.swift */; };
 		804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D862D7D01A700E2378D /* CalendarView.swift */; };
 		804F6D8A2D7D01F100E2378D /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 804F6D892D7D01F100E2378D /* FSCalendar */; };
 		804F6D8C2D80730F00E2378D /* JournalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D8B2D80730F00E2378D /* JournalModel.swift */; };
@@ -119,7 +120,8 @@
 		80227B542D9842E700675AD7 /* AddJournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddJournalView.swift; sourceTree = "<group>"; };
 		80227B562D984D6F00675AD7 /* CircularIconButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularIconButtonView.swift; sourceTree = "<group>"; };
 		80227B582D9856F100675AD7 /* CustomTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldView.swift; sourceTree = "<group>"; };
-		80227B5A2D98582C00675AD7 /* AddTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagView.swift; sourceTree = "<group>"; };
+		80227B5C2D9872F500675AD7 /* CustomSecureFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSecureFieldView.swift; sourceTree = "<group>"; };
+		80227B5E2D987E4200675AD7 /* UIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHelpers.swift; sourceTree = "<group>"; };
 		804F6D862D7D01A700E2378D /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		804F6D8B2D80730F00E2378D /* JournalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalModel.swift; sourceTree = "<group>"; };
 		804F6D8D2D8075EF00E2378D /* SideBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarView.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 				80227B242D978FD100675AD7 /* RoundedBorderButtonView.swift */,
 				80227B562D984D6F00675AD7 /* CircularIconButtonView.swift */,
 				80227B582D9856F100675AD7 /* CustomTextFieldView.swift */,
+				80227B5C2D9872F500675AD7 /* CustomSecureFieldView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -275,7 +278,6 @@
 				80AF73DB2D91E0D90095B252 /* SignUpSuccessView.swift */,
 				80AF73DD2D91E4370095B252 /* GlowingPasscodeFieldView.swift */,
 				80227B542D9842E700675AD7 /* AddJournalView.swift */,
-				80227B5A2D98582C00675AD7 /* AddTagView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -298,6 +300,7 @@
 				804F6D982D81D7C300E2378D /* IconLibrary.swift */,
 				80AF73CF2D91D6560095B252 /* AppBlurOverlay.swift */,
 				80227B202D9594B800675AD7 /* CryptoHelper.swift */,
+				80227B5E2D987E4200675AD7 /* UIHelpers.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -472,6 +475,7 @@
 				804F6D902D80764100E2378D /* TopNavBarView.swift in Sources */,
 				804F6D922D80768B00E2378D /* HomeView.swift in Sources */,
 				80BDB0352D8DBC3E0021262A /* SettingsView.swift in Sources */,
+				80227B5D2D9872F500675AD7 /* CustomSecureFieldView.swift in Sources */,
 				80227B512D983F8700675AD7 /* AddItemButton.swift in Sources */,
 				80227B182D94A79F00675AD7 /* DigitButton.swift in Sources */,
 				80AF73C42D8F14F50095B252 /* TagModel.swift in Sources */,
@@ -482,12 +486,12 @@
 				80AF73DC2D91E0D90095B252 /* SignUpSuccessView.swift in Sources */,
 				80AF73DA2D91DEEA0095B252 /* SignUpCreatePasscodeView.swift in Sources */,
 				80227B4D2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift in Sources */,
-				80227B5B2D98582C00675AD7 /* AddTagView.swift in Sources */,
 				80227B592D9856F100675AD7 /* CustomTextFieldView.swift in Sources */,
 				804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */,
 				80B2CE682D70DC5D00440A1F /* DateFormatterHelper.swift in Sources */,
 				80227B142D94894800675AD7 /* LottieView.swift in Sources */,
 				80227B4F2D983DD000675AD7 /* BlurView.swift in Sources */,
+				80227B5F2D987E4200675AD7 /* UIHelpers.swift in Sources */,
 				80B2CE632D70D28D00440A1F /* AddEntryView.swift in Sources */,
 				80AF73DE2D91E4370095B252 /* GlowingPasscodeFieldView.swift in Sources */,
 				805E5C8D2D6E7EFF006A0614 /* FirebaseService.swift in Sources */,

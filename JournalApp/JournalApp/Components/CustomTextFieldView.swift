@@ -19,11 +19,14 @@ struct CustomTextFieldView: View {
     var textColor: Color = .primary
     var font: Font = .body
     var onTextChange: ((String) -> Void)? = nil
+    var autocorrectionDisabled: Bool? = nil
 
     var body: some View {
         TextField("", text: $text)
             .textInputAutocapitalization(autocapitalization)
-            .disableAutocorrection(true)
+            .ifLet(autocorrectionDisabled) { view, disabled in
+                view.disableAutocorrection(disabled)
+            }
             .font(font)
             .foregroundColor(textColor)
             .padding(.horizontal, horizontalPadding)
@@ -43,6 +46,20 @@ struct CustomTextFieldView: View {
             .onChange(of: text) { newValue in
                 onTextChange?(newValue)
             }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func ifLet<T, Content: View>(
+        _ value: T?,
+        transform: (Self, T) -> Content
+    ) -> some View {
+        if let value = value {
+            transform(self, value)
+        } else {
+            self
+        }
     }
 }
 

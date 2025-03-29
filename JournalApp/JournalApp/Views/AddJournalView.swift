@@ -23,7 +23,8 @@ struct AddJournalView: View {
 
     let presetColors: [Color] = [.orange, .yellow, .red, .blue, .green]
 
-    var onSave: (_ title: String, _ color: Color) -> Void
+    var userID: String
+    var onAddComplete: () -> Void
 
     var body: some View {
         NavigationView {
@@ -125,10 +126,18 @@ struct AddJournalView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button("Save") {
                         guard !title.trimmingCharacters(in: .whitespaces).isEmpty, let color = selectedColor else { return }
-                        onSave(title, color)
-                        dismiss()
+
+                        let uiColor = UIColor(selectedColor ?? .gray)
+                        let hex = uiColor.hexString ?? "#999999"
+
+                        FirebaseService.shared.createJournal(userID: userID, title: title, colorHex: hex) { success in
+                            if success {
+                                onAddComplete()
+                                dismiss()
+                            }
+                        }
                     }
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || selectedColor == nil)
                 }
@@ -180,9 +189,27 @@ struct ColorPickerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIColorPickerViewController, context: Context) {}
 }
 
-struct AddJournalView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddJournalView(onSave: { _, _ in })
+extension UIColor {
+    var hexString: String? {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        guard self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+            return nil
+        }
+
+        let r = Int(red * 255)
+        let g = Int(green * 255)
+        let b = Int(blue * 255)
+
+        return String(format: "#%02X%02X%02X", r, g, b)
     }
 }
 
+struct AddJournalView_Previews: PreviewProvider {
+    static var previews: some View {
+        AddJournalView(userID: "previewUser", onAddComplete: {})
+    }
+}

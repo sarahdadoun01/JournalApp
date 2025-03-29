@@ -60,7 +60,7 @@ class FirebaseService: ObservableObject {
                 "firstName": firstName,
                 "lastName": lastName,
                 "birthday": Timestamp(date: birthday),
-                "email": email,
+                "email": email.lowercased(),
                 "passcodeSalt": salt,
                 "passcodeHashed": hashed
             ]

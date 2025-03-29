@@ -20,114 +20,137 @@ struct SignUpCreatePasscodeView: View {
     @State private var showNext = false
     @State private var showAlert = false
 
+    @Environment(\.dismiss) private var dismiss
+
+    private var isPasscodeValid: Bool {
+        if showAlphanumeric {
+            return !passcode.isEmpty
+        } else {
+            return passcode.count == 4
+        }
+    }
+
     var body: some View {
-        VStack(spacing: 24) {
-            Text("Create a Passcode")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top, 20)
-
-            Text("This passcode will protect your journal.")
-                .foregroundColor(.gray)
-
-            ZStack(alignment: .trailing) {
-                if showAlphanumeric {
-                    if showPasscode {
-                        TextField("Enter alphanumeric passcode", text: $passcode)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
-                            .padding(.horizontal)
-                    } else {
-                        SecureField("Enter alphanumeric passcode", text: $passcode)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
-                            .padding(.horizontal)
-                    }
-                } else {
-                    if showPasscode {
-                        TextField("Enter 4-digit passcode", text: $passcode)
-                            .keyboardType(.numberPad)
-                            .textContentType(.oneTimeCode)
-                            .frame(width: 200)
-                            .multilineTextAlignment(.center)
-                            .padding(.trailing, 30)
-                    } else {
-                        SecureField("Enter 4-digit passcode", text: $passcode)
-                            .keyboardType(.numberPad)
-                            .textContentType(.oneTimeCode)
-                            .frame(width: 200)
-                            .multilineTextAlignment(.center)
-                            .padding(.trailing, 30)
-                    }
+        VStack(spacing: 0) {
+            // Back Button
+            HStack {
+                CircularIconButtonView(
+                    systemName: "chevron.left",
+                    size: 40,
+                    padding: 15,
+                    backgroundColor: .clear,
+                    borderColor: Color(hex: "#D6D6D6"),
+                    iconColor: .black
+                ) {
+                    dismiss()
                 }
-
-                Button(action: {
-                    showPasscode.toggle()
-                }) {
-                    Image(systemName: showPasscode ? "eye.slash" : "eye")
-                        .foregroundColor(.gray)
-                        .padding(.trailing, showAlphanumeric ? 30 : 0)
-                }
+                Spacer()
             }
+            .padding(.top, 8)
+            .padding(.leading)
 
-            Toggle("Alphanumeric", isOn: $showAlphanumeric)
-                .padding(.horizontal)
+            Spacer()
+
+            ScrollView {
+                VStack(spacing: 24) {
+                    Text("Create a Passcode")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+
+                    Text("Required on every app \nlaunch to maintain privacy.")
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        
+
+                    // Passcode Field
+                    ZStack(alignment: .trailing) {
+                        CustomSecureFieldView(
+                            text: $passcode,
+                            placeholder: showAlphanumeric ? "Enter alphanumeric passcode" : "4-digits",
+                            horizontalPadding: 20,
+                            verticalPadding: 20,
+                            cornerRadius: 10,
+                            backgroundColor: Color(.systemGray6),
+                            borderColor: .clear,
+                            textColor: .primary
+                        )
+                        .keyboardType(showAlphanumeric ? .default : .numberPad)
+                        .frame(width: showAlphanumeric ? nil : 200)
+                        .multilineTextAlignment(showAlphanumeric ? .leading : .center)
+                        .padding(.horizontal)
+
+                    }
+
+                    // Alphanumeric Toggle Styled as Button
+                    RoundedBorderButtonView(
+                        title: showAlphanumeric ? "Alphanumeric ✓" : "Alphanumeric",
+                        action: {
+                            showAlphanumeric.toggle()
+                        },
+                        backgroundColor: .clear,
+                        borderColor: Color(hex: "#D6D6D6"),
+                        textColor: .gray,
+                        horizontalPadding: 20,
+                        verticalPadding: 10
+                    )
+                }
+                .padding(.top, 60)
+                .padding(.bottom, 150)
+            }
+            .scrollDismissesKeyboard(.interactively)
+
+            Spacer()
 
             NavigationLink(
-                destination: SignUpSuccessView(
-                    firstName: firstName
-                ),
+                destination: SignUpSuccessView(firstName: firstName),
                 isActive: $showNext
             ) {
                 EmptyView()
             }
 
-            Button(action: {
-                if passcode.isEmpty || (!showAlphanumeric && passcode.count != 4) {
-                    showAlert = true
-                    return
-                }
+            // Next Button
+            RoundedBorderButtonView(
+                title: "Next",
+                action: {
+                    if !isPasscodeValid {
+                        showAlert = true
+                        return
+                    }
 
-                FirebaseService.shared.createUserAccount(
-                    firstName: firstName,
-                    lastName: lastName,
-                    birthday: birthday,
-                    email: email,
-                    password: password,
-                    passcode: passcode
-                ) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .success(let uid):
-                            print("✅ Account created and stored with UID: \(uid)")
-                            showNext = true
-                        case .failure(let error):
-                            print("❌ Error creating account: \(error.localizedDescription)")
-                            showAlert = true
+                    let lowercasedEmail = email.lowercased()
+                    FirebaseService.shared.createUserAccount(
+                        firstName: firstName,
+                        lastName: lastName,
+                        birthday: birthday,
+                        email: lowercasedEmail,
+                        password: password,
+                        passcode: passcode
+                    ) { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let uid):
+                                print("✅ Account created and stored with UID: \(uid)")
+                                showNext = true
+                            case .failure(let error):
+                                print("❌ Error creating account: \(error.localizedDescription)")
+                                showAlert = true
+                            }
                         }
                     }
-                }
-            }) {
-                Text("Next")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.clear)
-                    .foregroundColor(Color(hex: "#1A1F3B"))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 150)
-                            .stroke(Color(hex: "#B9B9B9"), lineWidth: 1)
-                    )
-                    .cornerRadius(150)
-                    .padding(.horizontal)
-            }
-
-            Spacer()
+                },
+                backgroundColor: isPasscodeValid ? .black : .gray,
+                textColor: .white,
+                horizontalPadding: 30,
+                verticalPadding: 20
+            )
+            .disabled(!isPasscodeValid)
+            .opacity(isPasscodeValid ? 1 : 0.5)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 32)
         }
-        .navigationTitle("Passcode")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .alert(isPresented: $showAlert) {
             Alert(
                 title: Text("Missing Info"),
@@ -135,32 +158,12 @@ struct SignUpCreatePasscodeView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-        .navigationBarBackButtonHidden(true)
         .onChange(of: passcode) { newValue in
             if !showAlphanumeric && newValue.count > 4 {
                 passcode = String(newValue.prefix(4))
             }
         }
-    }
-}
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        let scanner = Scanner(string: hex)
-
-        if hex.hasPrefix("#") {
-            scanner.currentIndex = hex.index(after: hex.startIndex)
-        }
-
-        var color: UInt64 = 0
-        scanner.scanHexInt64(&color)
-
-        let r = Double((color >> 16) & 0xFF) / 255.0
-        let g = Double((color >> 8) & 0xFF) / 255.0
-        let b = Double(color & 0xFF) / 255.0
-
-        self.init(red: r, green: g, blue: b)
+        .hideKeyboardOnTap()
     }
 }
 
@@ -177,3 +180,4 @@ struct SignUpCreatePasscodeView_Previews: PreviewProvider {
         }
     }
 }
+

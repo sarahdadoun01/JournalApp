@@ -21,6 +21,7 @@ struct SideBarView: View {
     let tags: [String]
     let onSelectJournal: (String) -> Void
     let onLogout: () -> Void
+    let onAddJournal: () -> Void
     
     // Accept the counts
     let journalEntryCounts: [String: Int]
@@ -62,9 +63,8 @@ struct SideBarView: View {
                                     }
                                 }
 
-                                AddItemButton(title: "Add New Journal") {
-                                    // Add new journal logic
-                                }
+                                AddItemButton(title: "Add New Journal", action: onAddJournal)
+
                             }.padding(.horizontal, -16)
                                 .padding(.vertical, -11)
 
@@ -133,6 +133,7 @@ struct SideBarView_Previews: PreviewProvider {
             tags: ["Tag1", "Tag2"],
             onSelectJournal: { _ in },
             onLogout: {},
+            onAddJournal: {},
             journalEntryCounts: ["1": 4, "2": 3],
             tagEntryCounts: ["Tag1" : 3, "Tag2": 1],
             pinnedCount: 2,

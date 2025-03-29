@@ -11,20 +11,41 @@ struct RoundedBorderButtonView: View {
     let title: String
     let action: () -> Void
     let backgroundColor: Color
-    let borderColor: Color
+    let borderColor: Color?
     let textColor: Color
+    let horizontalPadding: CGFloat?
+    let verticalPadding: CGFloat?
+    
+    
+    init(
+        title: String,
+        action: @escaping () -> Void,
+        backgroundColor: Color,
+        borderColor: Color? = nil,
+        textColor: Color,
+        horizontalPadding: CGFloat = 24,
+        verticalPadding: CGFloat = 12
+    ) {
+        self.title = title
+        self.action = action
+        self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
+        self.textColor = textColor
+        self.horizontalPadding = horizontalPadding
+        self.verticalPadding = verticalPadding
+    }
 
     var body: some View {
         Button(action: action) {
             Text(title)
                 .fontWeight(.semibold)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 24)
+                .padding(.vertical, verticalPadding)
+                .padding(.horizontal, horizontalPadding)
                 .background(backgroundColor)
                 .foregroundColor(textColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: 999)
-                        .stroke(borderColor, lineWidth: 1)
+                        .stroke(borderColor ?? .clear, lineWidth: 1)
                 )
                 .cornerRadius(999)
         }
@@ -37,7 +58,7 @@ struct RoundedBorderButtonView_Previews: PreviewProvider {
             title: "Primary",
             action: { print("Primary tapped") },
             backgroundColor: Color(hex: "#1A1F3B"),
-            borderColor: .clear,
+            borderColor: Color.clear,
             textColor: .white
         )
     }

@@ -5,84 +5,6 @@
 //  Created by Sarah Dadoun on 2025-03-24.
 //
 
-//import SwiftUI
-//
-//struct SignUpInfoView: View {
-//    @State private var firstName: String = ""
-//    @State private var lastName: String = ""
-//    @State private var birthday: Date = Date()
-//    @State private var showNext = false
-//    @State private var showAlert = false
-//
-//    var body: some View {
-//        VStack(alignment: .leading, spacing: 24) {
-//            Text("Basic Info")
-//                .font(.largeTitle)
-//                .fontWeight(.bold)
-//                .padding(.top, 16)
-//
-//            TextField("First Name", text: $firstName)
-//                .padding()
-//                .background(Color(.systemGray6))
-//                .cornerRadius(10)
-//
-//            TextField("Last Name", text: $lastName)
-//                .padding()
-//                .background(Color(.systemGray6))
-//                .cornerRadius(10)
-//
-//            HStack {
-//                Text("Birthday")
-//                    .foregroundColor(.gray)
-//                Spacer()
-//                DatePicker("", selection: $birthday, displayedComponents: .date)
-//                    .labelsHidden()
-//            }
-//
-//            Spacer()
-//
-//            NavigationLink(
-//                destination: SignUpEmailPassView(
-//                    firstName: firstName,
-//                    lastName: lastName,
-//                    birthday: birthday
-//                ),
-//                isActive: $showNext
-//            ) {
-//                Button(action: {
-//                    if firstName.isEmpty || lastName.isEmpty {
-//                        showAlert = true
-//                    } else {
-//                        showNext = true
-//                    }
-//                }) {
-//                    Text("Next")
-//                        .fontWeight(.semibold)
-//                        .frame(maxWidth: .infinity)
-//                        .padding()
-//                        .background(Color.blue)
-//                        .foregroundColor(.white)
-//                        .cornerRadius(12)
-//                }
-//            }
-//        }
-//        .padding()
-//        .navigationTitle("Create Account")
-//        .navigationBarTitleDisplayMode(.inline)
-//        .alert(isPresented: $showAlert) {
-//            Alert(title: Text("Missing Info"), message: Text("Please enter both first and last names."), dismissButton: .default(Text("OK")))
-//        }
-//    }
-//}
-//
-//struct SignUpInfoView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NavigationStack {
-//            SignUpInfoView()
-//        }
-//    }
-//}
-
 import SwiftUI
 
 enum SignUpRoute: Hashable {
@@ -94,77 +16,143 @@ struct SignUpInfoView: View {
     @State private var lastName: String = ""
     @State private var birthday: Date = Date()
     @State private var showAlert = false
-    @State private var path = NavigationPath()
+    @State private var showDatePicker = false
+    
+    private var isBirthdayValid: Bool {
+        ValidationHelper.isBirthdayValid(birthday)
+    }
+
+    private var isFormValid: Bool {
+        ValidationHelper.isNameFormValid(firstName: firstName, lastName: lastName, birthday: birthday)
+    }
+    
+    @Binding var path: NavigationPath
+    
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack(path: $path) {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Basic Info")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.top, 16)
-
-                    TextField("First Name", text: $firstName)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-
-                    TextField("Last Name", text: $lastName)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-
-                    HStack {
-                        Text("Birthday")
-                            .foregroundColor(.gray)
-                        Spacer()
-                        DatePicker("", selection: $birthday, displayedComponents: .date)
-                            .labelsHidden()
-                    }
+        VStack {
+            HStack {
+                CircularIconButtonView(
+                    systemName: "chevron.left",
+                    size: 40,
+                    padding: 15,
+                    backgroundColor: .clear,
+                    borderColor: Color(hex: "#D6D6D6"),
+                    iconColor: .black
+                ) {
+                    dismiss()
                 }
 
                 Spacer()
+            }
+            .padding(.top, 8)
+            .padding(.leading)
+            
+            Spacer()
 
-                Button(action: {
-                    if firstName.isEmpty || lastName.isEmpty {
-                        showAlert = true
-                    } else {
-                        path.append(SignUpRoute.emailPass(firstName: firstName, lastName: lastName, birthday: birthday))
-                    }
-                }) {
-                    Text("Next")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                }
-            }
-            .padding()
-            .navigationTitle("Create Account")
-            .navigationBarTitleDisplayMode(.inline)
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text("Missing Info"),
-                    message: Text("Please enter both first and last names."),
-                    dismissButton: .default(Text("OK"))
+            VStack(spacing: 10) {
+                Text("Basic Info")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                    .padding(.bottom, 40)
+
+                CustomTextFieldView(
+                    text: $firstName,
+                    placeholder: "First Name",
+                    horizontalPadding: 25,
+                    verticalPadding: 20,
+                    cornerRadius: 999,
+                    backgroundColor: .clear,
+                    borderColor: Color(hex: "#D6D6D6")
                 )
-            }
-            .navigationDestination(for: SignUpRoute.self) { route in
-                switch route {
-                case let .emailPass(first, last, bday):
-                    SignUpEmailPassView(firstName: first, lastName: last, birthday: bday)
+
+                CustomTextFieldView(
+                    text: $lastName,
+                    placeholder: "Last Name",
+                    horizontalPadding: 25,
+                    verticalPadding: 20,
+                    cornerRadius: 999,
+                    backgroundColor: .clear,
+                    borderColor: Color(hex: "#D6D6D6")
+                )
+
+                Button {
+                    showDatePicker = true
+                } label: {
+                    Text(birthday.formatted(date: .long, time: .omitted))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 20)
+                        .background(Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 999)
+                                .stroke(Color(hex: "#D6D6D6"), lineWidth: 1)
+                        )
+                        .cornerRadius(999)
+                        .foregroundColor(.black)
+                }
+                .sheet(isPresented: $showDatePicker) {
+                    VStack {
+                        DatePicker(
+                            "Select Your Birthday",
+                            selection: $birthday,
+                            displayedComponents: .date
+                        )
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+
+                        Button("Done") {
+                            showDatePicker = false
+                        }
+                        .padding()
+                    }
+                    .presentationDetents([.height(300)])
                 }
             }
+            .padding(.horizontal, 24)
+
+            Spacer()
+
+            RoundedBorderButtonView(
+                title: "Next",
+                action: {
+                    path.append(SignUpRoute.emailPass(
+                        firstName: firstName,
+                        lastName: lastName,
+                        birthday: birthday
+                    ))
+                },
+                backgroundColor: isFormValid ? .black : .gray,
+                textColor: .white,
+                horizontalPadding: 30,
+                verticalPadding: 20
+            )
+            .disabled(!isFormValid)
+            .opacity(isFormValid ? 1 : 0.5)
+
         }
+        .padding(.top, 32)
+        .navigationTitle("Create Account")
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("Missing Info"),
+                message: Text("Please enter both first and last names."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .hideKeyboardOnTap()
     }
 }
 
 struct SignUpInfoView_Previews: PreviewProvider {
+    @State static var mockPath = NavigationPath()
+
     static var previews: some View {
-        SignUpInfoView()
+        SignUpInfoView(path: $mockPath)
     }
 }
 
