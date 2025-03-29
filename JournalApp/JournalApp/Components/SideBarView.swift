@@ -20,6 +20,7 @@ struct SideBarView: View {
     let journals: [Journal]
     let tags: [String]
     let onSelectJournal: (String) -> Void
+    let onLogout: () -> Void
     
     // Accept the counts
     let journalEntryCounts: [String: Int]
@@ -33,9 +34,12 @@ struct SideBarView: View {
     var body: some View {
             ZStack {
                 if isShowing {
-                    Color.black.opacity(0.3)
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .background(BlurView(style: .systemUltraThinMaterial)) // this line adds blur
                         .edgesIgnoringSafeArea(.all)
                         .onTapGesture { isShowing = false }
+
 
                     HStack(spacing: 0) {
                         List {
@@ -91,6 +95,11 @@ struct SideBarView: View {
                                 SideBarItem(title: "Settings", iconName: "gearshape.fill", count: nil, isSelected: false) {
                                     // Settings action
                                 }
+                                SideBarItem(title: "Logout", iconName: "arrow.backward.circle.fill", count: nil, isSelected: false) {
+                                    onLogout()
+                                    isShowing = false
+                                }
+                                
                             }.padding(.horizontal, -16)
                                 .padding(.vertical, -11)
                             
@@ -101,6 +110,8 @@ struct SideBarView: View {
                         .frame(width: UIScreen.main.bounds.width * 0.75)
                         .background(Color(.systemGray6))
                         .edgesIgnoringSafeArea(.all)
+                        .offset(x: isShowing ? 0 : -UIScreen.main.bounds.width)
+                        .animation(.easeInOut(duration: 0.3), value: isShowing)
 
                         Spacer()
                     }
@@ -108,39 +119,6 @@ struct SideBarView: View {
             }
             .animation(.easeInOut, value: isShowing)
         }
-}
-
-struct SectionLabel: View {
-    let text: String
-
-    init(_ text: String) {
-        self.text = text
-    }
-
-    var body: some View {
-        Text(text)
-            .font(.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(.gray)
-            .padding(.top, 10)
-    }
-}
-
-struct AddItemButton: View {
-    let title: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "plus.circle")
-                Text(title)
-            }
-            .foregroundColor(.purple)
-            .padding(.vertical, 20)
-            .padding(.horizontal, 20)
-        }
-    }
 }
 
 struct SideBarView_Previews: PreviewProvider {
@@ -154,6 +132,7 @@ struct SideBarView_Previews: PreviewProvider {
             ],
             tags: ["Tag1", "Tag2"],
             onSelectJournal: { _ in },
+            onLogout: {},
             journalEntryCounts: ["1": 4, "2": 3],
             tagEntryCounts: ["Tag1" : 3, "Tag2": 1],
             pinnedCount: 2,

@@ -92,16 +92,16 @@ struct AddEntryView: View {
                     
                     /// ----- SAVE BUTTON
                     VStack(alignment: .center){
-                        Button(action: { saveEntry() } ) {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.white) // White checkmark
-                                    .font(.system(size: 17, weight: .bold))
-                                    .frame(width: 40, height: 40) // size of the button
-                                    .background(
-                                        Circle()
-                                            .fill(Color.black.opacity(0.2))
-                                    )
-                            }
+                        CircularIconButtonView(
+                            systemName: "checkmark",
+                            size: 48,
+                            padding: 15,
+                            backgroundColor: .clear,
+                            borderColor: .white,
+                            iconColor: .white
+                        ) {
+                            saveEntry()
+                        }
                     }.frame(width: 50, height: 57,alignment: .trailing)
                     
                 }.padding(.horizontal,20)
@@ -228,15 +228,12 @@ struct AddEntryView: View {
         // Add logic for journal selection
     }
 
-
-    // MARK: - Floating Toolbar Handlers
     private func addBlock(_ type: BlockType) {
         withAnimation {
             blocks.append(EntryBlock(type: type, content: ""))
         }
     }
 
-    // MARK: - Keyboard Observers
     private func observeKeyboardNotifications() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { _ in
             isKeyboardVisible = true
@@ -246,7 +243,6 @@ struct AddEntryView: View {
         }
     }
 
-    // MARK: - Save Entry Logic
     private func saveEntry(completion: (() -> Void)? = nil) {
         let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
 
@@ -378,12 +374,6 @@ struct AddEntryView: View {
 
     
 }
-
-//struct AddEntryView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AddEntryView(selectedJournalID: "sampleJournalID")
-//    }
-//}
 
 struct AddEntryView_Previews: PreviewProvider {
     static var previews: some View {

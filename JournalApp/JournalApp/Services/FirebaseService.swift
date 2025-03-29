@@ -215,13 +215,34 @@ class FirebaseService: ObservableObject {
                 }
             }
     }
+    
+    func createJournal(userID: String, title: String, colorHex: String, completion: @escaping (Bool) -> Void) {
+        let journalData: [String: Any] = [
+            "userID": userID,
+            "title": title,
+            "createdAt": Date().timeIntervalSince1970,
+            "entries": [],
+            "colorHex": colorHex
+        ]
+
+        db.collection("journals").addDocument(data: journalData) { error in
+            if let error = error {
+                print("❌ Failed to create journal: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print("✅ Journal created!")
+                completion(true)
+            }
+        }
+    }
+
 
     // Fetches ALL entries from all journals and sorts them by date (Most recent first)
     func fetchAllEntries(userID: String, completion: @escaping ([Entry]) -> Void) {
         print("Fetching entries for userID: \(userID)")
 
         db.collection("entries")
-            .whereField("userID", isEqualTo: userID) // 👈 Filter at Firestore level
+            .whereField("userID", isEqualTo: userID)
             .getDocuments { snapshot, error in
                 if let error = error {
                     print("❌ Error fetching entries: \(error.localizedDescription)")

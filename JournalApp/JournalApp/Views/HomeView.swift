@@ -54,6 +54,14 @@ struct HomeView: View {
                 onSelectJournal: { journalID in
                     selectedJournal = journalID // Update journal when selected
                 },
+                onLogout: {
+                    do {
+                        try FirebaseService.shared.signOut()
+                        // Navigate back to login screen here
+                    } catch {
+                        print("❌ Logout failed: \(error.localizedDescription)")
+                    }
+                },
                 journalEntryCounts: journalEntryCounts,
                 tagEntryCounts: tagEntryCounts,
                 pinnedCount: pinnedCount,

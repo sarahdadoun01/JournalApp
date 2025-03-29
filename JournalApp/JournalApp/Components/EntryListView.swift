@@ -23,7 +23,7 @@ struct EntryListView: View {
                 } else {
                     ForEach(entries.indices, id: \.self) { index in
                         EntryListBlockView(entry: entries[index]) {
-                            deleteEntry(at: index) // added this
+                            deleteEntry(at: index)
                         }
                     }
                 }

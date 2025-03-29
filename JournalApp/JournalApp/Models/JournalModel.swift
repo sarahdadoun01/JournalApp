@@ -13,13 +13,15 @@ struct Journal: Identifiable {
     var title: String
     var createdAt: Date
     var entries: [String]? // List of Entry IDs (Firestore references)
+    var colorHex: String?
 
-    init(id: String = UUID().uuidString, userID: String, title: String, createdAt: Date = Date(), entries: [String]? = []) {
+    init(id: String = UUID().uuidString, userID: String, title: String, createdAt: Date = Date(), entries: [String]? = [], colorHex: String? = nil) {
         self.id = id
         self.userID = userID
         self.title = title
         self.createdAt = createdAt
         self.entries = entries
+        self.colorHex = colorHex
     }
 
     // Convert Firestore document into a Journal
@@ -35,7 +37,8 @@ struct Journal: Identifiable {
             userID: userID,
             title: title,
             createdAt: Date(timeIntervalSince1970: timestamp),
-            entries: document["entries"] as? [String] ?? []
+            entries: document["entries"] as? [String] ?? [],
+            colorHex: document["colorHex"] as? String
         )
     }
 }

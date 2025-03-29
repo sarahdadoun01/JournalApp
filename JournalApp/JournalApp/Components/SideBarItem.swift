@@ -34,8 +34,8 @@ struct SideBarItem: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                .padding(.vertical, 20)
-                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .padding(.horizontal, 16)
                 .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
                 .cornerRadius(8)
             }
