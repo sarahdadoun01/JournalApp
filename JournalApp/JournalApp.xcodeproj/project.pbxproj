@@ -33,6 +33,7 @@
 		80227B492D98321F00675AD7 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B372D98321E00675AD7 /* Poppins-Light.ttf */; };
 		80227B4A2D98321F00675AD7 /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B382D98321E00675AD7 /* Poppins-ExtraLightItalic.ttf */; };
 		80227B4B2D98321F00675AD7 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B392D98321F00675AD7 /* Poppins-Medium.ttf */; };
+		80227B4D2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B4C2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift */; };
 		804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D862D7D01A700E2378D /* CalendarView.swift */; };
 		804F6D8A2D7D01F100E2378D /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 804F6D892D7D01F100E2378D /* FSCalendar */; };
 		804F6D8C2D80730F00E2378D /* JournalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D8B2D80730F00E2378D /* JournalModel.swift */; };
@@ -104,6 +105,7 @@
 		80227B372D98321E00675AD7 /* Poppins-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Light.ttf"; sourceTree = "<group>"; };
 		80227B382D98321E00675AD7 /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		80227B392D98321F00675AD7 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Medium.ttf"; sourceTree = "<group>"; };
+		80227B4C2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasscodeUnlockAlphanumeric.swift; sourceTree = "<group>"; };
 		804F6D862D7D01A700E2378D /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		804F6D8B2D80730F00E2378D /* JournalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalModel.swift; sourceTree = "<group>"; };
 		804F6D8D2D8075EF00E2378D /* SideBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarView.swift; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				80D636372D6CCBA3008FF902 /* ContentView.swift */,
 				80AF73CB2D91D6150095B252 /* PasscodeSetup.swift */,
 				80AF73CD2D91D6370095B252 /* PasscodeUnlock.swift */,
+				80227B4C2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift */,
 				80227B1D2D95888800675AD7 /* PasscodeBGBlurView.swift */,
 				80AF73D32D91DB560095B252 /* SignUpInfoView.swift */,
 				80AF73D52D91DC120095B252 /* SignUpEmailPassView.swift */,
@@ -453,6 +456,7 @@
 				80227B1A2D94A86000675AD7 /* KeypadView.swift in Sources */,
 				80AF73DC2D91E0D90095B252 /* SignUpSuccessView.swift in Sources */,
 				80AF73DA2D91DEEA0095B252 /* SignUpCreatePasscodeView.swift in Sources */,
+				80227B4D2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift in Sources */,
 				804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */,
 				80B2CE682D70DC5D00440A1F /* DateFormatterHelper.swift in Sources */,
 				80227B142D94894800675AD7 /* LottieView.swift in Sources */,

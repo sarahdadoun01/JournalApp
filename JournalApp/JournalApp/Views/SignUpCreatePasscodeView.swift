@@ -5,13 +5,6 @@
 //  Created by Sarah Dadoun on 2025-03-24.
 //
 
-//
-//  SignUpCreatePasscodeView.swift
-//  JournalApp
-//
-//  Created by Sarah Dadoun on 2025-03-24.
-//
-
 import SwiftUI
 
 struct SignUpCreatePasscodeView: View {

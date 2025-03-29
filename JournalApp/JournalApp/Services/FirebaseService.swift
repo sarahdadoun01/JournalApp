@@ -140,37 +140,6 @@ class FirebaseService: ObservableObject {
             completion(isMatch)
         }
     }
-
-    
-//    func verifyPasscodeForUser(uid: String, typedPasscode: String, completion: @escaping (Bool) -> Void) {
-//        let docRef = Firestore.firestore().collection("users").document(uid)
-//        docRef.getDocument { snapshot, error in
-//            if let error = error {
-//                print("❌ Error fetching user doc: \(error.localizedDescription)")
-//                completion(false)
-//                return
-//            }
-//            guard let data = snapshot?.data(),
-//                  let salt = data["passcodeSalt"] as? String,
-//                  let storedHash = data["passcodeHashed"] as? String else {
-//                // no passcode set or missing fields
-//                completion(false)
-//                return
-//            }
-//
-//            let typedHash = hashPasscode(typedPasscode, salt: salt)
-//
-//            print("🔥 passcode entered: \(typedPasscode)")
-//            print("🔥 salt from Firestore: \(salt)")
-//            print("🔥 hash of entered passcode: \(typedHash)")
-//            print("🔥 stored hash from Firestore: \(storedHash)")
-//
-//
-//            completion(typedHash == storedHash)
-//        }
-//    }
-    
-    
     
     func storePasscodeForUser(uid: String, passcode: String) {
         let salt = generateRandomSalt()
@@ -249,25 +218,22 @@ class FirebaseService: ObservableObject {
 
     // Fetches ALL entries from all journals and sorts them by date (Most recent first)
     func fetchAllEntries(userID: String, completion: @escaping ([Entry]) -> Void) {
-        
-        print("Fetching for userID:", userID)
-        
+        print("Fetching entries for userID: \(userID)")
+
         db.collection("entries")
+            .whereField("userID", isEqualTo: userID) // 👈 Filter at Firestore level
             .getDocuments { snapshot, error in
                 if let error = error {
-                    print("❌ Error fetching all entries: \(error.localizedDescription)")
+                    print("❌ Error fetching entries: \(error.localizedDescription)")
                     completion([])
                     return
                 }
-                
+
                 let docs = snapshot?.documents ?? []
                 print("📦 Firestore returned \(docs.count) documents")
 
-                var entries = snapshot?.documents.compactMap { doc -> Entry? in
+                let entries = docs.compactMap { doc -> Entry? in
                     let data = doc.data()
-                    
-                    print("Found entry with userID:", data["userID"] ?? "none")
-
                     return Entry(
                         id: doc.documentID,
                         journalID: data["journalID"] as? String ?? "",
@@ -279,22 +245,21 @@ class FirebaseService: ObservableObject {
                         mediaFiles: data["mediaFiles"] as? [String] ?? [],
                         tags: data["tags"] as? [String] ?? []
                     )
-                } ?? []
+                }
 
                 DispatchQueue.main.async {
-                    
-                    entries.sort { $0.date > $1.date }
-                    completion(entries)
+                    completion(entries.sorted { $0.date > $1.date })
                 }
             }
-        
     }
+
     
     // Fetch All Entries from a specific Journal
-    func fetchEntriesFromJournal(journalID: String, completion: @escaping ([Entry]) -> Void) {
+    func fetchEntriesFromJournal(journalID: String, userID: String, completion: @escaping ([Entry]) -> Void) {
         
         db.collection("entries")
             .whereField("journalID", isEqualTo: journalID)
+            .whereField("userID", isEqualTo: userID)
             .order(by: "date", descending: false)
             .getDocuments { snapshot, error in
                 if let error = error {
