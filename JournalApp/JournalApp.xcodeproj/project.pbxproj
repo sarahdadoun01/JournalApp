@@ -7,6 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		80227B0F2D94866A00675AD7 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 80227B0E2D94866A00675AD7 /* Lottie */; };
+		80227B142D94894800675AD7 /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B132D94894800675AD7 /* LottieView.swift */; };
+		80227B162D948A0200675AD7 /* checkmark_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 80227B152D948A0200675AD7 /* checkmark_animation.json */; };
+		80227B182D94A79F00675AD7 /* DigitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B172D94A79F00675AD7 /* DigitButton.swift */; };
+		80227B1A2D94A86000675AD7 /* KeypadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B192D94A86000675AD7 /* KeypadView.swift */; };
+		80227B1E2D95888800675AD7 /* PasscodeBGBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B1D2D95888800675AD7 /* PasscodeBGBlurView.swift */; };
+		80227B212D9594B800675AD7 /* CryptoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B202D9594B800675AD7 /* CryptoHelper.swift */; };
+		80227B252D978FD100675AD7 /* RoundedBorderButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80227B242D978FD100675AD7 /* RoundedBorderButtonView.swift */; };
+		80227B3A2D98321F00675AD7 /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B282D98321700675AD7 /* Poppins-ExtraBold.ttf */; };
+		80227B3B2D98321F00675AD7 /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B292D98321800675AD7 /* Poppins-ExtraLight.ttf */; };
+		80227B3C2D98321F00675AD7 /* Poppins-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B2A2D98321800675AD7 /* Poppins-BlackItalic.ttf */; };
+		80227B3D2D98321F00675AD7 /* Poppins-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B2B2D98321800675AD7 /* Poppins-MediumItalic.ttf */; };
+		80227B3E2D98321F00675AD7 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B2C2D98321900675AD7 /* Poppins-Regular.ttf */; };
+		80227B3F2D98321F00675AD7 /* Poppins-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B2D2D98321900675AD7 /* Poppins-ThinItalic.ttf */; };
+		80227B402D98321F00675AD7 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B2E2D98321A00675AD7 /* Poppins-Black.ttf */; };
+		80227B412D98321F00675AD7 /* Poppins-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B2F2D98321A00675AD7 /* Poppins-Italic.ttf */; };
+		80227B422D98321F00675AD7 /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B302D98321B00675AD7 /* Poppins-ExtraBoldItalic.ttf */; };
+		80227B432D98321F00675AD7 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B312D98321B00675AD7 /* Poppins-SemiBold.ttf */; };
+		80227B442D98321F00675AD7 /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B322D98321C00675AD7 /* Poppins-Thin.ttf */; };
+		80227B452D98321F00675AD7 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B332D98321C00675AD7 /* Poppins-Bold.ttf */; };
+		80227B462D98321F00675AD7 /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B342D98321D00675AD7 /* Poppins-BoldItalic.ttf */; };
+		80227B472D98321F00675AD7 /* Poppins-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B352D98321D00675AD7 /* Poppins-LightItalic.ttf */; };
+		80227B482D98321F00675AD7 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B362D98321D00675AD7 /* Poppins-SemiBoldItalic.ttf */; };
+		80227B492D98321F00675AD7 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B372D98321E00675AD7 /* Poppins-Light.ttf */; };
+		80227B4A2D98321F00675AD7 /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B382D98321E00675AD7 /* Poppins-ExtraLightItalic.ttf */; };
+		80227B4B2D98321F00675AD7 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80227B392D98321F00675AD7 /* Poppins-Medium.ttf */; };
 		804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D862D7D01A700E2378D /* CalendarView.swift */; };
 		804F6D8A2D7D01F100E2378D /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 804F6D892D7D01F100E2378D /* FSCalendar */; };
 		804F6D8C2D80730F00E2378D /* JournalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F6D8B2D80730F00E2378D /* JournalModel.swift */; };
@@ -45,7 +71,6 @@
 		80B2CE6A2D70DC7300440A1F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B2CE692D70DC7300440A1F /* Constants.swift */; };
 		80B2CE6C2D70DC8600440A1F /* ValidationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B2CE6B2D70DC8600440A1F /* ValidationHelper.swift */; };
 		80BDB02F2D8DB10A0021262A /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BDB02E2D8DB10A0021262A /* LoginView.swift */; };
-		80BDB0332D8DB8E00021262A /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BDB0322D8DB8E00021262A /* SignUpView.swift */; };
 		80BDB0352D8DBC3E0021262A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BDB0342D8DBC3E0021262A /* SettingsView.swift */; };
 		80D636362D6CCBA3008FF902 /* JournalAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D636352D6CCBA3008FF902 /* JournalAppApp.swift */; };
 		80D636382D6CCBA3008FF902 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D636372D6CCBA3008FF902 /* ContentView.swift */; };
@@ -54,6 +79,31 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		80227B132D94894800675AD7 /* LottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieView.swift; sourceTree = "<group>"; };
+		80227B152D948A0200675AD7 /* checkmark_animation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = checkmark_animation.json; sourceTree = "<group>"; };
+		80227B172D94A79F00675AD7 /* DigitButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigitButton.swift; sourceTree = "<group>"; };
+		80227B192D94A86000675AD7 /* KeypadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypadView.swift; sourceTree = "<group>"; };
+		80227B1D2D95888800675AD7 /* PasscodeBGBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasscodeBGBlurView.swift; sourceTree = "<group>"; };
+		80227B202D9594B800675AD7 /* CryptoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHelper.swift; sourceTree = "<group>"; };
+		80227B242D978FD100675AD7 /* RoundedBorderButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedBorderButtonView.swift; sourceTree = "<group>"; };
+		80227B282D98321700675AD7 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
+		80227B292D98321800675AD7 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
+		80227B2A2D98321800675AD7 /* Poppins-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-BlackItalic.ttf"; sourceTree = "<group>"; };
+		80227B2B2D98321800675AD7 /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
+		80227B2C2D98321900675AD7 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Regular.ttf"; sourceTree = "<group>"; };
+		80227B2D2D98321900675AD7 /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
+		80227B2E2D98321A00675AD7 /* Poppins-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Black.ttf"; sourceTree = "<group>"; };
+		80227B2F2D98321A00675AD7 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Italic.ttf"; sourceTree = "<group>"; };
+		80227B302D98321B00675AD7 /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		80227B312D98321B00675AD7 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		80227B322D98321C00675AD7 /* Poppins-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Thin.ttf"; sourceTree = "<group>"; };
+		80227B332D98321C00675AD7 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Bold.ttf"; sourceTree = "<group>"; };
+		80227B342D98321D00675AD7 /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
+		80227B352D98321D00675AD7 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
+		80227B362D98321D00675AD7 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		80227B372D98321E00675AD7 /* Poppins-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Light.ttf"; sourceTree = "<group>"; };
+		80227B382D98321E00675AD7 /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		80227B392D98321F00675AD7 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		804F6D862D7D01A700E2378D /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		804F6D8B2D80730F00E2378D /* JournalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalModel.swift; sourceTree = "<group>"; };
 		804F6D8D2D8075EF00E2378D /* SideBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarView.swift; sourceTree = "<group>"; };
@@ -87,7 +137,6 @@
 		80B2CE692D70DC7300440A1F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		80B2CE6B2D70DC8600440A1F /* ValidationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationHelper.swift; sourceTree = "<group>"; };
 		80BDB02E2D8DB10A0021262A /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		80BDB0322D8DB8E00021262A /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		80BDB0342D8DBC3E0021262A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		80D636322D6CCBA3008FF902 /* JournalApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JournalApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80D636352D6CCBA3008FF902 /* JournalAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalAppApp.swift; sourceTree = "<group>"; };
@@ -106,12 +155,54 @@
 				80B2CE1F2D6F632200440A1F /* FirebaseAuth in Frameworks */,
 				804F6D8A2D7D01F100E2378D /* FSCalendar in Frameworks */,
 				80B2CE212D6F632200440A1F /* FirebaseFirestore in Frameworks */,
+				80227B0F2D94866A00675AD7 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		80227B122D94890200675AD7 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				80227B152D948A0200675AD7 /* checkmark_animation.json */,
+			);
+			path = Animations;
+			sourceTree = "<group>";
+		};
+		80227B262D9831F500675AD7 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				80227B272D9831FC00675AD7 /* Poppins */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		80227B272D9831FC00675AD7 /* Poppins */ = {
+			isa = PBXGroup;
+			children = (
+				80227B2E2D98321A00675AD7 /* Poppins-Black.ttf */,
+				80227B2A2D98321800675AD7 /* Poppins-BlackItalic.ttf */,
+				80227B332D98321C00675AD7 /* Poppins-Bold.ttf */,
+				80227B342D98321D00675AD7 /* Poppins-BoldItalic.ttf */,
+				80227B282D98321700675AD7 /* Poppins-ExtraBold.ttf */,
+				80227B302D98321B00675AD7 /* Poppins-ExtraBoldItalic.ttf */,
+				80227B292D98321800675AD7 /* Poppins-ExtraLight.ttf */,
+				80227B382D98321E00675AD7 /* Poppins-ExtraLightItalic.ttf */,
+				80227B2F2D98321A00675AD7 /* Poppins-Italic.ttf */,
+				80227B372D98321E00675AD7 /* Poppins-Light.ttf */,
+				80227B352D98321D00675AD7 /* Poppins-LightItalic.ttf */,
+				80227B392D98321F00675AD7 /* Poppins-Medium.ttf */,
+				80227B2B2D98321800675AD7 /* Poppins-MediumItalic.ttf */,
+				80227B2C2D98321900675AD7 /* Poppins-Regular.ttf */,
+				80227B312D98321B00675AD7 /* Poppins-SemiBold.ttf */,
+				80227B362D98321D00675AD7 /* Poppins-SemiBoldItalic.ttf */,
+				80227B322D98321C00675AD7 /* Poppins-Thin.ttf */,
+				80227B2D2D98321900675AD7 /* Poppins-ThinItalic.ttf */,
+			);
+			path = Poppins;
+			sourceTree = "<group>";
+		};
 		804F6D972D81D60000E2378D /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -124,6 +215,10 @@
 				807BB9BA2D8C459800F6A86C /* FloatingToolbarMenuView.swift */,
 				804F6D862D7D01A700E2378D /* CalendarView.swift */,
 				80BDB0342D8DBC3E0021262A /* SettingsView.swift */,
+				80227B132D94894800675AD7 /* LottieView.swift */,
+				80227B172D94A79F00675AD7 /* DigitButton.swift */,
+				80227B192D94A86000675AD7 /* KeypadView.swift */,
+				80227B242D978FD100675AD7 /* RoundedBorderButtonView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -145,13 +240,13 @@
 			isa = PBXGroup;
 			children = (
 				80BDB02E2D8DB10A0021262A /* LoginView.swift */,
-				80BDB0322D8DB8E00021262A /* SignUpView.swift */,
 				804F6D912D80768B00E2378D /* HomeView.swift */,
 				80B2CE622D70D28D00440A1F /* AddEntryView.swift */,
 				80B2CE642D70DA0200440A1F /* ProfileView.swift */,
 				80D636372D6CCBA3008FF902 /* ContentView.swift */,
 				80AF73CB2D91D6150095B252 /* PasscodeSetup.swift */,
 				80AF73CD2D91D6370095B252 /* PasscodeUnlock.swift */,
+				80227B1D2D95888800675AD7 /* PasscodeBGBlurView.swift */,
 				80AF73D32D91DB560095B252 /* SignUpInfoView.swift */,
 				80AF73D52D91DC120095B252 /* SignUpEmailPassView.swift */,
 				80AF73D92D91DEEA0095B252 /* SignUpCreatePasscodeView.swift */,
@@ -178,6 +273,7 @@
 				80B2CE6B2D70DC8600440A1F /* ValidationHelper.swift */,
 				804F6D982D81D7C300E2378D /* IconLibrary.swift */,
 				80AF73CF2D91D6560095B252 /* AppBlurOverlay.swift */,
+				80227B202D9594B800675AD7 /* CryptoHelper.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -201,6 +297,8 @@
 		80D636342D6CCBA3008FF902 /* JournalApp */ = {
 			isa = PBXGroup;
 			children = (
+				80227B262D9831F500675AD7 /* Fonts */,
+				80227B122D94890200675AD7 /* Animations */,
 				804F6D972D81D60000E2378D /* Components */,
 				80B2CE662D70DC3600440A1F /* Utilities */,
 				805E5C8E2D6E905E006A0614 /* GoogleService-Info.plist */,
@@ -244,6 +342,7 @@
 				80B2CE202D6F632200440A1F /* FirebaseFirestore */,
 				80B2CE222D6F632200440A1F /* FirebaseStorage */,
 				804F6D892D7D01F100E2378D /* FSCalendar */,
+				80227B0E2D94866A00675AD7 /* Lottie */,
 			);
 			productName = JournalApp;
 			productReference = 80D636322D6CCBA3008FF902 /* JournalApp.app */;
@@ -276,6 +375,7 @@
 			packageReferences = (
 				80B2CE1B2D6F632200440A1F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				804F6D882D7D01F100E2378D /* XCRemoteSwiftPackageReference "FSCalendar" */,
+				80227B0D2D94866A00675AD7 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = 80D636332D6CCBA3008FF902 /* Products */;
 			projectDirPath = "";
@@ -291,7 +391,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80227B3B2D98321F00675AD7 /* Poppins-ExtraLight.ttf in Resources */,
+				80227B482D98321F00675AD7 /* Poppins-SemiBoldItalic.ttf in Resources */,
+				80227B432D98321F00675AD7 /* Poppins-SemiBold.ttf in Resources */,
+				80227B3D2D98321F00675AD7 /* Poppins-MediumItalic.ttf in Resources */,
+				80227B452D98321F00675AD7 /* Poppins-Bold.ttf in Resources */,
+				80227B3C2D98321F00675AD7 /* Poppins-BlackItalic.ttf in Resources */,
+				80227B3E2D98321F00675AD7 /* Poppins-Regular.ttf in Resources */,
+				80227B162D948A0200675AD7 /* checkmark_animation.json in Resources */,
+				80227B472D98321F00675AD7 /* Poppins-LightItalic.ttf in Resources */,
+				80227B422D98321F00675AD7 /* Poppins-ExtraBoldItalic.ttf in Resources */,
+				80227B3A2D98321F00675AD7 /* Poppins-ExtraBold.ttf in Resources */,
+				80227B492D98321F00675AD7 /* Poppins-Light.ttf in Resources */,
+				80227B462D98321F00675AD7 /* Poppins-BoldItalic.ttf in Resources */,
+				80227B4B2D98321F00675AD7 /* Poppins-Medium.ttf in Resources */,
+				80227B412D98321F00675AD7 /* Poppins-Italic.ttf in Resources */,
+				80227B442D98321F00675AD7 /* Poppins-Thin.ttf in Resources */,
+				80227B4A2D98321F00675AD7 /* Poppins-ExtraLightItalic.ttf in Resources */,
 				80D6363D2D6CCBA6008FF902 /* Preview Assets.xcassets in Resources */,
+				80227B3F2D98321F00675AD7 /* Poppins-ThinItalic.ttf in Resources */,
+				80227B402D98321F00675AD7 /* Poppins-Black.ttf in Resources */,
 				80D6363A2D6CCBA6008FF902 /* Assets.xcassets in Resources */,
 				805E5C8F2D6E905F006A0614 /* GoogleService-Info.plist in Resources */,
 			);
@@ -308,30 +427,35 @@
 				80B2CE612D70D27900440A1F /* EntryDetailView.swift in Sources */,
 				807BB9BB2D8C459800F6A86C /* FloatingToolbarMenuView.swift in Sources */,
 				804F6D8E2D8075EF00E2378D /* SideBarView.swift in Sources */,
-				80BDB0332D8DB8E00021262A /* SignUpView.swift in Sources */,
 				804F6D992D81D7C300E2378D /* IconLibrary.swift in Sources */,
 				80AF73CA2D91D16A0095B252 /* BiometricAuthService.swift in Sources */,
 				80B2CE5F2D70D26A00440A1F /* EntryListView.swift in Sources */,
 				80AF73D62D91DC120095B252 /* SignUpEmailPassView.swift in Sources */,
+				80227B1E2D95888800675AD7 /* PasscodeBGBlurView.swift in Sources */,
+				80227B252D978FD100675AD7 /* RoundedBorderButtonView.swift in Sources */,
 				80AF73D22D91D9930095B252 /* AppUser.swift in Sources */,
 				80B2CE652D70DA0200440A1F /* ProfileView.swift in Sources */,
 				804F6D8C2D80730F00E2378D /* JournalModel.swift in Sources */,
 				80D636382D6CCBA3008FF902 /* ContentView.swift in Sources */,
 				80AF73D42D91DB560095B252 /* SignUpInfoView.swift in Sources */,
+				80227B212D9594B800675AD7 /* CryptoHelper.swift in Sources */,
 				80BDB02F2D8DB10A0021262A /* LoginView.swift in Sources */,
 				80AF73C82D91AD1B0095B252 /* SideBarCounts.swift in Sources */,
 				805E5C8B2D6E7D40006A0614 /* MediaFile.swift in Sources */,
 				804F6D902D80764100E2378D /* TopNavBarView.swift in Sources */,
 				804F6D922D80768B00E2378D /* HomeView.swift in Sources */,
 				80BDB0352D8DBC3E0021262A /* SettingsView.swift in Sources */,
+				80227B182D94A79F00675AD7 /* DigitButton.swift in Sources */,
 				80AF73C42D8F14F50095B252 /* TagModel.swift in Sources */,
 				80AF73D02D91D6560095B252 /* AppBlurOverlay.swift in Sources */,
 				805E5C892D6E79EF006A0614 /* EntryModel.swift in Sources */,
 				80B2CE6C2D70DC8600440A1F /* ValidationHelper.swift in Sources */,
+				80227B1A2D94A86000675AD7 /* KeypadView.swift in Sources */,
 				80AF73DC2D91E0D90095B252 /* SignUpSuccessView.swift in Sources */,
 				80AF73DA2D91DEEA0095B252 /* SignUpCreatePasscodeView.swift in Sources */,
 				804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */,
 				80B2CE682D70DC5D00440A1F /* DateFormatterHelper.swift in Sources */,
+				80227B142D94894800675AD7 /* LottieView.swift in Sources */,
 				80B2CE632D70D28D00440A1F /* AddEntryView.swift in Sources */,
 				80AF73DE2D91E4370095B252 /* GlowingPasscodeFieldView.swift in Sources */,
 				805E5C8D2D6E7EFF006A0614 /* FirebaseService.swift in Sources */,
@@ -540,6 +664,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		80227B0D2D94866A00675AD7 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
 		804F6D882D7D01F100E2378D /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
@@ -559,6 +691,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		80227B0E2D94866A00675AD7 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80227B0D2D94866A00675AD7 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
 		804F6D892D7D01F100E2378D /* FSCalendar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 804F6D882D7D01F100E2378D /* XCRemoteSwiftPackageReference "FSCalendar" */;

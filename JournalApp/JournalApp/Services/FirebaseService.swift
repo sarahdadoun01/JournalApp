@@ -33,15 +33,49 @@ class FirebaseService: ObservableObject {
     }
     
     
-    func signUp(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { _, error in
+    func createUserAccount(
+        firstName: String,
+        lastName: String,
+        birthday: Date,
+        email: String,
+        password: String,
+        passcode: String,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 completion(.failure(error))
-            } else {
-                completion(.success(()))
+                return
+            }
+
+            guard let uid = result?.user.uid else {
+                completion(.failure(NSError(domain: "FirebaseService", code: -1, userInfo: [NSLocalizedDescriptionKey: "No UID returned."])))
+                return
+            }
+
+            let salt = generateRandomSalt()
+            let hashed = hashPasscode(passcode, salt: salt)
+
+            let userData: [String: Any] = [
+                "firstName": firstName,
+                "lastName": lastName,
+                "birthday": Timestamp(date: birthday),
+                "email": email,
+                "passcodeSalt": salt,
+                "passcodeHashed": hashed
+            ]
+
+            Firestore.firestore().collection("users").document(uid).setData(userData) { err in
+                if let err = err {
+                    completion(.failure(err))
+                } else {
+                    completion(.success(uid))
+                }
             }
         }
     }
+
+
 
     func logIn(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { _, error in
@@ -62,6 +96,100 @@ class FirebaseService: ObservableObject {
             }
         }
     }
+    
+    func verifyPasscodeForUser(uid: String, typedPasscode: String, completion: @escaping (Bool) -> Void) {
+        print("🔍 Verifying passcode for UID: \(uid)")
+
+        let docRef = Firestore.firestore().collection("users").document(uid)
+        docRef.getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error fetching user doc: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            // Check if document exists
+            guard let data = snapshot?.data() else {
+                print("❌ No data found for UID \(uid)")
+                completion(false)
+                return
+            }
+
+            print("📦 Document data: \(data)")
+
+            guard let salt = data["passcodeSalt"] as? String else {
+                print("❌ Missing 'passcodeSalt' field")
+                completion(false)
+                return
+            }
+
+            guard let storedHash = data["passcodeHashed"] as? String else {
+                print("❌ Missing 'passcodeHashed' field")
+                completion(false)
+                return
+            }
+
+            let typedHash = hashPasscode(typedPasscode, salt: salt)
+
+            print("🔐 Typed hash: \(typedHash)")
+            print("🗃 Stored hash: \(storedHash)")
+
+            let isMatch = typedHash == storedHash
+            print(isMatch ? "✅ Passcode match!" : "❌ Passcode mismatch.")
+
+            completion(isMatch)
+        }
+    }
+
+    
+//    func verifyPasscodeForUser(uid: String, typedPasscode: String, completion: @escaping (Bool) -> Void) {
+//        let docRef = Firestore.firestore().collection("users").document(uid)
+//        docRef.getDocument { snapshot, error in
+//            if let error = error {
+//                print("❌ Error fetching user doc: \(error.localizedDescription)")
+//                completion(false)
+//                return
+//            }
+//            guard let data = snapshot?.data(),
+//                  let salt = data["passcodeSalt"] as? String,
+//                  let storedHash = data["passcodeHashed"] as? String else {
+//                // no passcode set or missing fields
+//                completion(false)
+//                return
+//            }
+//
+//            let typedHash = hashPasscode(typedPasscode, salt: salt)
+//
+//            print("🔥 passcode entered: \(typedPasscode)")
+//            print("🔥 salt from Firestore: \(salt)")
+//            print("🔥 hash of entered passcode: \(typedHash)")
+//            print("🔥 stored hash from Firestore: \(storedHash)")
+//
+//
+//            completion(typedHash == storedHash)
+//        }
+//    }
+    
+    
+    
+    func storePasscodeForUser(uid: String, passcode: String) {
+        let salt = generateRandomSalt()
+        let hashed = hashPasscode(passcode, salt: salt)
+
+        let docRef = Firestore.firestore().collection("users").document(uid)
+        docRef.setData([
+            "passcodeSalt": salt,
+            "passcodeHashed": hashed
+        ], merge: true) { error in
+            if let error = error {
+                print("❌ Error saving passcode: \(error.localizedDescription)")
+            } else {
+                print("✅ Passcode stored successfully!")
+            }
+        }
+    }
+
+
 
     func signOut() throws {
         try Auth.auth().signOut()
@@ -123,51 +251,6 @@ class FirebaseService: ObservableObject {
     func fetchAllEntries(userID: String, completion: @escaping ([Entry]) -> Void) {
         
         print("Fetching for userID:", userID)
-
-        
-//        db.collection("entries")
-//            .whereField("userID", isEqualTo: userID)
-//            .order(by: "date", descending: false) // Sort by date (newest first)
-//            .getDocuments { snapshot, error in
-//                if let error = error {
-//                    print("❌ Error fetching all entries: \(error.localizedDescription)")
-//                    completion([])
-//                    return
-//                }
-//
-//                let docs = snapshot?.documents ?? []
-//                print("📦 Firestore returned \(docs.count) documents")
-//
-//                var entries = snapshot?.documents.compactMap { doc -> Entry? in
-//                    let data = doc.data()
-//
-//                    print("Found entry with userID:", data["userID"] ?? "none")
-//
-//                    return Entry(
-//                        id: doc.documentID,
-//                        journalID: data["journalID"] as? String ?? "",
-//                        userID: data["userID"] as? String ?? "",
-//                        title: data["title"] as? String ?? "Untitled",
-//                        content: data["content"] as? String ?? "",
-//                        date: (data["date"] as? Timestamp)?.dateValue() ?? Date(),
-//                        moods: data["moods"] as? [String] ?? [],
-//                        mediaFiles: data["mediaFiles"] as? [String] ?? [],
-//                        tags: data["tags"] as? [String] ?? []
-//                    )
-//                } ?? []
-//
-//                DispatchQueue.main.async {
-//
-//                    entries.sort { $0.date > $1.date  }
-//
-//                    // debug
-//                    for entry in entries {
-//                        print("Title: \(entry.title), Date: \(entry.date)")
-//                    }
-//
-//                    completion(entries)
-//                }
-//            }
         
         db.collection("entries")
             .getDocuments { snapshot, error in

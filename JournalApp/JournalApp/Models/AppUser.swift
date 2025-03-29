@@ -10,4 +10,5 @@ import Foundation
 struct AppUser: Identifiable, Codable {
     var id: String // userID
     var email: String
+    var birthday: Date
 }

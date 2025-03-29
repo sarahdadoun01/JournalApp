@@ -9,11 +9,6 @@ import SwiftUI
 
 struct SignUpSuccessView: View {
     let firstName: String
-    let lastName: String
-    let birthday: Date
-    let email: String
-    let password: String
-    let passcode: String
 
     @State private var navigateToHome = false
 
@@ -21,26 +16,26 @@ struct SignUpSuccessView: View {
         VStack(spacing: 30) {
             Spacer()
 
-            Image(systemName: "checkmark.seal.fill")
-                .resizable()
+            LottieView(animationName: "checkmark_animation")
                 .scaledToFit()
                 .frame(width: 80, height: 80)
-                .foregroundColor(.green)
                 .padding()
 
-            Text("Account Created")
+            Text("Welcome, \(firstName)!")
                 .font(.title)
                 .fontWeight(.bold)
 
-            Text("Welcome, \(firstName)! You're all set.")
-                .foregroundColor(.gray)
+            Text("Your account has been successfully created.\nEnjoy your peace of mind.")
+                .multilineTextAlignment(.center)
+                .foregroundColor(.black)
+                .padding(.horizontal)
 
             Spacer()
 
             Button(action: {
                 navigateToHome = true
             }) {
-                Text("Start Writing")
+                Text("Explore")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -61,12 +56,7 @@ struct SignUpSuccessView: View {
 struct SignUpSuccessView_Previews: PreviewProvider {
     static var previews: some View {
         SignUpSuccessView(
-            firstName: "Sarah",
-            lastName: "Dadoun",
-            birthday: Date(),
-            email: "sarah@example.com",
-            password: "password123",
-            passcode: "1234"
+            firstName: "Sarah"
         )
     }
 }

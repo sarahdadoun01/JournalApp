@@ -8,25 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var firebaseService = FirebaseService()
+    @State private var loggedIn = false
 
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Journal App")
-                    .font(.title)
-                
-                Button("Test Firestore") {
-                    Task {
-                        await firebaseService.testFirestoreConnection()
-                    }
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
+        ZStack {
+            if loggedIn {
+                // When logged in, show PasscodeBGBlurView (which in turn shows HomeView + PasscodeUnlock)
+                PasscodeBGBlurView()
+                    .transition(.move(edge: .top))
+            } else {
+                // Otherwise, show the login form.
+//                LoginView(onLoginSuccess: {
+//                    withAnimation(.easeInOut(duration: 1.0)) {
+//                        loggedIn = true
+//                    }
+//                })
+//                .transition(.move(edge: .bottom))
             }
         }
+        .animation(.easeInOut, value: loggedIn)
     }
 }
 

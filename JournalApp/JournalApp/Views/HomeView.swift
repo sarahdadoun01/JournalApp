@@ -63,66 +63,47 @@ struct HomeView: View {
             )
         }
         .onAppear {
-            authenticateTestUser()
-        }
+            fetchJournalsForCurrentUser()
+        }.navigationBarBackButtonHidden(true)
     }
-    
-    private func authenticateTestUser() {
-            if Auth.auth().currentUser == nil {
-
-                Auth.auth().signIn(withEmail: "testuser@example.com", password: "123456") { result, error in
-                    if let error = error {
-                        print("❌ Firebase Auth failed: \(error.localizedDescription)")
-                    } else {
-                        fetchJournalsForCurrentUser()
-                    }
-                }
-            } else {
-                fetchJournalsForCurrentUser()
-            }
-        }
     
     private func fetchJournalsForCurrentUser() {
-        if let user = Auth.auth().currentUser {
-            let userID = user.email ?? "testuser@example.com"
-            
-
-            firebaseService.fetchJournals(userID: userID) { fetchedJournals in
-                DispatchQueue.main.async {
-                    // If selectedJournal is "All", keep it. Otherwise, preserve last selection.
-                    let previousSelection = self.selectedJournal
-
-                    self.journals = fetchedJournals
-
-                    if fetchedJournals.contains(where: { $0.title == previousSelection }) {
-                        self.selectedJournal = previousSelection
-                    } else {
-                        self.selectedJournal = "All"
-                    }
-                }
-                
-                
-                // Fetch entries and compute counts
-                firebaseService.fetchAllEntries(userID: userID) { entries in
-                    print("✅ Fetched \(entries.count) entries")
-                    
-                    let counts = computeSidebarCounts(from: entries)
-
-                    DispatchQueue.main.async {
-                        self.journalEntryCounts = counts.journalCounts
-                        self.tagEntryCounts = counts.tagCounts
-                        self.pinnedCount = counts.pinned
-                        self.favoritesCount = counts.favorites
-                        self.deletedCount = counts.deleted
-                        self.allCount = counts.all
-                    }
-                }
-                
-            }
-        } else {
+        guard let user = Auth.auth().currentUser else {
             print("❌ No user is logged in")
+            return
+        }
+
+        let userID = user.uid
+
+        firebaseService.fetchJournals(userID: userID) { fetchedJournals in
+            DispatchQueue.main.async {
+                let previousSelection = self.selectedJournal
+                self.journals = fetchedJournals
+
+                if fetchedJournals.contains(where: { $0.title == previousSelection }) {
+                    self.selectedJournal = previousSelection
+                } else {
+                    self.selectedJournal = "All"
+                }
+            }
+
+            firebaseService.fetchAllEntries(userID: userID) { entries in
+                print("✅ Fetched \(entries.count) entries")
+
+                let counts = computeSidebarCounts(from: entries)
+
+                DispatchQueue.main.async {
+                    self.journalEntryCounts = counts.journalCounts
+                    self.tagEntryCounts = counts.tagCounts
+                    self.pinnedCount = counts.pinned
+                    self.favoritesCount = counts.favorites
+                    self.deletedCount = counts.deleted
+                    self.allCount = counts.all
+                }
+            }
         }
     }
+
     
     
     private func fetchEntryCounts(for userID: String) {

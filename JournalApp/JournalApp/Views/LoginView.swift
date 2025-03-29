@@ -14,6 +14,7 @@ struct LoginView: View {
     @State private var isSecure: Bool = true
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var isLoggedIn = false
     
     var body: some View {
         NavigationView {
@@ -84,7 +85,15 @@ struct LoginView: View {
                         alertMessage = "Please enter both email and password."
                         showingAlert = true
                     } else {
-                        // Add your login authentication here
+                        FirebaseService.shared.logIn(email: email, password: password) { result in
+                            switch result {
+                            case .success():
+                                isLoggedIn = true  // triggers navigation to HomeView
+                            case .failure(let error):
+                                alertMessage = error.localizedDescription
+                                showingAlert = true
+                            }
+                        }
                     }
                 }) {
                     Text("Log In")
@@ -120,13 +129,19 @@ struct LoginView: View {
                 // Sign Up Link
                 HStack {
                     Text("Don't have an account?")
-                    NavigationLink(destination: SignUpView()) {
+                    NavigationLink(destination: SignUpInfoView()) {
                         Text("Sign Up")
                             .foregroundColor(.blue)
                             .fontWeight(.medium)
                     }
                 }
                 .padding(.bottom)
+                
+                NavigationLink(destination: PasscodeBGBlurView(), isActive: $isLoggedIn) {
+                    EmptyView()
+                }
+
+                
             }
             .padding()
             .alert(isPresented: $showingAlert) {

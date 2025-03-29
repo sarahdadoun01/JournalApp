@@ -5,6 +5,13 @@
 //  Created by Sarah Dadoun on 2025-03-24.
 //
 
+//
+//  SignUpCreatePasscodeView.swift
+//  JournalApp
+//
+//  Created by Sarah Dadoun on 2025-03-24.
+//
+
 import SwiftUI
 
 struct SignUpCreatePasscodeView: View {
@@ -14,115 +21,166 @@ struct SignUpCreatePasscodeView: View {
     let email: String
     let password: String
 
-    @State private var passcode = ""
-    @State private var isAlphanumeric = false
-    @State private var isSecure = true
+    @State private var passcode: String = ""
+    @State private var showAlphanumeric = false
+    @State private var showPasscode = false
     @State private var showNext = false
     @State private var showAlert = false
 
-    @FocusState private var isFocused: Bool
-
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Text("Create a Passcode")
-                .font(.title)
+                .font(.largeTitle)
                 .fontWeight(.bold)
+                .padding(.top, 20)
 
-            Text(isAlphanumeric ? "Use numbers and letters" : "4-digit numeric PIN")
-                .font(.subheadline)
+            Text("This passcode will protect your journal.")
                 .foregroundColor(.gray)
 
-            HStack {
-                Group {
-                    if isSecure {
-                        SecureField(isAlphanumeric ? "Enter passcode" : "Enter 4-digit PIN", text: $passcode)
-                            .focused($isFocused)
+            ZStack(alignment: .trailing) {
+                if showAlphanumeric {
+                    if showPasscode {
+                        TextField("Enter alphanumeric passcode", text: $passcode)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .padding(.horizontal)
                     } else {
-                        TextField(isAlphanumeric ? "Enter passcode" : "Enter 4-digit PIN", text: $passcode)
-                            .focused($isFocused)
+                        SecureField("Enter alphanumeric passcode", text: $passcode)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .padding(.horizontal)
+                    }
+                } else {
+                    if showPasscode {
+                        TextField("Enter 4-digit passcode", text: $passcode)
+                            .keyboardType(.numberPad)
+                            .textContentType(.oneTimeCode)
+                            .frame(width: 200)
+                            .multilineTextAlignment(.center)
+                            .padding(.trailing, 30)
+                    } else {
+                        SecureField("Enter 4-digit passcode", text: $passcode)
+                            .keyboardType(.numberPad)
+                            .textContentType(.oneTimeCode)
+                            .frame(width: 200)
+                            .multilineTextAlignment(.center)
+                            .padding(.trailing, 30)
                     }
                 }
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
-                .keyboardType(isAlphanumeric ? .default : .numberPad)
-                .padding(.leading)
 
                 Button(action: {
-                    isSecure.toggle()
+                    showPasscode.toggle()
                 }) {
-                    Image(systemName: isSecure ? "eye.slash" : "eye")
+                    Image(systemName: showPasscode ? "eye.slash" : "eye")
                         .foregroundColor(.gray)
-                        .padding(.trailing)
+                        .padding(.trailing, showAlphanumeric ? 30 : 0)
                 }
             }
-            .frame(height: 50)
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isFocused ? Color.blue : Color.clear, lineWidth: 2)
-                    .shadow(color: isFocused ? Color.blue.opacity(0.4) : .clear, radius: 6, x: 0, y: 0)
-            )
-            .animation(.easeInOut(duration: 0.2), value: isFocused)
 
+            Toggle("Alphanumeric", isOn: $showAlphanumeric)
+                .padding(.horizontal)
 
-            Toggle(isOn: $isAlphanumeric) {
-                Text("Use alphanumeric passcode")
+            NavigationLink(
+                destination: SignUpSuccessView(
+                    firstName: firstName
+                ),
+                isActive: $showNext
+            ) {
+                EmptyView()
             }
-            .padding(.horizontal)
-
-            Spacer()
 
             Button(action: {
-                let isValid = isAlphanumeric
-                    ? passcode.count >= 4
-                    : passcode.count == 4 && passcode.allSatisfy(\.isNumber)
-
-                if isValid {
-                    showNext = true
-                } else {
+                if passcode.isEmpty || (!showAlphanumeric && passcode.count != 4) {
                     showAlert = true
+                    return
+                }
+
+                FirebaseService.shared.createUserAccount(
+                    firstName: firstName,
+                    lastName: lastName,
+                    birthday: birthday,
+                    email: email,
+                    password: password,
+                    passcode: passcode
+                ) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let uid):
+                            print("✅ Account created and stored with UID: \(uid)")
+                            showNext = true
+                        case .failure(let error):
+                            print("❌ Error creating account: \(error.localizedDescription)")
+                            showAlert = true
+                        }
+                    }
                 }
             }) {
                 Text("Next")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+                    .background(Color.clear)
+                    .foregroundColor(Color(hex: "#1A1F3B"))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 150)
+                            .stroke(Color(hex: "#B9B9B9"), lineWidth: 1)
+                    )
+                    .cornerRadius(150)
+                    .padding(.horizontal)
             }
+
+            Spacer()
         }
-        .padding()
+        .navigationTitle("Passcode")
+        .navigationBarTitleDisplayMode(.inline)
         .alert(isPresented: $showAlert) {
             Alert(
-                title: Text("Invalid Passcode"),
-                message: Text(isAlphanumeric ? "Passcode must be at least 4 characters." : "PIN must be exactly 4 numbers."),
+                title: Text("Missing Info"),
+                message: Text("Please enter a valid passcode."),
                 dismissButton: .default(Text("OK"))
             )
         }
-        .navigationDestination(isPresented: $showNext) {
-            SignUpSuccessView(
-                firstName: firstName,
-                lastName: lastName,
-                birthday: birthday,
-                email: email,
-                password: password,
-                passcode: passcode
-            )
+        .navigationBarBackButtonHidden(true)
+        .onChange(of: passcode) { newValue in
+            if !showAlphanumeric && newValue.count > 4 {
+                passcode = String(newValue.prefix(4))
+            }
         }
-        .navigationTitle("Passcode")
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        let scanner = Scanner(string: hex)
+
+        if hex.hasPrefix("#") {
+            scanner.currentIndex = hex.index(after: hex.startIndex)
+        }
+
+        var color: UInt64 = 0
+        scanner.scanHexInt64(&color)
+
+        let r = Double((color >> 16) & 0xFF) / 255.0
+        let g = Double((color >> 8) & 0xFF) / 255.0
+        let b = Double(color & 0xFF) / 255.0
+
+        self.init(red: r, green: g, blue: b)
     }
 }
 
 struct SignUpCreatePasscodeView_Previews: PreviewProvider {
     static var previews: some View {
-        SignUpCreatePasscodeView(
-            firstName: "Sarah",
-            lastName: "Dadoun",
-            birthday: Date(),
-            email: "sarahcdadoun@gmail.com",
-            password: "123456"
-        )
+        NavigationStack {
+            SignUpCreatePasscodeView(
+                firstName: "Sarah",
+                lastName: "Radium",
+                birthday: Date(),
+                email: "sarah@example.com",
+                password: "password123"
+            )
+        }
     }
 }

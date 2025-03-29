@@ -92,7 +92,7 @@ struct EntryListBlockView: View {
             .padding()
             .frame(minHeight: entry.mediaFiles?.isEmpty == false ? 250 : 150)
             .background(
-                RoundedRectangle(cornerRadius: 15)
+                RoundedRectangle(cornerRadius: 40)
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 0)
             )
@@ -129,7 +129,7 @@ struct EntryListBlockView: View {
             }
         }
         .frame(height: 80)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
     
     // Function to display a single image (either from Firebase or from local asset)
@@ -150,7 +150,7 @@ struct EntryListBlockView: View {
             }
         }
         .frame(width: 80, height: 80) // Set consistent size
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
 
