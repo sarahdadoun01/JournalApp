@@ -15,13 +15,16 @@ struct FloatingToolbarMenuView: View {
     var onAddTag: () -> Void
     var onSelectJournal: () -> Void
     
+    @Binding var showMoodPicker: Bool
     @State private var isVisible: Bool = true
     
     var body: some View {
         VStack {
             if isVisible {
                 HStack(spacing: 20) {
-                    ToolbarButton(icon: "face.smiling", action: onAddMood)
+                    ToolbarButton(icon: "face.smiling") {
+                        showMoodPicker.toggle()
+                    }
                     ToolbarButton(icon: "textformat", action: onAddText)
                     ToolbarButton(icon: "photo.on.rectangle", action: onAddImage)
                     ToolbarButton(icon: "mic", action: onAddVoiceMemo)
@@ -62,6 +65,8 @@ struct ToolbarButton: View {
 }
 
 struct FloatingToolbarMenuView_Previews: PreviewProvider {
+    @State static var showMoodPicker = false
+
     static var previews: some View {
         FloatingToolbarMenuView(
             onAddMood: {},
@@ -69,7 +74,8 @@ struct FloatingToolbarMenuView_Previews: PreviewProvider {
             onAddImage: {},
             onAddVoiceMemo: {},
             onAddTag: {},
-            onSelectJournal: {}
+            onSelectJournal: {},
+            showMoodPicker: $showMoodPicker
         )
         .previewLayout(.sizeThatFits)
     }

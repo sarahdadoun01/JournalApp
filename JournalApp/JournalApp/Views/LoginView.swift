@@ -9,30 +9,37 @@ import SwiftUI
 import LocalAuthentication
 
 struct LoginView: View {
+    @EnvironmentObject var appState: AppState
+    
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isSecure: Bool = true
     @State private var showingAlert = false
     @State private var alertMessage = ""
-    @State private var isLoggedIn = false
-    
     @State private var path = NavigationPath()
+    @State private var animateDismiss = false
+    
+//    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+
 
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $path) {
             VStack {
                 // Top Header (fixed at top)
                 VStack(spacing: 8) {
                     Text("Welcome Back!")
                         .font(.largeTitle)
                         .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
 
                     Text("Login if you already have an account.")
                         .font(.subheadline)
                         .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 40)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 60)
+                .hideKeyboardOnTap()
 
                 Spacer()
 
@@ -47,7 +54,7 @@ struct LoginView: View {
                             verticalPadding: 15,
                             cornerRadius: 999,
                             backgroundColor: .clear,
-                            borderColor: .gray
+                            borderColor: Color(hex: "#D9D9D9")
                         )
 
                         CustomSecureFieldView(
@@ -57,7 +64,7 @@ struct LoginView: View {
                             verticalPadding: 15,
                             cornerRadius: 999,
                             backgroundColor: .clear,
-                            borderColor: .gray,
+                            borderColor: Color(hex: "#D9D9D9"),
                             textColor: .gray
                         )
 
@@ -80,6 +87,7 @@ struct LoginView: View {
                             }
                         }
                     }.padding()
+                    .hideKeyboardOnTap()
 
                     // Login & Face ID buttons
                     VStack(spacing: 16) {
@@ -93,7 +101,11 @@ struct LoginView: View {
                                     FirebaseService.shared.logIn(email: email, password: password) { result in
                                         switch result {
                                         case .success():
-                                            isLoggedIn = true
+//                                            isLoggedIn = true
+                                            withAnimation(.easeInOut(duration: 1.0)) {
+                                                appState.isLoggedIn = true
+                                                appState.triggerPasscode()
+                                            }
                                         case .failure(let error):
                                             alertMessage = error.localizedDescription
                                             showingAlert = true
@@ -106,27 +118,8 @@ struct LoginView: View {
                             horizontalPadding: 30,
                             verticalPadding: 20
                         )
-
-
-//                        CircularIconButtonView(
-//                            systemName: "faceid",
-//                            size: 44,
-//                            padding: 15,
-//                            backgroundColor: .clear,
-//                            borderColor: Color.gray,
-//                            iconColor: .black
-//                        ) {
-//                            BiometricAuthService.authenticate { success, errorMessage in
-//                                if success {
-//                                    // Log in or proceed
-//                                } else {
-//                                    alertMessage = errorMessage ?? "Login failed"
-//                                    showingAlert = true
-//                                }
-//                            }
-//                        }
                     }
-                }
+                }.hideKeyboardOnTap()
 
                 Spacer()
 
@@ -139,11 +132,12 @@ struct LoginView: View {
                             .font(.footnote)
                             .fontWeight(.medium)
                             .foregroundColor(.black)
+                            .multilineTextAlignment(.center)
                             .padding(14)
                             .frame(width: 80, height: 80)
                             .background(
                                 Circle()
-                                    .stroke(Color.gray, lineWidth: 1)
+                                    .stroke(Color(hex: "#E0E0E0"), lineWidth: 1)
                             )
                     }
 
@@ -155,7 +149,7 @@ struct LoginView: View {
                         size: 80,
                         padding: 27,
                         backgroundColor: .clear,
-                        borderColor: Color.gray,
+                        borderColor: Color(hex: "#E0E0E0"),
                         iconColor: .black
                     ) {
                         BiometricAuthService.authenticate { success, errorMessage in
@@ -169,14 +163,8 @@ struct LoginView: View {
                     }
                 }.padding(.horizontal, 5)
                 .padding(.bottom, -10)
-                    
-                
+                .hideKeyboardOnTap()
 
-
-                // Navigate to main screen on login
-                NavigationLink(destination: PasscodeBGBlurView(), isActive: $isLoggedIn) {
-                    EmptyView()
-                }
             }
             .padding(.horizontal)
             .alert(isPresented: $showingAlert) {
@@ -186,6 +174,21 @@ struct LoginView: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
+            .navigationDestination(for: String.self) { value in
+                if value == "passcode" {
+                    PasscodeBGBlurView(
+                        isLoggedIn: $appState.isLoggedIn,
+                        animateDismiss: animateDismiss
+                    )
+                }
+            }
+            .navigationDestination(for: SignUpRoute.self) { route in
+                switch route {
+                case .emailPass(let first, let last, let birthday):
+                    SignUpEmailPassView(firstName: first, lastName: last, birthday: birthday)
+                }
+            }
+
             .hideKeyboardOnTap()
         }
     }

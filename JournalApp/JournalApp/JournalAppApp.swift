@@ -19,12 +19,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct JournalAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject var appState = AppState()
 
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            ContentView() // ✅ this should be the ONLY view loaded at launch
+                .environmentObject(appState)
         }
     }
 }
-
-

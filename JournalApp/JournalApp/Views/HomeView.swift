@@ -10,6 +10,8 @@ import FirebaseFirestore
 import FirebaseAuth
 
 struct HomeView: View {
+    @EnvironmentObject var appState: AppState
+
     @State private var isSidebarOpen = false
     @State private var selectedJournal = "All" // default to 'all'
     @State private var journals: [Journal] = []
@@ -23,6 +25,8 @@ struct HomeView: View {
     @State private var showAddJournalView = false
 
     @StateObject private var firebaseService = FirebaseService()
+//    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
+
 
     var body: some View {
         ZStack {
@@ -38,7 +42,7 @@ struct HomeView: View {
                     },
                     isSidebarOpen: $isSidebarOpen,
                     selectedJournal: $selectedJournal,
-                    journals: journals,
+                    journals: $journals,
                     onSearch: { print("Search...") }
                 )
 
@@ -50,7 +54,7 @@ struct HomeView: View {
             SideBarView(
                 isShowing: $isSidebarOpen,
                 selectedJournal: $selectedJournal,
-                journals: journals,
+                journals: $journals,
                 tags: tags,
                 onSelectJournal: { journalID in
                     selectedJournal = journalID // Update journal when selected
@@ -58,7 +62,8 @@ struct HomeView: View {
                 onLogout: {
                     do {
                         try FirebaseService.shared.signOut()
-                        // Navigate back to login screen here
+                        appState.isLoggedIn = false
+                        appState.logout()
                     } catch {
                         print("❌ Logout failed: \(error.localizedDescription)")
                     }
@@ -77,6 +82,11 @@ struct HomeView: View {
         .onAppear {
             fetchJournalsForCurrentUser()
         }.navigationBarBackButtonHidden(true)
+            .onChange(of: appState.isLoggedIn) { newValue in
+                if newValue {
+                fetchJournalsForCurrentUser()
+            }
+        }
         .sheet(isPresented: $showAddJournalView) {
             if let user = Auth.auth().currentUser {
                 AddJournalView(userID: user.uid) {
@@ -89,7 +99,7 @@ struct HomeView: View {
     
     private func fetchJournalsForCurrentUser() {
         guard let user = Auth.auth().currentUser else {
-            print("❌ No user is logged in")
+            print("❌ No Firebase user — should NOT be in HomeView")
             return
         }
 
@@ -149,5 +159,6 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+            .environmentObject(AppState())
     }
 }

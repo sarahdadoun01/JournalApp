@@ -14,8 +14,7 @@ struct TopNavBarView: View {
     @Binding var selectedJournal: String
     
     @State private var isAddingEntry = false
-    
-    let journals: [Journal]
+    @Binding var journals: [Journal]
     let onSearch: () -> Void
     
 
@@ -99,11 +98,12 @@ struct TopNavBarView: View {
             .background(Color.white)
             .sheet(isPresented: $isAddingEntry) {
                 AddEntryView(
+                    journals: $journals,
+                    selectedJournalID: selectedJournal,
                     onSaveComplete: {
                         onSaveComplete() //Refresh journal list in HomeView
                         isAddingEntry = false
-                    },
-                    selectedJournalID: selectedJournal
+                    }
                 )
                 .transition(.move(edge: .bottom))
                 .onAppear {
@@ -123,10 +123,10 @@ struct TopNavBarView_Previews: PreviewProvider {
             onSaveComplete: {},
             isSidebarOpen: .constant(false),
             selectedJournal: .constant("Personal"),
-            journals: [
+            journals: .constant([
                 Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
                 Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
-            ], // Sample list of journals
+            ]), // Sample list of journals
             onSearch: {}
         )
     }

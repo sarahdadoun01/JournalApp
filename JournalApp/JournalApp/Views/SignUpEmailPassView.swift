@@ -137,7 +137,6 @@ struct SignUpEmailPassView: View {
             .padding(.bottom, 32)
 
         }
-        .navigationTitle("Create Account")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .alert(isPresented: $showAlert) {

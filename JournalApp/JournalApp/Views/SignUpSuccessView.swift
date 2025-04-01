@@ -49,6 +49,7 @@ struct SignUpSuccessView: View {
             HomeView()
         }
         .navigationBarBackButtonHidden(true)
+        
     }
 }
 

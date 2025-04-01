@@ -4,29 +4,38 @@
 //
 //  Created by Sarah Dadoun on 2025-02-24.
 //
-
 import SwiftUI
 
 struct ContentView: View {
-    @State private var loggedIn = false
+    @Environment(\.scenePhase) var scenePhase
+    @StateObject var appState = AppState()
 
     var body: some View {
         ZStack {
-            if loggedIn {
-                // When logged in, show PasscodeBGBlurView (which in turn shows HomeView + PasscodeUnlock)
-                PasscodeBGBlurView()
-                    .transition(.move(edge: .top))
+            if appState.isLoggedIn {
+                HomeView()
             } else {
-                // Otherwise, show the login form.
-//                LoginView(onLoginSuccess: {
-//                    withAnimation(.easeInOut(duration: 1.0)) {
-//                        loggedIn = true
-//                    }
-//                })
-//                .transition(.move(edge: .bottom))
+                LoginView()
+            }
+
+            // Blur overlay ONLY when app is multitasked
+            if appState.blurOverlay {
+                Color.black
+                    .opacity(0.6)
+                    .ignoresSafeArea()
             }
         }
-        .animation(.easeInOut, value: loggedIn)
+        .fullScreenCover(isPresented: $appState.needsPasscode) {
+            PasscodeBGBlurView(
+                isLoggedIn: $appState.isLoggedIn,
+                animateDismiss: true
+            )
+            .environmentObject(appState)
+        }
+        .onChange(of: scenePhase) { value in
+            appState.handleScenePhase(value)
+        }
+        .environmentObject(appState)
     }
 }
 

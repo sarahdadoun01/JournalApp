@@ -38,7 +38,7 @@ struct SignUpInfoView: View {
                     size: 40,
                     padding: 15,
                     backgroundColor: .clear,
-                    borderColor: Color(hex: "#D6D6D6"),
+                    borderColor: Color(hex: "#D9D9D9"),
                     iconColor: .black
                 ) {
                     dismiss()
@@ -48,6 +48,7 @@ struct SignUpInfoView: View {
             }
             .padding(.top, 8)
             .padding(.leading)
+            .hideKeyboardOnTap()
             
             Spacer()
 
@@ -65,7 +66,7 @@ struct SignUpInfoView: View {
                     verticalPadding: 20,
                     cornerRadius: 999,
                     backgroundColor: .clear,
-                    borderColor: Color(hex: "#D6D6D6")
+                    borderColor: Color(hex: "#D9D9D9")
                 )
 
                 CustomTextFieldView(
@@ -75,7 +76,7 @@ struct SignUpInfoView: View {
                     verticalPadding: 20,
                     cornerRadius: 999,
                     backgroundColor: .clear,
-                    borderColor: Color(hex: "#D6D6D6")
+                    borderColor: Color(hex: "#D9D9D9")
                 )
 
                 Button {
@@ -112,6 +113,7 @@ struct SignUpInfoView: View {
                 }
             }
             .padding(.horizontal, 24)
+            .hideKeyboardOnTap()
 
             Spacer()
 
@@ -133,8 +135,6 @@ struct SignUpInfoView: View {
             .opacity(isFormValid ? 1 : 0.5)
 
         }
-        .padding(.top, 32)
-        .navigationTitle("Create Account")
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .alert(isPresented: $showAlert) {

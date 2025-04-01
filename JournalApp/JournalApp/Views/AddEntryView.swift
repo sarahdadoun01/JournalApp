@@ -2,9 +2,8 @@
 //  AddEntryView.swift
 //  JournalApp
 //
-//  Created by Sarah Dadoun on 2025-02-27.
+//  Created by Sarah Dadoun on 2025-03-31.
 //
-
 import SwiftUI
 import Firebase
 
@@ -29,10 +28,13 @@ struct EntryBlock: Identifiable {
 enum BlockType {
     case text
     case image
+    case video
+    case audio
 }
 
 struct AddEntryView: View {
-    
+    @Binding var journals: [Journal]
+
     @State private var entryTitle: String = "Untitled"
     @State private var selectedMoods: [String] = []
     @State private var selectedTags: [String] = []
@@ -40,26 +42,22 @@ struct AddEntryView: View {
     @State private var selectedMediaFiles: [UIImage] = []
     @State private var isKeyboardVisible = false
     @State private var hasEditedTitle = false
-    
+    @State private var showMoodPicker = false
+    @State private var selectedJournalTitle: String = ""
+    @State var selectedJournalID: String?
+
     var onSaveComplete: () -> Void = {}
-    
 
     @Environment(\.presentationMode) var presentationMode
-    let selectedJournalID: String
-    
+
     @StateObject private var firebaseService = FirebaseService()
-    
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         VStack {
-            
-            /// ------  TOP
-            VStack{
-                
-                HStack{
-                    /// ----- TITLE AND DATE
-                    ///
+            // 🔝 Top Purple Header
+            VStack {
+                HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         ZStack(alignment: .leading) {
                             if entryTitle.isEmpty {
@@ -83,77 +81,47 @@ struct AddEntryView: View {
                                 }
                         }
 
-                        // ✅ Date below the title
                         Text(formatCurrentDate())
                             .font(.system(size: 12))
                             .foregroundColor(.white.opacity(0.8))
                     }
 
-                    
-                    /// ----- SAVE BUTTON
-                    VStack(alignment: .center){
-                        CircularIconButtonView(
-                            systemName: "checkmark",
-                            size: 48,
-                            padding: 15,
-                            backgroundColor: .clear,
-                            borderColor: .white,
-                            iconColor: .white
-                        ) {
-                            saveEntry()
-                        }
-                    }.frame(width: 50, height: 57,alignment: .trailing)
-                    
-                }.padding(.horizontal,20)
-                .padding(.vertical,20)
-                
-            }.background(Color.purple)
-            
-            
-            
-            /// -------  CONTENT
-            // Mood Selection
-            HStack {
-                ForEach(selectedMoods, id: \.self) { mood in
-                    Text(mood)
-                        .padding()
-                        .background(Color.gray.opacity(0.3))
-                        .cornerRadius(8)
-                }
-            }
-            .padding(.horizontal)
-            
-            // Entry Blocks (Text, Images, etc.)
-            Form {
-                ForEach($blocks) { $block in
-                    if block.type == .text {
-                        TextEditor(text: $block.content)
-                            .frame(minHeight: 40)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(15)
-                            //.focused($isTextFieldFocused)
+                    Spacer()
+
+                    CircularIconButtonView(
+                        systemName: "checkmark",
+                        size: 48,
+                        padding: 15,
+                        backgroundColor: .clear,
+                        borderColor: .white,
+                        iconColor: .white
+                    ) {
+                        saveEntry()
                     }
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 20)
             }
+            .background(Color.purple)
+
+            EntryContentView(
+                mainText: $blocks[0].content,
+                selectedTags: $selectedTags,
+                selectedMoods: $selectedMoods,
+                selectedMediaFiles: $selectedMediaFiles,
+                selectedJournal: $selectedJournalID,
+                blocks: $blocks
+            )
             .onAppear {
-                showKeyboard() // Force keyboard to appear
+                showKeyboard()
             }
             .refreshable {
                 if shouldSaveEntry() {
-                    print("🔄 Pull-to-save triggered")
-
-                    if shouldSaveEntry() {
-                        await saveEntryAsync()
-                    }
-                    
-                } else {
-                    print("⚠️ Pull-to-save skipped — entry is empty")
+                    await saveEntryAsync()
                 }
             }
 
-
-            // Floating Toolbar
+            // ⌨️ Toolbar
             if isKeyboardVisible {
                 FloatingToolbarMenuView(
                     onAddMood: addMood,
@@ -161,76 +129,43 @@ struct AddEntryView: View {
                     onAddImage: addImage,
                     onAddVoiceMemo: addVoiceMemo,
                     onAddTag: addTag,
-                    onSelectJournal: selectJournal
+                    onSelectJournal: selectJournal,
+                    showMoodPicker: $showMoodPicker
                 )
-
-                    .transition(.move(edge: .bottom))
-                    .animation(.easeInOut(duration: 0.3))
+                .transition(.move(edge: .bottom))
+                .animation(.easeInOut(duration: 0.3), value: isKeyboardVisible)
             }
-            
         }
         .onAppear {
+            if let journal = journals.first(where: { $0.id == selectedJournalID }) {
+                selectedJournalTitle = journal.title
+            }
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 isTextFieldFocused = true
             }
             observeKeyboardNotifications()
         }
-
-        
+        .sheet(isPresented: $showMoodPicker) {
+            SelectMoodsView(
+                selectedMoods: $selectedMoods,
+                availableMoods: Mood.all
+            )
+        }
     }
-    
+
+    private func formatCurrentDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy - h:mm a"
+        return formatter.string(from: Date())
+    }
+
     private func showKeyboard() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             UIApplication.shared.sendAction(
                 #selector(UIResponder.becomeFirstResponder),
-                to: nil,
-                from: nil,
-                for: nil
+                to: nil, from: nil, for: nil
             )
-        }
-    }
-    
-    // Date Formatter
-    private func formatCurrentDate() -> String{
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy - h:mm a"
-        return formatter.string(from:Date())
-    }
-    
-    private func addMood() {
-        print("Mood added")
-        // Add logic to insert mood into entry
-    }
-
-    private func addText() {
-        withAnimation {
-            blocks.append(EntryBlock(type: .text, content: ""))
-        }
-    }
-
-    private func addImage() {
-        print("Image added")
-        // Add logic to open image picker and insert image
-    }
-
-    private func addVoiceMemo() {
-        print("Voice memo added")
-        // Add logic for voice memo recording
-    }
-
-    private func addTag() {
-        print("Tag added")
-        // Add logic for adding tags
-    }
-
-    private func selectJournal() {
-        print("Journal selected")
-        // Add logic for journal selection
-    }
-
-    private func addBlock(_ type: BlockType) {
-        withAnimation {
-            blocks.append(EntryBlock(type: type, content: ""))
         }
     }
 
@@ -241,6 +176,32 @@ struct AddEntryView: View {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
             isKeyboardVisible = false
         }
+    }
+
+    private func addMood() {
+        print("Mood added")
+    }
+
+    private func addText() {
+        withAnimation {
+            blocks.append(EntryBlock(type: .text, content: ""))
+        }
+    }
+
+    private func addImage() {
+        print("Image added")
+    }
+
+    private func addVoiceMemo() {
+        print("Voice memo added")
+    }
+
+    private func addTag() {
+        print("Tag added")
+    }
+
+    private func selectJournal() {
+        print("Journal selected")
     }
 
     private func saveEntry(completion: (() -> Void)? = nil) {
@@ -285,7 +246,6 @@ struct AddEntryView: View {
         saveEntryWithMedia(mediaURLs: mediaURLs)
     }
 
-
     private func uploadMediaFiles(completion: @escaping ([String]) -> Void) {
         let uploadedURLs = UploadedURLs()
         let dispatchGroup = DispatchGroup()
@@ -308,8 +268,7 @@ struct AddEntryView: View {
             }
         }
     }
-    
-    // Async version
+
     private func uploadMediaFilesAsync() async -> [String] {
         var uploadedURLs: [String] = []
 
@@ -330,20 +289,16 @@ struct AddEntryView: View {
         return uploadedURLs
     }
 
-
-
-    // Make sure media is included when calling the saveEntry function if there is media
     private func saveEntryWithMedia(mediaURLs: [String]) {
         let textBlocks = blocks.filter { $0.type == .text }.map { $0.content }.joined(separator: "\n\n")
 
-        // Get current userID
         guard let user = Auth.auth().currentUser else {
             print("Error: No authenticated user identified.")
             return
         }
-        
+
         firebaseService.saveEntry(
-            journalID: selectedJournalID.lowercased(),
+            journalID: selectedJournalID!.lowercased(),
             userID: user.uid,
             title: entryTitle,
             content: textBlocks,
@@ -352,13 +307,12 @@ struct AddEntryView: View {
             tags: selectedTags
         ) { success in
             if success {
-                onSaveComplete() 
+                onSaveComplete()
                 presentationMode.wrappedValue.dismiss()
             }
         }
     }
-    
-    // If page is pulled down, save Entry if not empty
+
     private func shouldSaveEntry() -> Bool {
         let textBlocks = blocks
             .filter { $0.type == .text }
@@ -371,16 +325,18 @@ struct AddEntryView: View {
 
         return titleIsValid || contentIsValid
     }
-
-    
 }
+
 
 struct AddEntryView_Previews: PreviewProvider {
     static var previews: some View {
         AddEntryView(
-            onSaveComplete: {},
-            selectedJournalID: "All"
+            journals:  .constant([
+                Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
+                Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
+            ]),
+            selectedJournalID: "All",
+            onSaveComplete: {}
         )
     }
 }
-

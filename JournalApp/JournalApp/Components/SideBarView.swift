@@ -17,7 +17,7 @@ import SwiftUI
 struct SideBarView: View {
     @Binding var isShowing: Bool
     @Binding var selectedJournal: String
-    let journals: [Journal]
+    @Binding var journals: [Journal]
     let tags: [String]
     let onSelectJournal: (String) -> Void
     let onLogout: () -> Void
@@ -57,7 +57,7 @@ struct SideBarView: View {
                             
                             Section(header: Text("JOURNALS")) {
                                 ForEach(journals, id: \.id) { journal in
-                                    SideBarItem(title: journal.title, iconName: "book.fill", count: journalEntryCounts[journal.id] ?? 0, isSelected: selectedJournal == journal.title) {
+                                    SideBarItem(title: journal.title, iconName: "book.fill", count: journalEntryCounts[journal.id] ?? 0, isSelected: selectedJournal == journal.id) {
                                         onSelectJournal(journal.id)
                                         isShowing = false
                                     }
@@ -126,16 +126,16 @@ struct SideBarView_Previews: PreviewProvider {
         SideBarView(
             isShowing: .constant(true),
             selectedJournal: .constant("All"),
-            journals: [
+            journals: .constant([
                 Journal(id: "1", userID: "user1", title: "Journal1", createdAt: Date()),
                 Journal(id: "2", userID: "user1", title: "Journal2", createdAt: Date())
-            ],
+            ]),
             tags: ["Tag1", "Tag2"],
             onSelectJournal: { _ in },
             onLogout: {},
             onAddJournal: {},
             journalEntryCounts: ["1": 4, "2": 3],
-            tagEntryCounts: ["Tag1" : 3, "Tag2": 1],
+            tagEntryCounts: ["Tag1": 3, "Tag2": 1],
             pinnedCount: 2,
             favoritesCount: 3,
             deletedCount: 4,

@@ -8,52 +8,63 @@
 import SwiftUI
 import FirebaseAuth
 
-struct PasscodeBGBlurView: View {
-    @State private var isLocked = true
-    @State private var inputPasscode = ""
-    @State private var animateDismiss = false  // Controls slide-down animation
+public struct PasscodeBGBlurView: View {
+    @EnvironmentObject var appState: AppState
 
-    var body: some View {
+    @Binding var isLoggedIn: Bool
+    @State var isLocked = true
+    @State var inputPasscode: String = ""
+    @State var animateDismiss: Bool  // Controls slide-down animation
+
+    public var body: some View {
         ZStack {
-            // Main app content
+            // Show the app underneath, blurred
             HomeView()
-            
-            // If locked, overlay with a blur and passcode screen
+                .blur(radius: isLocked ? 10 : 0) // ✅ apply visual blur here
+
             if isLocked {
-                Rectangle()
-                    .fill(.regularMaterial)
-                    .ignoresSafeArea()
-                
-                // Use the currentUser’s UID from FirebaseAuth
-                if let uid = Auth.auth().currentUser?.uid {
-                    PasscodeUnlock(
-                        userID: uid,
-                        inputPasscode: $inputPasscode
-                    ) {
-                        // When passcode is successfully verified close with animation
-                        withAnimation(.easeInOut(duration: 1.0)) {
-                            animateDismiss = true
+                ZStack {
+                    // ✅ Soft blur background using blur instead of a blocking color
+                    Color.clear
+                        .background(.ultraThinMaterial)
+                        .ignoresSafeArea()
+
+                    VStack {
+                        Spacer()
+                        PasscodeUnlock(
+                            userID: Auth.auth().currentUser?.uid ?? "preview",
+                            inputPasscode: $inputPasscode
+                        ) {
+                            withAnimation(.easeInOut(duration: 1.0)) {
+                                animateDismiss = true
+                                isLocked = false
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                isLocked = false
+                                appState.blurOverlay = false // ✅ ADD THIS LINE
+                            }
                         }
-                        // remove the overlay and unlock the app
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            isLocked = false
-                        }
+                        .padding()
+                        .background(Color.white.opacity(0.95)) // ✅ visible & tappable
+                        .cornerRadius(20)
+                        .shadow(radius: 10)
+                        .frame(maxWidth: 300)
+                        Spacer()
                     }
-                    .padding()
-                    // slide the PasscodeUnlock view downward when animateDismiss is true
-                    .offset(y: animateDismiss ? UIScreen.main.bounds.height : 0)
-                    .animation(.easeInOut(duration: 1.0), value: animateDismiss)
-                } else {
-                    Text("No user logged in")
-                        .foregroundColor(.white)
                 }
             }
         }
     }
 }
 
+
 struct PasscodeBGBlurView_Previews: PreviewProvider {
     static var previews: some View {
-        PasscodeBGBlurView()
+        PasscodeBGBlurView(
+            isLoggedIn: .constant(true),
+            isLocked: true,
+            inputPasscode: "",
+            animateDismiss: false
+        )
     }
 }
