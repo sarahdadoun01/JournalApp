@@ -18,7 +18,10 @@ class FirebaseService: ObservableObject {
     private let db = Firestore.firestore()
     let storage = Storage.storage()
     static let shared = FirebaseService()
-    
+
+    var currentUserID: String? {
+        Auth.auth().currentUser?.uid
+    }
     
     // Test firebase connection
     func testFirestoreConnection() async {
@@ -235,7 +238,33 @@ class FirebaseService: ObservableObject {
             }
         }
     }
+    
+    func fetchUserTags() async throws -> [String] {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            return []
+        }
 
+        let db = Firestore.firestore()
+        let snapshot = try await db.collection("tags")
+            .whereField("userID", isEqualTo: userID)
+            .getDocuments()
+
+        let tags = snapshot.documents.compactMap { $0["name"] as? String }
+        return tags
+    }
+    
+    func createTag(userID: String, name: String, completion: @escaping (Bool) -> Void) {
+        let db = Firestore.firestore()
+        let data: [String: Any] = [
+            "userID": userID,
+            "name": name,
+            "createdAt": Timestamp(date: Date())
+        ]
+
+        db.collection("tags").addDocument(data: data) { error in
+            completion(error == nil)
+        }
+    }
 
     // Fetches ALL entries from all journals and sorts them by date (Most recent first)
     func fetchAllEntries(userID: String, completion: @escaping ([Entry]) -> Void) {

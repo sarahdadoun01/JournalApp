@@ -36,9 +36,13 @@ struct SelectMoodsView: View {
             }
             .padding(8)
         }
-        .frame(maxWidth: 200, maxHeight: 180) // Compact height
-        .background(Color(.systemBackground))
-        .cornerRadius(14)
+//        .frame(maxWidth: 200, maxHeight: 180) // Compact height
+//        .background(Color(.systemBackground))
+//        .cornerRadius(14)
+//        .shadow(radius: 10)
+        .frame(width: 200, height: 150)
+        .background(Color.white)
+        .cornerRadius(12)
         .shadow(radius: 10)
     }
 

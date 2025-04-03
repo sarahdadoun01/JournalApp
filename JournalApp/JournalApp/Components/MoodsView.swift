@@ -23,7 +23,6 @@ struct MoodsView: View {
                             .clipShape(Circle())
                     }
                 }
-                .padding(.horizontal)
             }
         }
     }

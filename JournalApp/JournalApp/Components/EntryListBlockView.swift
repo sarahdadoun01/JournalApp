@@ -38,17 +38,46 @@ struct EntryListBlockView: View {
                 VStack(alignment: .leading, spacing: 15){
                     
                     // moods
-                    if let moods = entry.moods, !moods.isEmpty {
-                        HStack{
-                            ForEach(moods.prefix(2), id: \.self) {
-                                mood in Text(mood)
-                                    .font(.headline)
+                    if let moodNames = entry.moods, !moodNames.isEmpty {
+                        HStack {
+                            GeometryReader { geometry in
+                                let availableWidth = geometry.size.width
+                                let iconWidth: CGFloat = 28
+                                let spacing: CGFloat = 5
+                                let totalIconWidth = iconWidth + spacing
+
+                                // Calculate how many moods fit (reserve space for +X if needed)
+                                let maxIcons = Int(availableWidth / totalIconWidth)
+                                let needsTruncation = moodNames.count > maxIcons
+                                let displayedMoods = needsTruncation ? moodNames.prefix(maxIcons - 1) : moodNames.prefix(maxIcons)
+                                let extraCount = moodNames.count - displayedMoods.count
+
+                                HStack(spacing: spacing) {
+                                    ForEach(displayedMoods, id: \.self) { moodName in
+                                        if let mood = Mood.all.first(where: { $0.name == moodName }) {
+                                            Image(mood.imageName)
+                                                .resizable()
+                                                .frame(width: iconWidth, height: iconWidth)
+                                        } else {
+                                            Text(moodName)
+                                                .font(.headline)
+                                        }
+                                    }
+
+                                    if needsTruncation {
+                                        Text("+\(extraCount)")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.gray)
+                                    }
+                                }
                             }
                         }
+                        .frame(height: 25)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
                     // title
-                    
                     if !entry.title.isEmpty {
                         HStack{
                             Text(entry.title)
