@@ -63,6 +63,11 @@
 		805E5C8B2D6E7D40006A0614 /* MediaFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E5C8A2D6E7D40006A0614 /* MediaFile.swift */; };
 		805E5C8D2D6E7EFF006A0614 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E5C8C2D6E7EFF006A0614 /* FirebaseService.swift */; };
 		805E5C8F2D6E905F006A0614 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 805E5C8E2D6E905E006A0614 /* GoogleService-Info.plist */; };
+		806053A12DA4500400AFF245 /* FlexibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806053A02DA4500400AFF245 /* FlexibleView.swift */; };
+		806053A32DA5BAC700AFF245 /* EntryMediaURLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806053A22DA5BAC700AFF245 /* EntryMediaURLView.swift */; };
+		806053A52DA5C49900AFF245 /* EntryContentMediaTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806053A42DA5C49900AFF245 /* EntryContentMediaTabView.swift */; };
+		806053A72DA5C5DF00AFF245 /* EntryContentMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806053A62DA5C5DF00AFF245 /* EntryContentMainView.swift */; };
+		80677EED2D9EC184005C3364 /* InlinePopupType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80677EEC2D9EC184005C3364 /* InlinePopupType.swift */; };
 		807BB9BB2D8C459800F6A86C /* FloatingToolbarMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807BB9BA2D8C459800F6A86C /* FloatingToolbarMenuView.swift */; };
 		80AF73C42D8F14F50095B252 /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80AF73C32D8F14F50095B252 /* TagModel.swift */; };
 		80AF73C62D8F44390095B252 /* SideBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80AF73C52D8F44390095B252 /* SideBarItem.swift */; };
@@ -156,6 +161,11 @@
 		805E5C8A2D6E7D40006A0614 /* MediaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFile.swift; sourceTree = "<group>"; };
 		805E5C8C2D6E7EFF006A0614 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		805E5C8E2D6E905E006A0614 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		806053A02DA4500400AFF245 /* FlexibleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleView.swift; sourceTree = "<group>"; };
+		806053A22DA5BAC700AFF245 /* EntryMediaURLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryMediaURLView.swift; sourceTree = "<group>"; };
+		806053A42DA5C49900AFF245 /* EntryContentMediaTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryContentMediaTabView.swift; sourceTree = "<group>"; };
+		806053A62DA5C5DF00AFF245 /* EntryContentMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryContentMainView.swift; sourceTree = "<group>"; };
+		80677EEC2D9EC184005C3364 /* InlinePopupType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePopupType.swift; sourceTree = "<group>"; };
 		807BB9BA2D8C459800F6A86C /* FloatingToolbarMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingToolbarMenuView.swift; sourceTree = "<group>"; };
 		80AF73C32D8F14F50095B252 /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
 		80AF73C52D8F44390095B252 /* SideBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarItem.swift; sourceTree = "<group>"; };
@@ -271,16 +281,20 @@
 				80227B562D984D6F00675AD7 /* CircularIconButtonView.swift */,
 				80227B582D9856F100675AD7 /* CustomTextFieldView.swift */,
 				80227B5C2D9872F500675AD7 /* CustomSecureFieldView.swift */,
+				80B7AB132D9B46A40067BC92 /* EntryContentView.swift */,
 				80B7AB0F2D9B27DD0067BC92 /* VideoThumbnailView.swift */,
 				80B7AB112D9B28430067BC92 /* MediaGridScrollView.swift */,
+				8056661F2D9C7D7A00DD9DDF /* MediaPreviewView.swift */,
 				80B7AB152D9B6F350067BC92 /* MoodsView.swift */,
 				80B7AB172D9B71960067BC92 /* SelectMoodsView.swift */,
-				805666152D9B7CA200DD9DDF /* TagsFlowLayout.swift */,
 				805666192D9C4AFE00DD9DDF /* TextFormattingToolbarView.swift */,
-				80B7AB132D9B46A40067BC92 /* EntryContentView.swift */,
+				805666152D9B7CA200DD9DDF /* TagsFlowLayout.swift */,
+				806053A02DA4500400AFF245 /* FlexibleView.swift */,
 				8056661D2D9C7B9300DD9DDF /* EntryMediaView.swift */,
 				8056661B2D9C4EA500DD9DDF /* MarkdownTextView.swift */,
-				8056661F2D9C7D7A00DD9DDF /* MediaPreviewView.swift */,
+				806053A22DA5BAC700AFF245 /* EntryMediaURLView.swift */,
+				806053A42DA5C49900AFF245 /* EntryContentMediaTabView.swift */,
+				806053A62DA5C5DF00AFF245 /* EntryContentMainView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -303,6 +317,7 @@
 				80AF73C32D8F14F50095B252 /* TagModel.swift */,
 				80AF73C72D91AD1B0095B252 /* SideBarCounts.swift */,
 				80B7AB092D9B23A40067BC92 /* Mood.swift */,
+				80677EEC2D9EC184005C3364 /* InlinePopupType.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -508,6 +523,7 @@
 				804F6D8E2D8075EF00E2378D /* SideBarView.swift in Sources */,
 				804F6D992D81D7C300E2378D /* IconLibrary.swift in Sources */,
 				80227B532D983FC600675AD7 /* SectionLabel.swift in Sources */,
+				80677EED2D9EC184005C3364 /* InlinePopupType.swift in Sources */,
 				80C8D8842D9AE04400127A75 /* AppState.swift in Sources */,
 				80AF73CA2D91D16A0095B252 /* BiometricAuthService.swift in Sources */,
 				80B7AB102D9B27DD0067BC92 /* VideoThumbnailView.swift in Sources */,
@@ -534,6 +550,7 @@
 				804F6D902D80764100E2378D /* TopNavBarView.swift in Sources */,
 				8056661E2D9C7B9300DD9DDF /* EntryMediaView.swift in Sources */,
 				804F6D922D80768B00E2378D /* HomeView.swift in Sources */,
+				806053A32DA5BAC700AFF245 /* EntryMediaURLView.swift in Sources */,
 				80BDB0352D8DBC3E0021262A /* SettingsView.swift in Sources */,
 				80227B5D2D9872F500675AD7 /* CustomSecureFieldView.swift in Sources */,
 				80227B512D983F8700675AD7 /* AddItemButton.swift in Sources */,
@@ -548,7 +565,9 @@
 				80B2CE6C2D70DC8600440A1F /* ValidationHelper.swift in Sources */,
 				80227B1A2D94A86000675AD7 /* KeypadView.swift in Sources */,
 				80AF73DC2D91E0D90095B252 /* SignUpSuccessView.swift in Sources */,
+				806053A12DA4500400AFF245 /* FlexibleView.swift in Sources */,
 				80AF73DA2D91DEEA0095B252 /* SignUpCreatePasscodeView.swift in Sources */,
+				806053A52DA5C49900AFF245 /* EntryContentMediaTabView.swift in Sources */,
 				80227B4D2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift in Sources */,
 				80227B592D9856F100675AD7 /* CustomTextFieldView.swift in Sources */,
 				804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */,
@@ -562,6 +581,7 @@
 				805666142D9B78AC00DD9DDF /* AddEntryView.swift in Sources */,
 				80D636362D6CCBA3008FF902 /* JournalAppApp.swift in Sources */,
 				804F6D942D80B03300E2378D /* EntryListBlockView.swift in Sources */,
+				806053A72DA5C5DF00AFF245 /* EntryContentMainView.swift in Sources */,
 				80AF73C62D8F44390095B252 /* SideBarItem.swift in Sources */,
 				80AF73CE2D91D6370095B252 /* PasscodeUnlock.swift in Sources */,
 			);

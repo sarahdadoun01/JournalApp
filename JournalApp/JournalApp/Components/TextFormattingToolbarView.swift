@@ -40,9 +40,9 @@ struct TextFormattingToolbarView: View {
             }
         }
         .padding()
-        .background(.ultraThinMaterial)
+        .background(.white)
         .cornerRadius(12)
-        .shadow(radius: 10)
+        .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }

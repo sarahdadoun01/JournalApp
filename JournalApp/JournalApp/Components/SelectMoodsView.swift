@@ -20,33 +20,38 @@ struct SelectMoodsView: View {
                     Button(action: {
                         toggleMood(mood.name)
                     }) {
-                        Image(mood.imageName)
-                            .resizable()
-                            .frame(width: 28, height: 28)
-                            .padding(6)
-                            .background(
-                                selectedMoods.contains(mood.name)
-                                    ? Color.gray.opacity(0.2)
-                                    : Color.clear
-                            )
-                            .clipShape(Circle())
+                        if let image = UIImage(named: mood.imageName) ?? UIImage(systemName: "questionmark.circle") {
+                            Image(uiImage: image)
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                                .padding(6)
+                                .background(
+                                    selectedMoods.contains(mood.name)
+                                        ? Color.gray.opacity(0.2)
+                                        : Color.clear
+                                )
+                                .clipShape(Circle())
+                        } else {
+                            Circle()
+                                .fill(Color.red.opacity(0.3))
+                                .frame(width: 28, height: 28)
+                                .overlay(Text("?"))
+                        }
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
             }
             .padding(8)
         }
-//        .frame(maxWidth: 200, maxHeight: 180) // Compact height
-//        .background(Color(.systemBackground))
-//        .cornerRadius(14)
-//        .shadow(radius: 10)
         .frame(width: 200, height: 150)
         .background(Color.white)
         .cornerRadius(12)
-        .shadow(radius: 10)
+        .shadow(color: Color.black.opacity(0.1), radius: 30, x: 0, y: 0)
+
     }
 
     private func toggleMood(_ mood: String) {
+        print("Tapped mood: \(mood)")
         if selectedMoods.contains(mood) {
             selectedMoods.removeAll { $0 == mood }
         } else {

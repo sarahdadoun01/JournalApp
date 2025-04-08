@@ -17,11 +17,15 @@ import SwiftUI
 struct SideBarView: View {
     @Binding var isShowing: Bool
     @Binding var selectedJournal: String
+    @Binding var selectedTag: String?
     @Binding var journals: [Journal]
-    let tags: [String]
+    @Binding var tags: [Tag]
+    
     let onSelectJournal: (String) -> Void
+    let onSelectTag: (String) -> Void
     let onLogout: () -> Void
     let onAddJournal: () -> Void
+    let onAddTag: () -> Void
     
     // Accept the counts
     let journalEntryCounts: [String: Int]
@@ -55,30 +59,58 @@ struct SideBarView: View {
 
                             // Journals
                             
+//                            Section(header: Text("JOURNALS")) {
+//                                ForEach(journals, id: \.id) { journal in
+//                                    SideBarItem(title: journal.title, iconName: "book.fill", count: journalEntryCounts[journal.id] ?? 0, isSelected: selectedJournal == journal.id) {
+//                                        onSelectJournal(journal.id)
+//                                        isShowing = false
+//                                    }
+//                                }
+//
+//                                AddItemButton(title: "Add New Journal", action: onAddJournal)
+//
+//                            }.padding(.horizontal, -16)
+//                                .padding(.vertical, -11)
+                            
                             Section(header: Text("JOURNALS")) {
                                 ForEach(journals, id: \.id) { journal in
-                                    SideBarItem(title: journal.title, iconName: "book.fill", count: journalEntryCounts[journal.id] ?? 0, isSelected: selectedJournal == journal.id) {
-                                        onSelectJournal(journal.id)
-                                        isShowing = false
-                                    }
+                                    SideBarItem(
+                                        title: journal.title,
+                                        iconName: "book.fill",
+                                        count: journalEntryCounts[journal.id] ?? 0,
+                                        isSelected: selectedJournal == journal.id,
+                                        iconColor: Color(hex: journal.colorHex),
+                                        action: {
+                                            onSelectJournal(journal.id)
+                                            isShowing = false
+                                        }
+                                    )
                                 }
 
                                 AddItemButton(title: "Add New Journal", action: onAddJournal)
-
                             }.padding(.horizontal, -16)
-                                .padding(.vertical, -11)
+                            .padding(.vertical, -11)
+
+
 
                             // Tags
                             Section(header: Text("TAGS")) {
-                                ForEach(tags, id: \.self) { tag in
-                                    SideBarItem(title: tag, iconName: "tag.fill", count: tagEntryCounts[tag] ?? 0, isSelected: false) {
-                                        // Tag tap logic
-                                    }
+                                ForEach(tags) { tag in
+                                    SideBarItem(
+                                        title: tag.name,
+                                        iconName: "tag.fill",
+                                        count: tagEntryCounts[tag.id] ?? 0,
+                                        isSelected: false,
+                                        iconColor: Color(hex: tag.colorHex),
+                                        action: {
+                                            onSelectTag(tag.name)
+                                            isShowing = false
+                                        }
+                                    )
                                 }
 
-                                AddItemButton(title: "Add New Tag") {
-                                    // Add new tag logic
-                                }
+                                AddItemButton(title: "Add New Tag", action: onAddTag)
+                                
                             }.padding(.horizontal, -16)
                                 .padding(.vertical, -11)
 
@@ -125,21 +157,29 @@ struct SideBarView_Previews: PreviewProvider {
     static var previews: some View {
         SideBarView(
             isShowing: .constant(true),
-            selectedJournal: .constant("All"),
+            selectedJournal: .constant("1"),
+            selectedTag: .constant("Tag1"),
             journals: .constant([
-                Journal(id: "1", userID: "user1", title: "Journal1", createdAt: Date()),
-                Journal(id: "2", userID: "user1", title: "Journal2", createdAt: Date())
+                Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
+                Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
             ]),
-            tags: ["Tag1", "Tag2"],
-            onSelectJournal: { _ in },
-            onLogout: {},
-            onAddJournal: {},
-            journalEntryCounts: ["1": 4, "2": 3],
-            tagEntryCounts: ["Tag1": 3, "Tag2": 1],
+            tags: .constant([
+                Tag(id: "Tag1", name: "Tag1", colorHex: "#FF5733"),
+                Tag(id: "Tag2", name: "Tag2", colorHex: "#33B5FF")
+            ]),
+            onSelectJournal: { id in print("📘 Selected Journal: \(id)") },
+            onSelectTag: { name in print("🏷️ Selected Tag: \(name)") },
+            onLogout: { print("🚪 Logged out") },
+            onAddJournal: { print("➕ Add New Journal") },
+            onAddTag: { print("➕ Add New Tag") },
+            journalEntryCounts: ["1": 5, "2": 3],
+            tagEntryCounts: ["Tag1": 2, "Tag2": 4],
             pinnedCount: 2,
             favoritesCount: 3,
-            deletedCount: 4,
-            allCount: 5
+            deletedCount: 1,
+            allCount: 10
         )
+        .environmentObject(AppState())
+        .previewLayout(.sizeThatFits)
     }
 }

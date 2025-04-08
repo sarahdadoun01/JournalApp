@@ -6,60 +6,50 @@
 //
 
 import SwiftUI
-import PhotosUI
+import UIKit
 
 struct ImagePickerCoordinator: UIViewControllerRepresentable {
+    static var sourceType: UIImagePickerController.SourceType = .photoLibrary
+
     var onComplete: ([UIImage]) -> Void
 
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var config = PHPickerConfiguration(photoLibrary: .shared())
-        config.selectionLimit = 0 // allow multiple
-        config.filter = .any(of: [.images, .videos])
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(onComplete: onComplete)
+    }
 
-        let picker = PHPickerViewController(configuration: config)
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
         picker.delegate = context.coordinator
+        picker.sourceType = Self.sourceType
+        picker.allowsEditing = false
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onComplete: onComplete)
-    }
-
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         let onComplete: ([UIImage]) -> Void
 
         init(onComplete: @escaping ([UIImage]) -> Void) {
             self.onComplete = onComplete
         }
 
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             picker.dismiss(animated: true)
-
-            let itemProviders = results.map(\.itemProvider)
-            var images: [UIImage] = []
-
-            let group = DispatchGroup()
-
-            for provider in itemProviders {
-                if provider.canLoadObject(ofClass: UIImage.self) {
-                    group.enter()
-                    provider.loadObject(ofClass: UIImage.self) { object, _ in
-                        if let image = object as? UIImage {
-                            images.append(image)
-                        }
-                        group.leave()
-                    }
-                }
+            if let image = info[.originalImage] as? UIImage {
+                onComplete([image])
+            } else {
+                onComplete([])
             }
+        }
 
-            group.notify(queue: .main) {
-                self.onComplete(images)
-            }
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            picker.dismiss(animated: true)
+            onComplete([])
         }
     }
 }
+
 
 
 struct ImagePickerCoordinator_Previews: PreviewProvider {

@@ -13,9 +13,10 @@ struct HomeView: View {
     @EnvironmentObject var appState: AppState
 
     @State private var isSidebarOpen = false
-    @State private var selectedJournal = "All" // default to 'all'
+    @State private var selectedJournal = "All" // default to all
+    @State private var selectedTag: String? = nil
     @State private var journals: [Journal] = []
-    @State private var tags: [String] = ["Work", "Personal", "Ideas"]
+    @State private var tags: [Tag]
     @State private var journalEntryCounts: [String: Int] = [:]
     @State private var tagEntryCounts: [String: Int] = [:]
     @State private var pinnedCount: Int = 0
@@ -23,9 +24,26 @@ struct HomeView: View {
     @State private var deletedCount: Int = 0
     @State private var allCount: Int = 0
     @State private var showAddJournalView = false
+    @State private var showAddTagSheet = false
 
     @StateObject private var firebaseService = FirebaseService()
-//    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
+
+    init(tags: [Tag] = []) {
+        _tags = State(initialValue: tags)
+    }
+    
+    private func refreshTags() {
+        Task {
+            do {
+                let fetchedTags = try await FirebaseService.shared.fetchUserTags()
+                DispatchQueue.main.async {
+                    self.tags = fetchedTags
+                }
+            } catch {
+                print("❌ Failed to refresh tags: \(error.localizedDescription)")
+            }
+        }
+    }
 
 
     var body: some View {
@@ -43,21 +61,29 @@ struct HomeView: View {
                     isSidebarOpen: $isSidebarOpen,
                     selectedJournal: $selectedJournal,
                     journals: $journals,
-                    onSearch: { print("Search...") }
+                    selectedTag: $selectedTag,
+                    onSearch: { print("Search...") },
+                    tags: tags
                 )
 
                 // Show Entries for Selected Journal
                 EntryListView(journalID: selectedJournal)
+                
             }
 
             // Sidebar Menu with Journal Selection
             SideBarView(
                 isShowing: $isSidebarOpen,
                 selectedJournal: $selectedJournal,
+                selectedTag: $selectedTag,
                 journals: $journals,
-                tags: tags,
+                tags: $tags,
                 onSelectJournal: { journalID in
                     selectedJournal = journalID // Update journal when selected
+                },
+                onSelectTag: { tagName in
+                    selectedTag = tagName
+                    selectedJournal = "All" // optionally switch to All view
                 },
                 onLogout: {
                     do {
@@ -71,6 +97,9 @@ struct HomeView: View {
                 onAddJournal: {
                     showAddJournalView = true
                 },
+                onAddTag: {
+                    showAddTagSheet = true
+                },
                 journalEntryCounts: journalEntryCounts,
                 tagEntryCounts: tagEntryCounts,
                 pinnedCount: pinnedCount,
@@ -81,6 +110,8 @@ struct HomeView: View {
         }
         .onAppear {
             fetchJournalsForCurrentUser()
+            refreshTags()
+            
         }.navigationBarBackButtonHidden(true)
             .onChange(of: appState.isLoggedIn) { newValue in
                 if newValue {
@@ -91,9 +122,25 @@ struct HomeView: View {
             if let user = Auth.auth().currentUser {
                 AddJournalView(userID: user.uid) {
                     fetchJournalsForCurrentUser()
+                    refreshTags()
                 }
             }
         }
+        .sheet(isPresented: $showAddTagSheet) {
+            if let user = Auth.auth().currentUser {
+                AddTagView(userID: user.uid) {
+                    Task {
+                        do {
+                            tags = try await FirebaseService.shared.fetchUserTags()
+                            refreshTags() // ✅ this line will reload the sidebar tags
+                        } catch {
+                            print("❌ Failed to reload tags after adding: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+        }
+
 
     }
     
@@ -110,7 +157,7 @@ struct HomeView: View {
                 let previousSelection = self.selectedJournal
                 self.journals = fetchedJournals
 
-                if fetchedJournals.contains(where: { $0.title == previousSelection }) {
+                if fetchedJournals.contains(where: { $0.id == previousSelection }) {
                     self.selectedJournal = previousSelection
                 } else {
                     self.selectedJournal = "All"

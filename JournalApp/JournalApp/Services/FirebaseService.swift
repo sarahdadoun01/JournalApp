@@ -205,15 +205,22 @@ class FirebaseService: ObservableObject {
                 let journals = snapshot?.documents.compactMap { document -> Journal? in
                     let data = document.data()
                     guard let title = data["title"] as? String else { return nil }
+                    let colorHex = data["colorHex"] as? String ?? "#007BFF"
 
                     return Journal(
                         id: document.documentID,
                         userID: userID,
-                        title: title
+                        title: title,
+                        colorHex: colorHex
                     )
                 } ?? []
 
                 DispatchQueue.main.async {
+                    print("📘 Journals fetched:")
+                    journals.forEach { j in
+                        print("- \(j.title) | colorHex: \(j.colorHex)")
+                    }
+
                     completion(journals)
                 }
             }
@@ -239,7 +246,7 @@ class FirebaseService: ObservableObject {
         }
     }
     
-    func fetchUserTags() async throws -> [String] {
+    func fetchUserTagsName() async throws -> [String] {
         guard let userID = Auth.auth().currentUser?.uid else {
             return []
         }
@@ -253,18 +260,39 @@ class FirebaseService: ObservableObject {
         return tags
     }
     
-    func createTag(userID: String, name: String, completion: @escaping (Bool) -> Void) {
+    func fetchUserTags() async throws -> [Tag] {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            return []
+        }
+
+        let snapshot = try await db.collection("tags")
+            .whereField("userID", isEqualTo: userID)
+            .getDocuments()
+
+        let tags = snapshot.documents.compactMap { doc -> Tag? in
+            guard let name = doc["name"] as? String,
+                  let colorHex = doc["colorHex"] as? String else {
+                return nil
+            }
+            return Tag(id: doc.documentID, name: name, colorHex: colorHex)
+        }
+
+        return tags
+    }
+    
+    func createTag(userID: String, name: String, colorHex: String, completion: @escaping (Bool) -> Void) {
         let db = Firestore.firestore()
         let data: [String: Any] = [
             "userID": userID,
             "name": name,
-            "createdAt": Timestamp(date: Date())
+            "colorHex": colorHex
         ]
 
         db.collection("tags").addDocument(data: data) { error in
             completion(error == nil)
         }
     }
+
 
     // Fetches ALL entries from all journals and sorts them by date (Most recent first)
     func fetchAllEntries(userID: String, completion: @escaping ([Entry]) -> Void) {
@@ -394,26 +422,6 @@ class FirebaseService: ObservableObject {
         }
     }
 
-    
-    // Save a new Journal
-    func saveJournal(userID: String, title: String, completion: @escaping (Bool) -> Void) {
-        let newJournal: [String: Any] = [
-            "userID": userID,
-            "title": title,
-            "createdAt": Date().timeIntervalSince1970,
-            "entries": []
-        ]
-
-        db.collection("journals").addDocument(data: newJournal) { error in
-            if let error = error {
-                print("❌ Failed to save journal: \(error.localizedDescription)")
-                completion(false)
-            } else {
-                print("Journal saved successfully!")
-                completion(true)
-            }
-        }
-    }
 
     // Save an entry inside a specific journal
     func saveEntry(journalID: String, userID: String, title: String, content: String, moods: [String]?, mediaFiles: [String]?, tags: [String]?, completion: @escaping (Bool) -> Void) {

@@ -21,6 +21,11 @@ struct EntryContentView: View {
     @State private var showFullMediaViewer = false
 
     @FocusState private var localTextFocus: Bool
+    
+    
+    private var imageURLs: [String] {
+        blocks.filter { $0.type == .image }.map { $0.content }
+    }
 
     var body: some View {
         ZStack {
@@ -29,64 +34,56 @@ struct EntryContentView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-
-                    // Show selected journal
-//                    if let journalID = selectedJournalID,
-//                       let journal = journals.first(where: { $0.id == journalID }) {
-//
-//                        let journalColorHex = journal.colorHex ?? "#9C27B0"
-//                        let journalColor = Color(hex: journalColorHex)
-//
-//                        Text(journal.title)
-//                            .font(.title3)
-//                            .foregroundColor(journalColor)
-//                            .padding(.horizontal)
-//                    }
-                    
                     // Show selected journal at top in a styled header
                     if let journalID = selectedJournalID,
                        let journal = journals.first(where: { $0.id == journalID }) {
 
                         let journalColorHex = journal.colorHex ?? "#6432a8"
                         let journalColor = Color(hex: journalColorHex)
-
+                
                         HStack(spacing: 8) {
                             Circle()
                                 .fill(journalColor)
-                                .frame(width: 12, height: 12)
+                                .frame(width: 8, height: 8)
                             Text(journal.title)
-                                .font(.headline)
+                                .font(.caption)
                                 .foregroundColor(journalColor)
-                        }
-                        .padding(.top, 20)
-                    } else if selectedJournalID == "all" {
+                        }.padding(.top, 5)
+                        .background(.blue)
+                        
+                    } else if selectedJournalID == "All" {
+                        
                         HStack(spacing: 8) {
                             Image(systemName: "tray.full")
+                                .frame(width: 8, height: 8)
                                 .foregroundColor(.secondary)
+                                .padding(.trailing, 3)
                             Text("All Journals")
-                                .font(.headline)
+                                .font(.caption)
                                 .foregroundColor(.secondary)
-                        }
-                        .padding(.top, 20)
-                        .padding(.horizontal, 20)
+                        }.padding(.top, 5)
+                        .background(.blue)
+                        
                     }
 
 
 
                     // Show tags
                     if !selectedTags.isEmpty {
-                        TagsFlowLayout(spacing: 8) {
-                            ForEach(selectedTags, id: \.self) { tag in
-                                Text("#\(tag)")
-                                    .font(.subheadline)
-                                    .padding(.vertical, 4)
-                                    .padding(.horizontal, 10)
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(10)
-                            }
+                        TagsFlowLayout(tags: selectedTags, spacing: 3) { tag in
+                            Text("#\(tag)")
+                                .font(.subheadline)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.red.opacity(0.2))
+                                .foregroundColor(.primary)
+                                .cornerRadius(12)
                         }
-                        .padding(.horizontal)
+                        .padding(.top, 8)
                     }
+
+                    
+                    
 
                     // Show moods
                     MoodsView(selectedMoods: selectedMoods)
@@ -96,9 +93,19 @@ struct EntryContentView: View {
                             .font(.subheadline)
                     }
                     .toggleStyle(.switch)
-                    .padding(.horizontal)
+                    
+                    
+                    
 
                     // Loop through content blocks
+                    if !imageURLs.isEmpty {
+                        EntryMediaURLView(
+                            imageURLs: imageURLs,
+                            onShowAll: { showFullMediaViewer = true }
+                        )
+                    }
+
+                    
                     ForEach($blocks.indices, id: \.self) { index in
                         let block = $blocks[index]
                         
@@ -108,22 +115,37 @@ struct EntryContentView: View {
                                 text: $blocks[index].content,
                                 renderMarkdown: renderMarkdown
                             )
-                            .focused($localTextFocus)  // local focus
+                            .focused($localTextFocus)
                             .onTapGesture {
-                                // When tapped, focus this editor
                                 localTextFocus = true
                             }
                             
-                            // Keep the parent's isTextEditorFocused in sync with local focus
+                            
                             .onChange(of: localTextFocus) { newValue in
                                 isTextEditorFocused = newValue
                             }
 
                         case .image:
-                            EntryMediaView(
-                                mediaItems: selectedMediaFiles,
-                                onShowAll: { showFullMediaViewer = true }
-                            )
+                            if let url = URL(string: block.wrappedValue.content) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFit()
+                                            .cornerRadius(10)
+                                    case .failure:
+                                        Image(systemName: "xmark.octagon")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(.gray)
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            }
 
                         case .audio:
                             AudioPlaybackView(audioFileName: block.wrappedValue.content)
@@ -132,16 +154,15 @@ struct EntryContentView: View {
                             VideoBlockView(videoFileName: block.wrappedValue.content)
                         }
                     }
+                    
+                    
 
                     Spacer().frame(height: 100)
+                    
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 20)
+                .padding(.top, 10)
                 .padding(.bottom, 100)
-                .onAppear { // temp debug
-                    print("Selected journal ID: \(selectedJournalID ?? "none")")
-                    print("Available journals: \(journals.map(\.id))")
-                }
 
             }
         }

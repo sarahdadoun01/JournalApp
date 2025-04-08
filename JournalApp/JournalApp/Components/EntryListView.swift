@@ -31,47 +31,44 @@ struct EntryListView: View {
             .padding()
         }
         .onAppear {
-            print("DEBUG @EntryListView- View appeared with journalID: \(journalID)")
+            
             if journalID == "All" {
+                
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchAllEntries(userID: user.uid) { fetchedEntries in
                         self.entries = fetchedEntries
                     }
                 }
+                
             } else {
+                
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchEntriesFromJournal(journalID: journalID, userID: user.uid) { fetchedEntries in
                         self.entries = fetchedEntries
                     }
                 }
+                
             }
         }
         .task(id: journalID) {
             let currentJournalID = journalID // snapshot the value
-
-            print("DEBUG @EntryListView - Loading entries for journalID: \(currentJournalID)")
+            
             if currentJournalID == "All" {
+                
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchAllEntries(userID: user.uid) { fetchedEntries in
                         DispatchQueue.main.async {
                             self.entries = fetchedEntries
-                            print("DEBUG - Fetched \(fetchedEntries.count) entries for journalID: \(currentJournalID)")
-                            for entry in fetchedEntries {
-                                print("Title: \(entry.title), Date: \(entry.date)")
-                            }
                         }
                     }
                 }
+                
             } else {
                 
                 if let user = Auth.auth().currentUser {
                     firebaseService.fetchEntriesFromJournal(journalID: currentJournalID, userID: user.uid) { fetchedEntries in
                         DispatchQueue.main.async {
                             self.entries = fetchedEntries
-                            print("DEBUG - Fetched \(fetchedEntries.count) entries for journalID: \(currentJournalID)")
-                            for entry in fetchedEntries {
-                                print("Title: \(entry.title), Date: \(entry.date)")
-                            }
                         }
                     }
                 }
@@ -99,6 +96,6 @@ struct EntryListView: View {
 
 struct EntryListView_Previews: PreviewProvider {
     static var previews: some View {
-        EntryListView(journalID: "work") //  Pass a sample journal ID
+        EntryListView(journalID: "work")
     }
 }

@@ -48,14 +48,18 @@ struct AddEntryView: View {
     @State private var showMediaMenu = false
     @State private var activeSheet: ActiveSheet?
     @State private var showFormattedText = false
+    @State private var showAddTagSheet = false
     @State private var isChildTextEditorFocused = false
-    @State private var activeInlinePopup: ActiveSheet? = nil
+    @State private var activeInlinePopup: InlinePopupType? = nil
     @State private var activeModalSheet: ActiveSheet? = nil
     @State private var moodButtonFrame: CGRect = .zero
+    @State private var formatButtonFrame: CGRect = .zero
+    @State private var userTags: [String] = []
 
     @FocusState private var isTitleFocused: Bool
 
     var onSaveComplete: () -> Void = {}
+    var onTagAdded: () -> Void = {}
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -151,8 +155,16 @@ struct AddEntryView: View {
                                 showTextFormatMenu.toggle()
                             },
                             onAddImage: {
-                                showTextFormatMenu = false
-                                togglePopup(for: .mediaMenu)
+                                ImagePickerCoordinator.sourceType = .photoLibrary
+                                activeModalSheet = .imagePicker
+                            },
+                            onTakePhoto: {
+                                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                    ImagePickerCoordinator.sourceType = .camera
+                                    activeModalSheet = .imagePicker
+                                } else {
+                                    print("🚫 Camera not available on this device")
+                                }
                             },
                             onAddVoiceMemo: addVoiceMemo,
                             onAddTag: { tag in
@@ -167,51 +179,68 @@ struct AddEntryView: View {
                             },
                             selectedJournalID: $selectedJournalID,
                             selectedTags: $selectedTags,
+                            moodButtonFrame: $moodButtonFrame,
+                            formatButtonFrame: $formatButtonFrame,
+                            activeInlinePopup: $activeInlinePopup,
+                            showAddTagSheet: $showAddTagSheet,
+                            userTags: $userTags,
                             journals: journals
                         )
+                        .padding(.bottom, 20)
                         .transition(.move(edge: .bottom))
                         .animation(.easeInOut(duration: 0.3), value: isKeyboardVisible)
                     }
                 }
-
-                // ActiveSheet overlays
-//                if let popup = activeInlinePopup {
-//                    ZStack {
-//                        switch popup {
-//                        case .moodPicker:
-//                            SelectMoodsView(
-//                                selectedMoods: $selectedMoods,
-//                                availableMoods: Mood.all
-//                            )
-//
-//                        default:
-//                            EmptyView()
-//                        }
-//                    }
-//                    .padding(.bottom, 80)
-//                    .transition(.opacity)
-//                    .zIndex(10)
-//                }
                 
+                // Mood button
                 if activeInlinePopup == .moodPicker {
-                    ZStack {
-                        Color.black.opacity(0.001)
-                            .ignoresSafeArea()
-                            .onTapGesture {
-                                withAnimation {
-                                    activeInlinePopup = nil
+                    GeometryReader { geo in
+                        ZStack {
+                            Color.black.opacity(0.001)
+                                .ignoresSafeArea()
+                                .onTapGesture {
+                                    withAnimation {
+                                        activeInlinePopup = nil
+                                    }
                                 }
-                            }
 
-                        SelectMoodsView(
-                            selectedMoods: $selectedMoods,
-                            availableMoods: Mood.all
-                        )
-                        .transition(.move(edge: .bottom))
-                        .position(x: moodButtonFrame.midX, y: moodButtonFrame.minY - 90)
-                        .zIndex(10)
+                            SelectMoodsView(
+                                selectedMoods: $selectedMoods,
+                                availableMoods: Mood.all
+                            )
+                            .position(x: formatButtonFrame.midX + 20, y: formatButtonFrame.minY - 120)
+                            //.position(x: safeX, y: safeY)
+                            .transition(.move(edge: .bottom))
+                            .zIndex(10)
+                        }
                     }
                     .animation(.easeInOut, value: activeInlinePopup)
+                }
+                
+                
+                // Format Button
+                if activeInlinePopup == .formattingToolbar {
+                    GeometryReader { geo in
+                        ZStack {
+                            Color.black.opacity(0.001)
+                                .ignoresSafeArea()
+                                .onTapGesture {
+                                    withAnimation {
+                                        activeInlinePopup = nil
+                                    }
+                                }
+                            let xOffset: CGFloat = 80
+                            let yOffset: CGFloat = -75
+
+                            TextFormattingToolbarView(onFormat: applyFormat)
+                                .position(x: formatButtonFrame.midX + xOffset,
+                                          y: formatButtonFrame.minY + yOffset)
+                                .transition(.move(edge: .bottom))
+                                .zIndex(10)
+                        }
+                    }
+                    .animation(.easeInOut, value: activeInlinePopup)
+                    
                 }
 
 
@@ -227,7 +256,6 @@ struct AddEntryView: View {
                         for image in images {
                             let block = EntryBlock(type: .image, content: "local-temp-id")
                             selectedMediaFiles.append(image)
-                            blocks.append(block)
                         }
                         activeSheet = nil
                     }
@@ -235,15 +263,36 @@ struct AddEntryView: View {
                     EmptyView()
                 }
             }
+            .sheet(isPresented: $showAddTagSheet) {
+                AddTagView(
+                    userID: FirebaseService.shared.currentUserID ?? "unknown",
+                    onAddComplete: {
+                        Task {
+                            userTags = try await FirebaseService.shared.fetchUserTagsName()
+                            onTagAdded() // refresh tags list in FloatingToolbarView
+                        }
+                        showAddTagSheet = false
+                    }
+                )
+            }
             .onAppear {
+                print("🧩 [AddEntryView] appeared")
                 if let journal = journals.first(where: { $0.id == selectedJournalID }) {
                     selectedJournalTitle = journal.title
                 }
+
+                Task {
+                    userTags = try await FirebaseService.shared.fetchUserTagsName()
+                    onTagAdded() // refresh sidebar in HomeView
+                }
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     isTitleFocused = true
                 }
+
                 observeKeyboardNotifications()
             }
+
             // -- Whenever child text editor focus changes, we can decide what to do --
             .onChange(of: isChildTextEditorFocused) { newValue in
                 isKeyboardVisible = newValue
@@ -262,15 +311,15 @@ struct AddEntryView: View {
         }
     }
 
-    private func togglePopup(for popup: ActiveSheet) {
-        showTextFormatMenu = false
-        if activeInlinePopup == popup {
+    private func togglePopup(for popup: InlinePopupType) {
+        guard activeInlinePopup != popup else {
             activeInlinePopup = nil
-        } else {
-            activeInlinePopup = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                activeInlinePopup = popup
-            }
+            return
+        }
+
+        activeInlinePopup = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            activeInlinePopup = popup
         }
     }
 
@@ -369,6 +418,7 @@ struct AddEntryView: View {
     }
 
     private func uploadMediaFiles(completion: @escaping ([String]) -> Void) {
+        
         let uploadedURLs = UploadedURLs()
         let dispatchGroup = DispatchGroup()
 
@@ -392,6 +442,7 @@ struct AddEntryView: View {
     }
 
     private func uploadMediaFilesAsync() async -> [String] {
+        
         var uploadedURLs: [String] = []
 
         await withTaskGroup(of: String?.self) { group in
@@ -400,6 +451,7 @@ struct AddEntryView: View {
                     return await firebaseService.uploadImage(image: image)
                 }
             }
+
             for await result in group {
                 if let url = result {
                     uploadedURLs.append(url)
@@ -407,10 +459,18 @@ struct AddEntryView: View {
             }
         }
 
+        blocks.removeAll { $0.type == .image }
+
+        for url in uploadedURLs {
+            blocks.append(EntryBlock(type: .image, content: url))
+        }
+
         return uploadedURLs
     }
 
+
     private func saveEntryWithMedia(mediaURLs: [String]) {
+        
         let textBlocks = blocks
             .filter { $0.type == .text }
             .map { $0.content }
@@ -446,6 +506,7 @@ struct AddEntryView: View {
 
         let titleIsValid = !entryTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let contentIsValid = !textBlocks.isEmpty
+        
         return titleIsValid || contentIsValid
     }
 }

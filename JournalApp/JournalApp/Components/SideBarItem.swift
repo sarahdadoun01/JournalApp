@@ -12,8 +12,24 @@ struct SideBarItem: View {
     let iconName: String?
     let count: Int?
     let isSelected: Bool
-    let iconColor: Color? = .blue
+    let iconColor: Color?
     let action: () -> Void
+    
+    init(
+        title: String,
+        iconName: String? = nil,
+        count: Int? = nil,
+        isSelected: Bool = false,
+        iconColor: Color? = .blue,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.iconName = iconName
+        self.count = count
+        self.isSelected = isSelected
+        self.iconColor = iconColor
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
@@ -52,6 +68,7 @@ struct SideBarItem_Previews: PreviewProvider {
             iconName: "star.fill",
             count: 5,
             isSelected: true,
+            iconColor: Color(hex: "#BBBBBB"),
             action: {}
         )
     }

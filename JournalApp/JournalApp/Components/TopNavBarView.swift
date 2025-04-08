@@ -12,11 +12,12 @@ struct TopNavBarView: View {
     
     @Binding var isSidebarOpen: Bool
     @Binding var selectedJournal: String
-    
-    @State private var isAddingEntry = false
     @Binding var journals: [Journal]
-    let onSearch: () -> Void
+    @Binding var selectedTag: String?
+    @State private var isAddingEntry = false
     
+    let onSearch: () -> Void
+    let tags: [Tag]
 
 
     var body: some View {
@@ -36,13 +37,14 @@ struct TopNavBarView: View {
 
                 // Journal Dropdown
                 Menu {
-                    // Add the "All" option manually
+                    // All Option
                     Button(action: {
                         selectedJournal = "All"
                     }) {
                         Text("All")
                     }
                     
+                    // List Journals
                     ForEach(journals, id: \.id) { journal in
                         Button(action: {
                             selectedJournal = journal.id
@@ -50,6 +52,19 @@ struct TopNavBarView: View {
                             Text(journal.title)
                         }
                     }
+                    
+                    Divider()
+                    
+                    // List Tags
+                    ForEach(tags, id: \.id) { tag in
+                        Button(action: {
+                            selectedTag = tag.name
+                            selectedJournal = "All" // or "" depending on how you want to deselect journals
+                        }) {
+                            Label("#\(tag.name)", systemImage: selectedTag == tag.name ? "checkmark" : "")
+                        }
+                    }
+                    
                 } label: {
                     HStack(spacing: 8) {
                             Text(journals.first(where: { $0.id == selectedJournal })?.title ?? "All")
@@ -118,6 +133,7 @@ struct TopNavBarView: View {
 
 
 struct TopNavBarView_Previews: PreviewProvider {
+    @State static var selectedTag: String? = "Tag1"
     static var previews: some View {
         TopNavBarView(
             onSaveComplete: {},
@@ -126,8 +142,13 @@ struct TopNavBarView_Previews: PreviewProvider {
             journals: .constant([
                 Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date()),
                 Journal(id: "2", userID: "user1", title: "Work", createdAt: Date())
-            ]), // Sample list of journals
-            onSearch: {}
+            ]),
+            selectedTag: $selectedTag,
+            onSearch: {},
+            tags: [
+                Tag(id: "tag1", name: "Tag1", colorHex: "#FF0000"),
+                Tag(id: "tag2", name: "Tag2", colorHex: "#00FF00")
+            ]
         )
     }
 }

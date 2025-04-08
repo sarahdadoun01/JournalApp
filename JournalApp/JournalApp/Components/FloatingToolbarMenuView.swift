@@ -18,16 +18,23 @@ struct FloatingToolbarMenuView: View {
     var onAddMood: () -> Void
     var onAddText: () -> Void
     var onAddImage: () -> Void
+    var onTakePhoto: () -> Void
     var onAddVoiceMemo: () -> Void
     var onAddTag: (String) -> Void
     var onSelectJournal: () -> Void
     
     @State private var isVisible: Bool = true
-    @State private var userTags: [String] = []
-    @State private var showAddTagSheet = false
     
+    //@State private var showAddTagSheet = false
     @Binding var selectedJournalID: String?
     @Binding var selectedTags: [String]
+    //new -test
+    @Binding var moodButtonFrame: CGRect
+    @Binding var formatButtonFrame: CGRect
+    @Binding var activeInlinePopup: InlinePopupType?
+    @Binding var showAddTagSheet: Bool
+    @Binding var userTags: [String]
+
     
     var journals: [Journal]
 
@@ -38,7 +45,11 @@ struct FloatingToolbarMenuView: View {
 //                    ToolbarButton(icon: "face.smiling", action: onAddMood)
                     // Mood Button
                     Button {
-                        activeInlinePopup = .moodPicker
+                        withAnimation {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                activeInlinePopup = .moodPicker
+                            }
+                        }
                     } label: {
                         Image(systemName: "face.smiling")
                             .font(.title2)
@@ -48,10 +59,12 @@ struct FloatingToolbarMenuView: View {
                                 GeometryReader { geo in
                                     Color.clear
                                         .onAppear {
-                                            let frame = geo.frame(in: .global)
-                                            print("📍Mood button frame set onAppear: \(frame)")
-                                            DispatchQueue.main.async {
-                                                moodButtonFrame = frame
+                                            let newFrame = geo.frame(in: .global)
+                                            print("📍Mood button frame set onAppear: \(newFrame)")
+                                            if moodButtonFrame != newFrame {
+                                                DispatchQueue.main.async {
+                                                    moodButtonFrame = newFrame
+                                                }
                                             }
                                         }
                                 }
@@ -59,17 +72,36 @@ struct FloatingToolbarMenuView: View {
                     }
 
 
+                    // Formatting button
+                    Button {
+                        withAnimation {
+                            activeInlinePopup = .formattingToolbar
+                        }
+                    } label: {
+                        Image(systemName: "textformat")
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                            .frame(width: 35, height: 25)
+                            .background(
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onAppear {
+                                            let frame = geo.frame(in: .global)
+                                            print("📍Format button frame set onAppear: \(frame)")
+                                            DispatchQueue.main.async {
+                                                formatButtonFrame = frame
+                                            }
+                                        }
+                                }
+                            )
+                    }
 
-                    ToolbarButton(icon: "textformat", action: onAddText)
                     ToolbarButton(icon: "mic", action: onAddVoiceMemo)
 
                     // Media menu
                     Menu {
                         Button("From Library", action: onAddImage)
-                        Button("Take a Photo") {
-                            print("TODO: implement camera action")
-                            // You can add a callback here later if you want
-                        }
+                        Button("Take a Photo", action: onTakePhoto)
                     } label: {
                         Image(systemName: "photo.on.rectangle")
                             .font(.title2)
@@ -82,10 +114,8 @@ struct FloatingToolbarMenuView: View {
                         ForEach(userTags, id: \.self) { tag in
                             Button(action: {
                                 if selectedTags.contains(tag) {
-                                    // remove it if already selected
                                     selectedTags.removeAll { $0 == tag }
                                 } else {
-                                    // add if not already there
                                     selectedTags.append(tag)
                                     onAddTag(tag)
                                 }
@@ -102,13 +132,13 @@ struct FloatingToolbarMenuView: View {
 
                         Divider()
 
-                        Button(action: {
-                            showAddTagSheet = true
-                        }) {
-                            HStack {
-                                Text("+ Add Tag")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                        Button {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                showAddTagSheet = true
                             }
+                        } label: {
+                            Text("+ Add Tag")
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         if userTags.isEmpty {
@@ -121,39 +151,10 @@ struct FloatingToolbarMenuView: View {
                             .foregroundColor(.primary)
                             .frame(width: 35, height: 25)
                     }
-                    .sheet(isPresented: $showAddTagSheet) {
-                        AddTagView(
-                            userID: FirebaseService.shared.currentUserID ?? "unknown",
-                            onAddComplete: {
-                                Task {
-                                    userTags = try await FirebaseService.shared.fetchUserTags()
-                                }
-                                showAddTagSheet = false
-                            }
-                        )
-                    }
 
 
-                    // Journal menu (still uses onSelectJournal)
-//                    Menu {
-//                        ForEach(journals) { journal in
-//                            Button {
-//                                selectedJournalID = journal.id
-//                            } label: {
-//                                HStack {
-//                                    Circle()
-//                                        .fill(Color(hex: journal.colorHex ?? "#9C27B0"))
-//                                        .frame(width: 12, height: 12)
-//                                    Text(journal.title)
-//                                }
-//                            }
-//                        }
-//                    } label: {
-//                        Image(systemName: "book")
-//                            .font(.title2)
-//                            .foregroundColor(.primary)
-//                            .frame(width: 35, height: 25)
-//                    }
+
+                    // Journal menu
                     Menu {
                         Button {
                             selectedJournalID = "all"
@@ -198,15 +199,6 @@ struct FloatingToolbarMenuView: View {
             }
         }
         .animation(.easeInOut, value: isVisible)
-        .onAppear {
-            Task {
-                do {
-                    userTags = try await FirebaseService().fetchUserTags()
-                } catch {
-                    print("Error fetching tags: \(error.localizedDescription)")
-                }
-            }
-        }
     }
 }
 
@@ -226,13 +218,21 @@ struct ToolbarButton: View {
 
 struct FloatingToolbarMenuView_Previews: PreviewProvider {
     @State static var selectedJournalID: String? = "1"
-    @State static var selectedTags: [String] = []
+    @State static var selectedTags: [String] = ["Tag1"]
+    @State static var moodButtonFrame: CGRect = .zero
+    @State static var formatButtonFrame: CGRect = .zero
+    @State static var activeInlinePopup: InlinePopupType? = nil
+    @State static var showAddTagSheet = false
+    @State static var userTags: [String] = []
 
     static var previews: some View {
         FloatingToolbarMenuView(
-            onAddMood: {},
+            onAddMood: {
+                activeInlinePopup = .moodPicker
+            },
             onAddText: {},
             onAddImage: {},
+            onTakePhoto: {},
             onAddVoiceMemo: {},
             onAddTag: { tag in
                 if !selectedTags.contains(tag) {
@@ -242,6 +242,11 @@ struct FloatingToolbarMenuView_Previews: PreviewProvider {
             onSelectJournal: {},
             selectedJournalID: $selectedJournalID,
             selectedTags: $selectedTags,
+            moodButtonFrame: $moodButtonFrame,
+            formatButtonFrame: $formatButtonFrame,
+            activeInlinePopup: $activeInlinePopup,
+            showAddTagSheet: $showAddTagSheet,
+            userTags: $userTags,
             journals: [
                 Journal(id: "1", userID: "user1", title: "Personal", createdAt: Date(), colorHex: "#FF5733"),
                 Journal(id: "2", userID: "user1", title: "Work", createdAt: Date(), colorHex: "#33A1FF")
