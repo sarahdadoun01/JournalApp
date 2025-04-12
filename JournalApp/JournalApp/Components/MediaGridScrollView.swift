@@ -10,28 +10,44 @@ import AVKit
 
 struct MediaGridScrollView: View {
     var mediaItems: [MediaFile]
-    let maxVisibleItems: Int = 4
     var onTapMore: (() -> Void)?
     
     var visibleItems: [MediaFile] {
-        Array(mediaItems.prefix(maxVisibleItems))
+        mediaItems
     }
 
-    var overflowCount: Int {
-        max(mediaItems.count - maxVisibleItems, 0)
-    }
 
     var body: some View {
+        
+        
         ScrollView(.horizontal, showsIndicators: false) {
+            
             HStack(spacing: 8) {
-                ForEach(visibleItems) { item in
+                
+                ForEach(Array(visibleItems.enumerated()), id: \.offset) { index, item in
                     ZStack {
                         if item.fileType == .image {
-                            Image(uiImage: UIImage(contentsOfFile: item.fileURL) ?? UIImage())
-                                .resizable()
-                                .scaledToFill()
+                            if let url = URL(string: item.fileURL) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    case .failure:
+                                        Image(systemName: "xmark.octagon")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(.red)
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            }
                         } else if item.fileType == .video {
-                            VideoThumbnailView(videoURL: URL(fileURLWithPath: item.fileURL))
+                            VideoThumbnailView(videoURL: URL(string: item.fileURL)!)
                         }
                     }
                     .frame(width: 65, height: 65)
@@ -39,30 +55,21 @@ struct MediaGridScrollView: View {
                     .cornerRadius(10)
                 }
 
-                if overflowCount > 0 {
-                    Button {
-                        onTapMore?()
-                    } label: {
-                        ZStack {
-                            Color.gray.opacity(0.2)
-                            Text("+\(overflowCount)")
-                                .font(.headline)
-                        }
-                        .frame(width: 65, height: 65)
-                        .background(Color(hex: "#B6B6B6"))
-                        .cornerRadius(10)
-                        
-                    }
-                }
+
             }
             .padding(.horizontal,8)
             .padding(.vertical,8)
-        }.background(.gray)
+            
+        }.padding(6)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
     }
 }
 
 struct MediaGridScrollView_Previews: PreviewProvider {
+    
     static var previews: some View {
+        
         let imagePath = Bundle.main.path(forResource: "sample-image", ofType: "png") ?? ""
         let videoPath = Bundle.main.path(forResource: "sample-video", ofType: "mp4") ?? ""
         
@@ -76,4 +83,5 @@ struct MediaGridScrollView_Previews: PreviewProvider {
         
         MediaGridScrollView(mediaItems: sampleItems)
     }
+    
 }

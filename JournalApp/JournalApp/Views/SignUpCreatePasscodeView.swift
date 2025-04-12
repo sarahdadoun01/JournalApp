@@ -154,7 +154,7 @@ struct SignUpCreatePasscodeView: View {
         .alert(isPresented: $showAlert) {
             Alert(
                 title: Text("Missing Info"),
-                message: Text("Please enter a valid passcode."),
+                message: Text("Please enter a valid passcode or email already exists."),
                 dismissButton: .default(Text("OK"))
             )
         }

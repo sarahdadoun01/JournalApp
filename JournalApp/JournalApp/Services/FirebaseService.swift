@@ -405,6 +405,66 @@ class FirebaseService: ObservableObject {
         }
     }
     
+    func fetchMediaFiles(for entryID: String) async throws -> [MediaFile] {
+        let snapshot = try await Firestore.firestore()
+            .collection("media")
+            .whereField("entryID", isEqualTo: entryID)
+            .getDocuments()
+
+        return snapshot.documents.compactMap { doc in
+            let data = doc.data()
+            guard
+                let fileURL = data["fileURL"] as? String,
+                let fileTypeRaw = data["fileType"] as? String,
+                let fileType = MediaType(rawValue: fileTypeRaw)
+            else { return nil }
+
+            return MediaFile(
+                id: doc.documentID,
+                entryID: entryID,
+                fileURL: fileURL,
+                fileType: fileType
+            )
+        }
+    }
+
+    
+    func saveMediafiles(entryID: String, fileURL: String, fileType: MediaType, completion: @escaping (Bool) -> Void){
+        let db = Firestore.firestore()
+        let mediaCollection = db.collection("media")
+        
+        let newDoc = mediaCollection.document()
+        
+        let mediaData: [String: Any] = [
+            "id": newDoc.documentID,
+            "entryID": entryID,
+            "fileURL": fileURL,
+            "fileType": fileType.rawValue
+        ]
+        
+        newDoc.setData(mediaData) { error in
+            if let error = error {
+                print("❌ Failed to save media file: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print("✅ Media file saved with ID \(newDoc.documentID)")
+                completion(true)
+            }
+        }
+    }
+    
+    func deleteImage(at url: String) {
+        let storageRef = Storage.storage().reference(forURL: url)
+        storageRef.delete { error in
+            if let error = error {
+                print("❌ Failed to delete image: \(error.localizedDescription)")
+            } else {
+                print("🗑️ Deleted unused image: \(url)")
+            }
+        }
+    }
+    
+    
     // Upload media to Firebase Storage when Entry is saved
     @MainActor
     func uploadImage(image: UIImage) async -> String? {

@@ -55,7 +55,15 @@ struct AddEntryView: View {
     @State private var moodButtonFrame: CGRect = .zero
     @State private var formatButtonFrame: CGRect = .zero
     @State private var userTags: [String] = []
+    @State private var selectedTab = 0
+    @State private var entryID: String? = UUID().uuidString
+    @State private var uploadedTempMediaURLs: [String] = [] // track unsaved entries to clean up storage
+    @State private var entryWasSaved: Bool = false
+    @State private var showInlineJournalPicker = false
+    @State private var isRecordingAudio = false
+    @State private var currentRecordingURL: URL?
 
+    
     @FocusState private var isTitleFocused: Bool
 
     var onSaveComplete: () -> Void = {}
@@ -130,7 +138,12 @@ struct AddEntryView: View {
                         blocks: $blocks,
                         renderMarkdown: $showFormattedText,
                         journals: $journals,
-                        isTextEditorFocused: $isChildTextEditorFocused
+                        isTextEditorFocused: $isChildTextEditorFocused,
+                        selectedTab: $selectedTab,
+                        entryID: $entryID,
+                        showAddTagSheet: $showAddTagSheet,
+                        userTags: $userTags,
+                        showInlineJournalPicker: $showInlineJournalPicker
                     )
                     .onAppear { showKeyboard() }
                     .refreshable {
@@ -155,12 +168,10 @@ struct AddEntryView: View {
                                 showTextFormatMenu.toggle()
                             },
                             onAddImage: {
-                                ImagePickerCoordinator.sourceType = .photoLibrary
                                 activeModalSheet = .imagePicker
                             },
                             onTakePhoto: {
                                 if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                                    ImagePickerCoordinator.sourceType = .camera
                                     activeModalSheet = .imagePicker
                                 } else {
                                     print("🚫 Camera not available on this device")
@@ -253,12 +264,44 @@ struct AddEntryView: View {
                     Text("Voice Recorder View")
                 case .imagePicker:
                     ImagePickerCoordinator { images in
-                        for image in images {
-                            let block = EntryBlock(type: .image, content: "local-temp-id")
-                            selectedMediaFiles.append(image)
+                        
+                        //DEBUG
+                        print("🌈 Images returned from picker: \(images.count)")
+                        for (i, img) in images.enumerated() {
+                            print("🖼️ Image \(i) size: \(img.size)")
                         }
-                        activeSheet = nil
+                        
+                        Task {
+                            var urls: [String] = []
+                            
+
+                            await withTaskGroup(of: String?.self) { group in
+                                for image in images {
+                                    group.addTask {
+                                        return await firebaseService.uploadImage(image: image)
+                                    }
+                                }
+
+                                for await result in group {
+                                    if let url = result {
+                                        urls.append(url)
+                                    }
+                                }
+                            }
+
+                            // Append all at once
+                            for url in urls {
+                                uploadedTempMediaURLs.append(url)
+                                blocks.append(EntryBlock(type: .image, content: url))
+                            }
+
+                            selectedTab = 1
+                            activeSheet = nil
+                        }
                     }
+                
+
+
                 default:
                     EmptyView()
                 }
@@ -293,7 +336,6 @@ struct AddEntryView: View {
                 observeKeyboardNotifications()
             }
 
-            // -- Whenever child text editor focus changes, we can decide what to do --
             .onChange(of: isChildTextEditorFocused) { newValue in
                 isKeyboardVisible = newValue
             }
@@ -306,6 +348,13 @@ struct AddEntryView: View {
             .onPreferenceChange(MoodButtonFrameKey.self) { frame in
                 moodButtonFrame = frame
                 print("🟡 Mood button frame: \(frame)")
+            }
+            .onDisappear {
+                if !entryWasSaved {
+                    for url in uploadedTempMediaURLs {
+                        FirebaseService.shared.deleteImage(at: url)
+                    }
+                }
             }
             
         }
@@ -470,7 +519,6 @@ struct AddEntryView: View {
 
 
     private func saveEntryWithMedia(mediaURLs: [String]) {
-        
         let textBlocks = blocks
             .filter { $0.type == .text }
             .map { $0.content }
@@ -491,11 +539,35 @@ struct AddEntryView: View {
             tags: selectedTags
         ) { success in
             if success {
+                print("✅ Entry saved to Firestore")
+
+                // ✅ Now save all image blocks to Firestore
+                for block in blocks where block.type == .image {
+                    firebaseService.saveMediafiles(
+                        entryID: entryID ?? "unknown",
+                        fileURL: block.content,
+                        fileType: .image
+                    ) { mediaSaved in
+                        if mediaSaved {
+                            print("✅ Media file saved to Firestore: \(block.content)")
+                        } else {
+                            print("❌ Failed to save media file: \(block.content)")
+                        }
+                    }
+                }
+                
+                uploadedTempMediaURLs.removeAll()
+                entryWasSaved = true
                 onSaveComplete()
                 presentationMode.wrappedValue.dismiss()
+            } else {
+                print("❌ Failed to save entry.")
             }
         }
     }
+
+
+    
 
     private func shouldSaveEntry() -> Bool {
         let textBlocks = blocks

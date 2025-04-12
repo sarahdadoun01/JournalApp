@@ -6,46 +6,72 @@
 //
 
 import SwiftUI
-import UIKit
+import PhotosUI
 
 struct ImagePickerCoordinator: UIViewControllerRepresentable {
-    static var sourceType: UIImagePickerController.SourceType = .photoLibrary
-
     var onComplete: ([UIImage]) -> Void
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(onComplete: onComplete)
+        Coordinator(self)
     }
 
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 0 // 0 = unlimited selection
+        config.filter = .any(of: [.images])
+
+        let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator
-        picker.sourceType = Self.sourceType
-        picker.allowsEditing = false
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
 
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let onComplete: ([UIImage]) -> Void
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: ImagePickerCoordinator
 
-        init(onComplete: @escaping ([UIImage]) -> Void) {
-            self.onComplete = onComplete
+        init(_ parent: ImagePickerCoordinator) {
+            self.parent = parent
         }
 
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            picker.dismiss(animated: true)
-            if let image = info[.originalImage] as? UIImage {
-                onComplete([image])
-            } else {
-                onComplete([])
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            print("📸 Final image count returned from ImagePickerCoordinator: \(results.count)")
+            print("📸 Picker returned \(results.count) result(s)")
+
+            for (i, result) in results.enumerated() {
+                print("📦 Result \(i): canLoad UIImage? \(result.itemProvider.canLoadObject(ofClass: UIImage.self))")
             }
-        }
 
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-            onComplete([])
+
+            var uiImages: [(Int, UIImage)] = []
+            let dispatchGroup = DispatchGroup()
+            let queue = DispatchQueue(label: "com.journalApp.imageLoadingQueue")
+
+            for (index, result) in results.enumerated() {
+                if result.itemProvider.canLoadObject(ofClass: UIImage.self) {
+                    dispatchGroup.enter()
+                    result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
+                        if let image = object as? UIImage {
+                            queue.async {
+                                uiImages.append((index, image))
+                                dispatchGroup.leave()
+                            }
+                        } else {
+                            dispatchGroup.leave()
+                        }
+                    }
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                let sortedImages = uiImages.sorted { $0.0 < $1.0 }.map { $0.1 }
+                print("✅ Final image count returned from ImagePickerCoordinator: \(sortedImages.count)")
+                for (index, image) in sortedImages.enumerated() {
+                    print("🖼️ Image \(index): \(image.size)")
+                }
+                self.parent.onComplete(sortedImages)
+                picker.dismiss(animated: true)
+            }
         }
     }
 }
