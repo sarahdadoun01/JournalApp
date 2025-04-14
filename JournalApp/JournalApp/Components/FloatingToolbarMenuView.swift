@@ -22,6 +22,8 @@ struct FloatingToolbarMenuView: View {
     var onAddVoiceMemo: () -> Void
     var onAddTag: (String) -> Void
     var onSelectJournal: () -> Void
+    var isRecordingAudio: Bool
+
     
     @State private var isVisible: Bool = true
     
@@ -96,7 +98,17 @@ struct FloatingToolbarMenuView: View {
                             )
                     }
 
-                    ToolbarButton(icon: "mic", action: onAddVoiceMemo)
+                    // Record Voice Memo
+                    if isRecordingAudio {
+                        LottieView(animationName: "red-dot_animated", loopMode: .loop)
+                            .frame(width: 35, height: 25)
+                            .onTapGesture {
+                                onAddVoiceMemo()
+                            }
+                    } else {
+                        ToolbarButton(icon: "mic", action: onAddVoiceMemo)
+                    }
+
 
                     // Media menu
                     Menu {
@@ -224,6 +236,7 @@ struct FloatingToolbarMenuView_Previews: PreviewProvider {
     @State static var activeInlinePopup: InlinePopupType? = nil
     @State static var showAddTagSheet = false
     @State static var userTags: [String] = []
+    static var isRecordingAudio = false
 
     static var previews: some View {
         FloatingToolbarMenuView(
@@ -240,6 +253,7 @@ struct FloatingToolbarMenuView_Previews: PreviewProvider {
                 }
             },
             onSelectJournal: {},
+            isRecordingAudio: isRecordingAudio,
             selectedJournalID: $selectedJournalID,
             selectedTags: $selectedTags,
             moodButtonFrame: $moodButtonFrame,

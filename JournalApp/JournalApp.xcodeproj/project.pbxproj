@@ -101,6 +101,8 @@
 		80BDB02F2D8DB10A0021262A /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BDB02E2D8DB10A0021262A /* LoginView.swift */; };
 		80BDB0352D8DBC3E0021262A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BDB0342D8DBC3E0021262A /* SettingsView.swift */; };
 		80C14BE72DAAC5B800E9AA4E /* red-dot_animated.json in Resources */ = {isa = PBXBuildFile; fileRef = 80C14BE62DAAC5B800E9AA4E /* red-dot_animated.json */; };
+		80C14BE92DAAC86200E9AA4E /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C14BE82DAAC86200E9AA4E /* AudioRecorder.swift */; };
+		80C14BEB2DAAE8CC00E9AA4E /* RenameAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C14BEA2DAAE8CC00E9AA4E /* RenameAlertView.swift */; };
 		80C8D8842D9AE04400127A75 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C8D8832D9AE04400127A75 /* AppState.swift */; };
 		80CBA7602D9DC7CB009FE54D /* AddTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CBA75F2D9DC7CB009FE54D /* AddTagView.swift */; };
 		80D636362D6CCBA3008FF902 /* JournalAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D636352D6CCBA3008FF902 /* JournalAppApp.swift */; };
@@ -198,6 +200,8 @@
 		80BDB02E2D8DB10A0021262A /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		80BDB0342D8DBC3E0021262A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		80C14BE62DAAC5B800E9AA4E /* red-dot_animated.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "red-dot_animated.json"; sourceTree = "<group>"; };
+		80C14BE82DAAC86200E9AA4E /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		80C14BEA2DAAE8CC00E9AA4E /* RenameAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameAlertView.swift; sourceTree = "<group>"; };
 		80C8D8832D9AE04400127A75 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		80CBA75F2D9DC7CB009FE54D /* AddTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagView.swift; sourceTree = "<group>"; };
 		80D636322D6CCBA3008FF902 /* JournalApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JournalApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -327,6 +331,7 @@
 				80AF73C72D91AD1B0095B252 /* SideBarCounts.swift */,
 				80B7AB092D9B23A40067BC92 /* Mood.swift */,
 				80677EEC2D9EC184005C3364 /* InlinePopupType.swift */,
+				80C14BE82DAAC86200E9AA4E /* AudioRecorder.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -374,6 +379,7 @@
 				80C8D8832D9AE04400127A75 /* AppState.swift */,
 				805666172D9C499A00DD9DDF /* TextFormatHelper.swift */,
 				805666272D9C884100DD9DDF /* ImagePickerCoordinator.swift */,
+				80C14BEA2DAAE8CC00E9AA4E /* RenameAlertView.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -579,8 +585,10 @@
 				80AF73DC2D91E0D90095B252 /* SignUpSuccessView.swift in Sources */,
 				806053A12DA4500400AFF245 /* FlexibleView.swift in Sources */,
 				80AF73DA2D91DEEA0095B252 /* SignUpCreatePasscodeView.swift in Sources */,
+				80C14BE92DAAC86200E9AA4E /* AudioRecorder.swift in Sources */,
 				806053A52DA5C49900AFF245 /* EntryContentMediaTabView.swift in Sources */,
 				80227B4D2D9835E400675AD7 /* PasscodeUnlockAlphanumeric.swift in Sources */,
+				80C14BEB2DAAE8CC00E9AA4E /* RenameAlertView.swift in Sources */,
 				80227B592D9856F100675AD7 /* CustomTextFieldView.swift in Sources */,
 				804F6D872D7D01A700E2378D /* CalendarView.swift in Sources */,
 				80B2CE682D70DC5D00440A1F /* DateFormatterHelper.swift in Sources */,

@@ -21,7 +21,7 @@ struct MoodsView: View {
                                 .resizable()
                                 .frame(width: 30, height: 30)
                                 .padding(6)
-                                .background(Color.gray.opacity(0.2))
+                                .background(Color.gray.opacity(0.1))
                                 .clipShape(Circle())
                                 .onAppear {
                                     print("Rendering mood image: \(mood)")

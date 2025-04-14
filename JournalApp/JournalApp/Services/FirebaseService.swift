@@ -482,6 +482,30 @@ class FirebaseService: ObservableObject {
         }
     }
 
+    @MainActor
+    func uploadMedia(from localPath: String, type: BlockType) async -> String? {
+        guard let fileURL = URL(string: localPath),
+              let fileData = try? Data(contentsOf: fileURL) else {
+            print("❌ Failed to load data from local path: \(localPath)")
+            return nil
+        }
+
+        let folder = type == .audio ? "audio" : "videos"
+        let ext = type == .audio ? "m4a" : "mp4"
+        let fileName = UUID().uuidString + ".\(ext)"
+        let storageRef = Storage.storage().reference().child("\(folder)/\(fileName)")
+
+        do {
+            let _ = try await storageRef.putDataAsync(fileData, metadata: nil)
+            let downloadURL = try await storageRef.downloadURL()
+            print("✅ Uploaded \(type) to:", downloadURL.absoluteString)
+            return downloadURL.absoluteString
+        } catch {
+            print("❌ Error uploading \(type): \(error.localizedDescription)")
+            return nil
+        }
+    }
+
 
     // Save an entry inside a specific journal
     func saveEntry(journalID: String, userID: String, title: String, content: String, moods: [String]?, mediaFiles: [String]?, tags: [String]?, completion: @escaping (Bool) -> Void) {

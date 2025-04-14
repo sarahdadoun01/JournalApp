@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import Firebase
+import AVFoundation
 
 actor UploadedURLs {
     var urls: [String] = []
@@ -19,8 +20,9 @@ actor UploadedURLs {
     }
 }
 
-struct EntryBlock: Identifiable {
+struct EntryBlock: Identifiable, Equatable {
     var id = UUID()
+    var title: String = ""
     var type: BlockType
     var content: String
 }
@@ -143,7 +145,8 @@ struct AddEntryView: View {
                         entryID: $entryID,
                         showAddTagSheet: $showAddTagSheet,
                         userTags: $userTags,
-                        showInlineJournalPicker: $showInlineJournalPicker
+                        showInlineJournalPicker: $showInlineJournalPicker,
+                        isRecordingAudio: $isRecordingAudio
                     )
                     .onAppear { showKeyboard() }
                     .refreshable {
@@ -188,6 +191,7 @@ struct AddEntryView: View {
                                 showTextFormatMenu = false
                                 togglePopup(for: .journalPicker)
                             },
+                            isRecordingAudio: isRecordingAudio,
                             selectedJournalID: $selectedJournalID,
                             selectedTags: $selectedTags,
                             moodButtonFrame: $moodButtonFrame,
@@ -409,9 +413,35 @@ struct AddEntryView: View {
         let original = blocks[index].content
         blocks[index].content = TextFormatHelper.applyFormat(style, to: original)
     }
+    
+    private func startRecording() {
+        let fileName = UUID().uuidString + ".m4a"
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+
+        AudioRecorder.shared.startRecording(to: fileURL) { success in
+            if success {
+                currentRecordingURL = fileURL
+                isRecordingAudio = true
+                selectedTab = 1 // switch to media tab
+                withAnimation(.spring()) {
+                    blocks.append(EntryBlock(type: .audio, content: fileURL.absoluteString))
+                }
+            }
+        }
+    }
+
+    private func stopRecording() {
+        AudioRecorder.shared.stopRecording()
+        isRecordingAudio = false
+    }
+
 
     private func addVoiceMemo() {
-        print("Voice memo added")
+        if isRecordingAudio {
+            stopRecording()
+        } else {
+            startRecording()
+        }
     }
 
     private func addTag() {
@@ -525,7 +555,6 @@ struct AddEntryView: View {
             .joined(separator: "\n\n")
 
         guard let user = Auth.auth().currentUser else {
-            print("Error: No authenticated user identified.")
             return
         }
 
@@ -539,9 +568,8 @@ struct AddEntryView: View {
             tags: selectedTags
         ) { success in
             if success {
-                print("✅ Entry saved to Firestore")
 
-                // ✅ Now save all image blocks to Firestore
+                //Now save all image blocks to Firestore
                 for block in blocks where block.type == .image {
                     firebaseService.saveMediafiles(
                         entryID: entryID ?? "unknown",
@@ -555,6 +583,22 @@ struct AddEntryView: View {
                         }
                     }
                 }
+                
+                for block in blocks where block.type == .audio {
+                    Task {
+                        if let uploadedURL = await firebaseService.uploadMedia(from: block.content, type: .audio) {
+                            firebaseService.saveMediafiles(
+                                entryID: entryID ?? "unknown",
+                                fileURL: uploadedURL,
+                                fileType: .audio
+                            ) { success in
+                                print(success ? "✅ Audio saved to Firestore" : "❌ Audio save failed")
+                            }
+                        }
+                    }
+                }
+
+
                 
                 uploadedTempMediaURLs.removeAll()
                 entryWasSaved = true

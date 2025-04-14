@@ -60,9 +60,9 @@ struct MediaGridScrollView: View {
             .padding(.horizontal,8)
             .padding(.vertical,8)
             
-        }.padding(6)
+        }.padding(20)
         .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
+        .cornerRadius(40)
     }
 }
 

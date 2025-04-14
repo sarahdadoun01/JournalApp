@@ -9,7 +9,12 @@ import SwiftUI
 import AVFoundation
 
 struct AudioPlaybackView: View {
-    let audioFileName: String
+    var block: EntryBlock
+    var entryID: String?
+    @Binding var blocks: [EntryBlock]
+    var showTitleAndSlider: Bool = true
+    @State private var isRenaming = false
+    @State private var newTitle = ""
 
     @State private var player: AVPlayer?
     @State private var isPlaying = false
@@ -18,6 +23,9 @@ struct AudioPlaybackView: View {
     @State private var duration: Double = 0
     @State private var currentTime: Double = 0
     @State private var isSeeking = false
+    @State private var recordingStartTime: Date? = nil
+    @State private var recordingTimer: Timer?
+    @State private var showMenu = false
 
     private var formattedCurrentTime: String {
         formatTime(currentTime)
@@ -25,6 +33,14 @@ struct AudioPlaybackView: View {
 
     private var formattedDuration: String {
         formatTime(duration)
+    }
+
+    private var formattedRecordingTime: String {
+        if let start = recordingStartTime {
+            let elapsed = Date().timeIntervalSince(start)
+            return formatTime(elapsed)
+        }
+        return "00:00"
     }
 
     var body: some View {
@@ -38,47 +54,96 @@ struct AudioPlaybackView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(audioFileName)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .font(.subheadline)
+                    HStack(spacing: 12) {
+                        Text(block.title.isEmpty ? "Untitled" : block.title)
+                            .font(.subheadline)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
 
-                    Text(formattedDate)
+                        WaveformView(isAnimating: $animateWave)
+                            .frame(height: 20)
+
+                        if !showTitleAndSlider {
+                            Text(formattedRecordingTime)
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                        }
+
+                        Spacer()
+
+                        Menu(content: {
+                            Button("Rename", action: {
+                                newTitle = block.title
+                                isRenaming = true
+                            })
+                            Button("Delete", role: .destructive, action: {
+                                if let id = entryID {
+                                    // Call Firebase delete logic here if available
+                                    print("🔥 Delete from Firebase: \(block.content)")
+                                }
+                                    if let index = blocks.firstIndex(where: { $0.id == block.id }) {
+                                        blocks.remove(at: index)
+                                    }
+                                })
+                            }, label: {
+                                Image(systemName: "ellipsis")
+                                    .rotationEffect(.degrees(90))
+                                    .foregroundColor(.gray)
+                            })
+                    }
+
+                    if showTitleAndSlider {
+                        Text(formattedDate)
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+
+            if showTitleAndSlider {
+                Slider(value: $currentTime, in: 0...duration, onEditingChanged: { editing in
+                    isSeeking = editing
+                    if !editing {
+                        seekToTime(currentTime)
+                    }
+                })
+
+                HStack {
+                    Text(formattedCurrentTime)
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                    Spacer()
+                    Text(formattedDuration)
                         .font(.caption2)
                         .foregroundColor(.gray)
                 }
             }
-
-            WaveformView(isAnimating: $animateWave)
-                .frame(height: 20)
-
-            Slider(value: $currentTime, in: 0...duration, onEditingChanged: { editing in
-                isSeeking = editing
-                if !editing {
-                    seekToTime(currentTime)
-                }
-            })
-
-            HStack {
-                Text(formattedCurrentTime)
-                    .font(.caption2)
-                    .foregroundColor(.gray)
-                Spacer()
-                Text(formattedDuration)
-                    .font(.caption2)
-                    .foregroundColor(.gray)
-            }
         }
-        .padding(12)
+        .padding(20)
         .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
+        .cornerRadius(40)
         .onAppear {
             setupPlayer()
+            if !showTitleAndSlider {
+                startRecordingTimer()
+            }
         }
+        .onDisappear {
+                recordingTimer?.invalidate()
+        }
+        .renameAlertView(
+            isPresented: $isRenaming,
+            currentTitle: block.title
+        ) { newTitle in
+            if let index = blocks.firstIndex(where: { $0.id == block.id }) {
+                blocks[index].title = newTitle
+            }
+        }
+        
     }
 
     private func setupPlayer() {
-        guard let url = URL(string: audioFileName) else { return }
+        guard let url = URL(string: block.content) else { return }
         let playerItem = AVPlayerItem(url: url)
         player = AVPlayer(playerItem: playerItem)
 
@@ -97,6 +162,19 @@ struct AudioPlaybackView: View {
             if !isSeeking {
                 currentTime = CMTimeGetSeconds(time)
             }
+        }
+
+        // Observe player status to stop waveform when done
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { _ in
+            isPlaying = false
+            animateWave = false
+        }
+    }
+
+    private func startRecordingTimer() {
+        recordingStartTime = Date()
+        recordingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            currentTime += 1
         }
     }
 
@@ -133,14 +211,27 @@ struct AudioPlaybackView: View {
     }
 }
 
-
 struct AudioPlaybackView_Previews: PreviewProvider {
     static var previews: some View {
+        
+        let previewBlock = EntryBlock(
+            id: UUID(),
+            title: "Preview Title",
+            type: .audio,
+            content: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+        )
+        
         VStack(spacing: 20) {
-            AudioPlaybackView(audioFileName: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")
+            
+            AudioPlaybackView(
+                block: previewBlock,
+                entryID: nil,
+                blocks: .constant([previewBlock]),
+                showTitleAndSlider: true
+            )
+            
+            .padding()
+            .previewLayout(.sizeThatFits)
         }
-        .padding()
-        .previewLayout(.sizeThatFits)
     }
 }
-

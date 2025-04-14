@@ -150,11 +150,12 @@ struct EntryContentMainView: View {
                     TagsFlowLayout(tags: selectedTags, spacing: 5) { tag in
                         Text("#\(tag)")
                             .font(.subheadline)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.gray.opacity(0.2))
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 10)
+                            .background(Color.gray.opacity(0.1))
                             .foregroundColor(.primary)
-                            .cornerRadius(12)
+                            .cornerRadius(100)
+                            .fixedSize()
                     }
                     .padding(.top, 8)
                 }
@@ -198,7 +199,12 @@ struct EntryContentMainView: View {
                         }
 
                     case .audio:
-                        AudioPlaybackView(audioFileName: block.wrappedValue.content)
+                        AudioPlaybackView(
+                            block: blocks[index],
+                            entryID: entryID,
+                            blocks: $blocks,
+                            showTitleAndSlider: false
+                        )
 
                     default:
                         EmptyView() // skip images/videos since they're grouped above

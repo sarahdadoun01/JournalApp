@@ -125,11 +125,14 @@ struct EntryListBlockView: View {
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 0)
             )
-            .swipeActions(edge: .trailing) { // added this friday at 10:47pm
+            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button(role: .destructive, action: onDelete) {
-                    Label("Delete", systemImage: "trash")
+                    Image(systemName: "trash")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                .tint(Color(red: 0.94, green: 0.36, blue: 0.39)) // your red background
             }
+
             
         }
         .frame(height: entry.mediaFiles?.isEmpty == false ? 250 : 150)

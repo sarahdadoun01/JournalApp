@@ -24,7 +24,6 @@ struct PasscodeUnlock: View {
 //                .ignoresSafeArea()
 
             if isUnlocked {
-                // When unlocked, you might navigate away or remove this view
                 Text("Unlocked")
                     .font(.largeTitle)
                     .foregroundColor(.white)
@@ -58,7 +57,7 @@ struct PasscodeUnlock: View {
                                         isUnlocked = true
                                         onPasscodeEntered()
                                     } else {
-                                        errorMessage = "Invalid passcode. UID: \(userID), TypedPasscode: \(inputPasscode) Try again."
+                                        errorMessage = "Incorrect."
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                             inputPasscode = ""
                                         }
@@ -87,7 +86,6 @@ struct PasscodeUnlock: View {
         }
     }
     
-    // MARK: - Biometric Authentication
     private func authenticateWithFaceID() {
         let context = LAContext()
         context.localizedFallbackTitle = ""  // Hide system fallback

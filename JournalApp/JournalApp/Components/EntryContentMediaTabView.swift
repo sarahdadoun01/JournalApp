@@ -9,6 +9,10 @@ import SwiftUI
 
 struct EntryContentMediaTabView: View {
     @Binding var blocks: [EntryBlock]
+    @Binding var entryID: String?
+    @Binding var isRecordingAudio: Bool
+
+
     let onShowAll: () -> Void
 
     // Convert .image and .video blocks to MediaFile array
@@ -61,12 +65,17 @@ struct EntryContentMediaTabView: View {
                             )
 
                         case .audio:
-                            AudioPlaybackView(audioFileName: block.content)
+                            AudioPlaybackView(
+                                block: block,
+                                entryID: entryID,
+                                blocks: $blocks,
+                                showTitleAndSlider: !isRecordingAudio
+                            )
 
                         default:
                             EmptyView()
                         }
-                    }
+                    }.animation(.interpolatingSpring(stiffness: 250, damping: 20), value: blocks)
                 }
 
                 Spacer()
@@ -84,10 +93,14 @@ struct EntryContentMediaTabView_Previews: PreviewProvider {
         EntryBlock(type: .video, content: "sample-video.mp4"),
         EntryBlock(type: .image, content: "https://via.placeholder.com/600x400.png?text=Image+2")
     ]
+    @State static var entryID: String? = "1"
+    @State static var isRecordingAudio: Bool = false
     
     static var previews: some View {
         EntryContentMediaTabView(
             blocks: $blocks,
+            entryID: $entryID,
+            isRecordingAudio: $isRecordingAudio,
             onShowAll: {}
         )
     }

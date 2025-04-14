@@ -61,79 +61,14 @@ struct TagsFlowLayout_Previews: PreviewProvider {
             TagsFlowLayout(tags: ["#happy", "#FirstTagTest", "#grateful", "#focus", "#redtag", "#bluetag"]) { tag in
                 Text(tag)
                     .font(.subheadline)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Color.gray.opacity(0.2))
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 10)
+                    .background(Color.gray.opacity(0.1))
                     .foregroundColor(.primary)
-                    .cornerRadius(12)
+                    .cornerRadius(100)
                     .fixedSize()
             }
         }
         .previewLayout(.sizeThatFits)
     }
 }
-
-
-
-
-//import SwiftUI
-//
-//struct TagsFlowLayout<Content: View>: View {
-//    let spacing: CGFloat
-//    let content: () -> Content
-//
-//    init(spacing: CGFloat = 8, @ViewBuilder content: @escaping () -> Content) {
-//        self.spacing = spacing
-//        self.content = content
-//    }
-//
-//    var body: some View {
-//        GeometryReader { geometry in
-//            self.generateContent(in: geometry)
-//        }
-//    }
-//
-//    func generateContent(in geometry: GeometryProxy) -> some View {
-//        var width = CGFloat.zero
-//        var height = CGFloat.zero
-//
-//        return ZStack(alignment: .topLeading) {
-//            content()
-//                .fixedSize()
-//                .alignmentGuide(.leading) { dimension in
-//                    if abs(width - dimension.width) > geometry.size.width {
-//                        width = 0
-//                        height -= dimension.height + spacing
-//                    }
-//                    let result = width
-//                    if dimension.width != 0 {
-//                        width -= dimension.width + spacing
-//                    }
-//                    return result
-//                }
-//                .alignmentGuide(.top) { _ in
-//                    let result = height
-//                    if width == 0 {
-//                        height -= spacing
-//                    }
-//                    return result
-//                }
-//        }.frame(maxWidth: .infinity, alignment: .leading)
-//    }
-//}
-//
-//
-//struct TagsFlowLayout_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TagsFlowLayout {
-//            ForEach(["happy", "sad", "excited", "tired"], id: \.self) { mood in
-//                Text(mood)
-//                    .padding(.horizontal, 12)
-//                    .padding(.vertical, 6)
-//                    .background(Color.black.opacity(0.3))
-//                    .cornerRadius(10)
-//            }
-//        }
-//        .padding()
-//    }
-//}
