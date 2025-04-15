@@ -46,8 +46,8 @@ public struct PasscodeBGBlurView: View {
                         }
                         .padding()
                         .background(Color.white.opacity(0.95)) // ✅ visible & tappable
-                        .cornerRadius(20)
-                        .shadow(radius: 10)
+                        .cornerRadius(40)
+                        .shadow(color: Color.black.opacity(0.1), radius: 40.0, x: 0, y: 0)
                         .frame(maxWidth: 300)
                         Spacer()
                     }

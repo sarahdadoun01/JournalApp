@@ -15,11 +15,23 @@ struct MarkdownTextView: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
         textView.isScrollEnabled = false
-        textView.backgroundColor = UIColor.systemGray6
+        textView.backgroundColor = .clear
         textView.font = UIFont.systemFont(ofSize: 17)
         textView.delegate = context.coordinator
+
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.textContainer.widthTracksTextView = true
+        textView.textContainerInset = .zero
+        textView.textContainer.lineFragmentPadding = 0
+
+        NSLayoutConstraint.activate([
+            textView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40)
+        ])
+
         return textView
     }
+
 
     func updateUIView(_ uiView: UITextView, context: Context) {
         if renderMarkdown {
@@ -33,6 +45,9 @@ struct MarkdownTextView: UIViewRepresentable {
                 uiView.text = text
             }
         }
+        
+        uiView.setNeedsLayout()
+        uiView.layoutIfNeeded()
     }
 
     func makeCoordinator() -> Coordinator {

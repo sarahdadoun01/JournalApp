@@ -5,12 +5,6 @@
 //  Created by Sarah Dadoun on 2025-03-11.
 //
 
-//
-//  SideBarView.swift
-//  JournalApp
-//
-//  Created by Sarah Dadoun on 2025-03-11.
-//
 import Foundation
 import SwiftUI
 
@@ -20,13 +14,13 @@ struct SideBarView: View {
     @Binding var selectedTag: String?
     @Binding var journals: [Journal]
     @Binding var tags: [Tag]
-    
+
     let onSelectJournal: (String) -> Void
     let onSelectTag: (String) -> Void
     let onLogout: () -> Void
     let onAddJournal: () -> Void
     let onAddTag: () -> Void
-    
+
     // Accept the counts
     let journalEntryCounts: [String: Int]
     let tagEntryCounts: [String: Int]
@@ -41,8 +35,8 @@ struct SideBarView: View {
                 if isShowing {
                     Rectangle()
                         .foregroundColor(.clear)
-                        .background(BlurView(style: .systemUltraThinMaterial)) // this line adds blur
-                        .edgesIgnoringSafeArea(.all)
+                        .background(BlurView(style: .systemUltraThinMaterial))
+                        .ignoresSafeArea()
                         .onTapGesture { isShowing = false }
 
 
@@ -58,20 +52,6 @@ struct SideBarView: View {
                             .padding(.vertical, -11)
 
                             // Journals
-                            
-//                            Section(header: Text("JOURNALS")) {
-//                                ForEach(journals, id: \.id) { journal in
-//                                    SideBarItem(title: journal.title, iconName: "book.fill", count: journalEntryCounts[journal.id] ?? 0, isSelected: selectedJournal == journal.id) {
-//                                        onSelectJournal(journal.id)
-//                                        isShowing = false
-//                                    }
-//                                }
-//
-//                                AddItemButton(title: "Add New Journal", action: onAddJournal)
-//
-//                            }.padding(.horizontal, -16)
-//                                .padding(.vertical, -11)
-                            
                             Section(header: Text("JOURNALS")) {
                                 ForEach(journals, id: \.id) { journal in
                                     SideBarItem(
@@ -110,7 +90,7 @@ struct SideBarView: View {
                                 }
 
                                 AddItemButton(title: "Add New Tag", action: onAddTag)
-                                
+
                             }.padding(.horizontal, -16)
                                 .padding(.vertical, -11)
 
@@ -131,11 +111,11 @@ struct SideBarView: View {
                                     onLogout()
                                     isShowing = false
                                 }
-                                
+
                             }.padding(.horizontal, -16)
                                 .padding(.vertical, -11)
-                            
-                            
+
+
                         }.padding(.top, 50)
                         .padding(.bottom, 20)
                         .listStyle(InsetGroupedListStyle())

@@ -74,8 +74,34 @@ struct AddEntryView: View {
     @Environment(\.presentationMode) var presentationMode
 
     @StateObject private var firebaseService = FirebaseService()
+    
+    init(
+        journals: Binding<[Journal]>,
+        entryTitle: String = "Untitled",
+        selectedMoods: [String] = [],
+        selectedTags: [String] = [],
+        blocks: [EntryBlock] = [EntryBlock(type: .text, content: "")],
+        selectedJournalID: String? = nil,
+        entryID: String? = UUID().uuidString,
+        onSaveComplete: @escaping () -> Void = {},
+        onTagAdded: @escaping () -> Void = {}
+    ) {
+        self._journals = journals
+        self._entryTitle = State(initialValue: entryTitle)
+        self._selectedMoods = State(initialValue: selectedMoods)
+        self._selectedTags = State(initialValue: selectedTags)
+        self._blocks = State(initialValue: blocks)
+        self._selectedJournalID = State(initialValue: selectedJournalID)
+        self._entryID = State(initialValue: entryID)
+
+        self.onSaveComplete = onSaveComplete
+        self.onTagAdded = onTagAdded
+    }
+
 
     var body: some View {
+        
+
         GeometryReader { geo in
             ZStack {
                 Color(.systemGray6).ignoresSafeArea()
@@ -324,6 +350,9 @@ struct AddEntryView: View {
             }
             .onAppear {
                 print("🧩 [AddEntryView] appeared")
+                if blocks.isEmpty {
+                    blocks = [EntryBlock(type: .text, content: "")]
+                }
                 if let journal = journals.first(where: { $0.id == selectedJournalID }) {
                     selectedJournalTitle = journal.title
                 }

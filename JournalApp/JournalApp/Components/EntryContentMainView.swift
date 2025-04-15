@@ -41,7 +41,6 @@ struct EntryContentMainView: View {
             return nil
         }
 
-        print("📸 Media files being passed to EntryContentMediaTabView:")
         result.forEach { print("• \($0.fileURL)") }
 
         return result
@@ -76,11 +75,7 @@ struct EntryContentMainView: View {
         self._journals = journals
         self._isTextEditorFocused = isTextEditorFocused
         self._showInlineJournalPicker = showInlineJournalPicker
-
-        print("📦 Media files in EntryContentMainView:")
-        for block in blocks.wrappedValue {
-            print("🧱 \(block.type) – \(block.content)")
-        }
+        
     }
 
 
@@ -170,16 +165,6 @@ struct EntryContentMainView: View {
                 }
                 .toggleStyle(.switch)
 
-//                // Unified media grid (images + videos)
-//                if !mediaFiles.isEmpty {
-//                    MediaGridScrollView(
-//                        mediaItems: mediaFiles,
-//                        onTapMore: {
-//                            // You can hook up full-screen viewer here
-//                        }
-//                    )
-//                }
-
                 // Text and audio blocks
                 ForEach($blocks.indices, id: \.self) { index in
                     let block = $blocks[index]
@@ -190,6 +175,10 @@ struct EntryContentMainView: View {
                             text: $blocks[index].content,
                             renderMarkdown: renderMarkdown
                         )
+                        .background(Color.yellow.opacity(0.1))
+                        .border(Color.red.opacity(0.2))
+                        .frame(maxWidth: .infinity)
+                        .fixedSize(horizontal: false, vertical: true)
                         .focused($localTextFocus)
                         .onTapGesture {
                             localTextFocus = true
@@ -198,16 +187,16 @@ struct EntryContentMainView: View {
                             isTextEditorFocused = isFocused
                         }
 
-                    case .audio:
-                        AudioPlaybackView(
-                            block: blocks[index],
-                            entryID: entryID,
-                            blocks: $blocks,
-                            showTitleAndSlider: false
-                        )
+//                    case .audio:
+//                        AudioPlaybackView(
+//                            block: blocks[index],
+//                            entryID: entryID,
+//                            blocks: $blocks,
+//                            showTitleAndSlider: false
+//                        )
 
                     default:
-                        EmptyView() // skip images/videos since they're grouped above
+                        EmptyView()
                     }
                 }
 
